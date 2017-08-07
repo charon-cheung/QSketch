@@ -12,13 +12,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     m_view = new MyView(this);
     m_view->setGeometry(0,0,600,400);
-    m_view->show();
 
     m_scene = new MyScene();
     m_scene->setSceneRect(-200,-150,400,300); //场景坐标系,超出view大小加滑条
     m_scene->setBackgroundBrush(QBrush(Qt::darkCyan));
+
     m_view->setScene(m_scene);
     m_view->scale(1, -1);
+    m_view->show();
 
     QPen p;
     p.setWidth(5);
