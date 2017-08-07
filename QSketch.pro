@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-
+QMAKE_CXXFLAGS += -Wno-unused-variable -Wno-unused-parameter
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QSketch
@@ -25,10 +25,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    myview.cpp \
+    myscene.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    myview.h \
+    myscene.h
 
 FORMS += \
         mainwindow.ui
+
+RESOURCES += \
+    res.qrc
