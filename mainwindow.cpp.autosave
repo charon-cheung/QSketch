@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     foreach(QAction* act, lineActions)
     connect(act, &QAction::triggered, m_view, &MyView::setLine );
+    connect(this, SIGNAL(getPt(QPointF)), m_view, SLOT()
 }
 
 MainWindow::~MainWindow()
@@ -56,8 +57,7 @@ void MainWindow::OpenPosDlg()
 {
     dlg = new PosDialog(this);
     if(dlg->exec() != QDialog::Accepted)    return;
-    QPointF pt1;
     if(sender()->objectName()=="act3")
-        pt1 = dlg->getPt();
-    qDebug()<<pt1;
+      QPointF pt1 = dlg->getPt();
+    emit(pt1);
 }

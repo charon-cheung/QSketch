@@ -27,15 +27,18 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     myview.cpp \
-    myscene.cpp
+    myscene.cpp \
+    posdialog.cpp
 
 HEADERS += \
         mainwindow.h \
     myview.h \
-    myscene.h
+    myscene.h \
+    posdialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    posdialog.ui
 
 RESOURCES += \
     res.qrc

@@ -6,6 +6,7 @@
 #include <QGraphicsItem>
 
 #include "myscene.h"
+
 class MyView : public QGraphicsView
 {
     Q_OBJECT
@@ -20,6 +21,7 @@ protected:
 private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
+
     bool drawPt, drawCirPt, drawCross, drawPtPos;
     bool drawLine, drawLinePos;
     enum{
