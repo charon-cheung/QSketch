@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->InitUi();
+
     m_view = new MyView(this);
     m_view->setGeometry(0,0,600,400);
     m_view->scale(1, -1);
@@ -22,8 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
 
-    drawPt = false;
-    drawLine = false;
+    foreach(QAction* act, ptActions)
+    connect(act, &QAction::triggered,m_view, &MyView::setPt);
+    foreach(QAction* act, lineActions)
+    connect(act, &QAction::triggered, m_view, &MyView::setLine );
 }
 
 MainWindow::~MainWindow()
@@ -31,50 +35,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
-#if 0
-void MainWindow::mousePressEvent(QGraphicsSceneMouseEvent *e)
+void MainWindow::InitUi()
 {
-    qDebug()<<"------------------";
-    QCursor cur;
-    qDebug()<<"全局坐标:"<<cur.pos();    //鼠标的全局位置
-    double pix = pt_size;
+    QMenu* ptMenu = new QMenu(this);
+    ptActions<< ui->act1 << ui->act2 << ui->act3;
+    ptMenu->addActions(ptActions);
+    ui->DrawPt->setMenu(ptMenu);
 
-    if(drawPt)
-    {
-
-        qDebug()<<"窗口坐标:"<<e->pos();
-        qDebug()<<"场景坐标:"<<QPoint(e->pos().x()-300, 200-e->pos().y());
-
-        qDebug()<<"映射到场景的坐标:"<<mapPressPt;
-        // 画圆点,mapPressPt为圆心,pix为半径
-//        m_scene->addEllipse(mapPressPt.x()-pix, mapPressPt.y()-pix, 2*pix, 2*pix,
-//                            QPen(QColor(Qt::black)), QBrush(Qt::SolidPattern));
-        // 画×样式的点
-        QPointF p1 = mapPressPt+QPoint(pt_size,pt_size);
-        QPointF p2 = mapPressPt+QPoint(-pt_size,-pt_size);
-        QPointF p3 = mapPressPt+QPoint(-pt_size,pt_size);
-        QPointF p4 = mapPressPt+QPoint(pt_size,-pt_size);
-        m_scene->addLine(QLineF(p1, p2), QPen(QColor(Qt::black)));
-        m_scene->addLine(QLineF(p3, p4), QPen(QColor(Qt::black)));
-    }
-
-}
-
-#endif
-
-void MainWindow::mouseReleaseEvent(QMouseEvent *e)
-{
-
-}
-
-void MainWindow::on_DrawLine_clicked()
-{
-    drawLine = true;
-}
-
-
-void MainWindow::on_DrawPtPos_clicked()
-{
-
+    QMenu* lineMenu = new QMenu(this);
+    lineActions<< ui->actLine_1 <<ui->actLine_2;
+    lineMenu->addActions(lineActions);
+    ui->DrawLine->setMenu(lineMenu);
 }

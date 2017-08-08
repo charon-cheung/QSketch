@@ -21,28 +21,21 @@ public:
 
 private slots:
 
-    void on_DrawLine_clicked();
-
-
-    void on_DrawPtPos_clicked();
 
 private:
     Ui::MainWindow *ui;
     MyScene* m_scene;
     MyView* m_view;
-    bool drawPt,drawLine;
-    QPointF mapPressPt;
-
+    QMenu *ptMenu, *LineMenu;
+    QList<QAction*> ptActions;
+    QList<QAction*> lineActions;
     QGraphicsLineItem* Line;
-    enum{
-        pt_size = 5,
-        line_width = 5
-    };
+private:
+    void InitUi();
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent* e);
-    void mouseMoveEvent(QGraphicsSceneMoveEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
-
+//    void mousePressEvent(QGraphicsSceneMouseEvent* e);
+//    void mouseMoveEvent(QGraphicsSceneMoveEvent* e);
+//    void mouseReleaseEvent(QMouseEvent* e);
 };
 
 #endif // MAINWINDOW_H

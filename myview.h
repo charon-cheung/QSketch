@@ -20,8 +20,17 @@ protected:
 private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
+    bool drawPt, drawCirPt, drawCross, drawPtPos;
+    bool drawLine, drawLinePos;
+    enum{
+        pt_size = 5,
+        line_width = 5
+    };
     QPointF start;
     QPointF end;
+public slots:
+    void setLine();
+    void setPt();
 };
 
 #endif // MYVIEW_H
