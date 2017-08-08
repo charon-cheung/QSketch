@@ -24,13 +24,15 @@ private:
     PosDialog* dlg;
     bool drawPt, drawCirPt, drawCross, drawPtPos;
     bool drawLine, drawLinePos;
-    QPointF pt1;
     enum{
-        pt_size = 5,
+        pt_size = 3,
         line_width = 5
     };
     QPointF start;
     QPointF end;
+private:
+    void catchPt(QPointF pt);
+
 public slots:
     void setLine();
     void setPt();

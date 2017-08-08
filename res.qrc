@@ -1,7 +1,15 @@
 <RCC>
     <qresource prefix="/Shape">
-        <file>Shape/line.png</file>
         <file>Shape/rectangle.png</file>
+        <file>Shape/point_clicked.png</file>
+        <file>Shape/point.png</file>
+        <file>Shape/line.png</file>
+        <file>Shape/ellipse.png</file>
     </qresource>
-    <qresource prefix="/new/prefix1"/>
+    <qresource prefix="/Icon">
+        <file>Icon/editor.png</file>
+        <file>Icon/input.png</file>
+        <file>Icon/QSketch.png</file>
+        <file>Icon/ruler.png</file>
+    </qresource>
 </RCC>

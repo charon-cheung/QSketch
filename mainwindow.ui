@@ -6,38 +6,77 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>767</width>
-    <height>562</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton
+{
+    padding: -1;
+} 
+QPushButton::menu-indicator{image:None;}</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="DrawPt">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>410</y>
-      <width>80</width>
-      <height>20</height>
+      <x>700</x>
+      <y>460</y>
+      <width>48</width>
+      <height>48</height>
      </rect>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
-     <string>画点</string>
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/Shape/Shape/point.png</normaloff>:/Shape/Shape/point.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>48</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="DrawLine">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>450</y>
-      <width>80</width>
-      <height>20</height>
+      <x>610</x>
+      <y>460</y>
+      <width>48</width>
+      <height>48</height>
      </rect>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
     <property name="text">
-     <string>画线</string>
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/Shape/Shape/line.png</normaloff>:/Shape/Shape/line.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>48</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -46,8 +85,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>767</width>
-     <height>22</height>
+     <width>800</width>
+     <height>23</height>
     </rect>
    </property>
   </widget>
@@ -87,6 +126,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

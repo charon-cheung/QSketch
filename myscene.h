@@ -17,6 +17,10 @@ private:
     QGraphicsLineItem* Line;
     QPointF start;
     QPointF end;
+    enum{
+        width = 600,
+        height = 400
+    };
 protected:
 
 

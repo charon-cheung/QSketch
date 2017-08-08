@@ -15,6 +15,8 @@ public:
     explicit PosDialog(QWidget *parent = 0);
     ~PosDialog();
     QPointF getPt();
+    QList<QPointF> getLine();
+    void showPt();
 
 private slots:
     void on_accept_clicked();

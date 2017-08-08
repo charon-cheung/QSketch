@@ -20,7 +20,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void OpenPosDlg();
+
 signals:
     void getPt(QPointF pt1);
 private:
