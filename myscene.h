@@ -18,7 +18,7 @@ private:
     QPointF start;
     QPointF end;
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent* event);
+
 
 };
 

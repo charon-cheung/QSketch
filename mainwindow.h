@@ -43,8 +43,6 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMoveEvent* e);
     void mouseReleaseEvent(QMouseEvent* e);
 
-//    void paintEvent(QPaintEvent* e);
-
 };
 
 #endif // MAINWINDOW_H
