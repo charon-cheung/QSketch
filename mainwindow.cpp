@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     foreach(QAction* act, lineActions)
     connect(act, &QAction::triggered, m_view, &MyView::setLine );
+
 }
 
 MainWindow::~MainWindow()
@@ -54,10 +55,6 @@ void MainWindow::InitUi()
 
 void MainWindow::OpenPosDlg()
 {
-    dlg = new PosDialog(this);
-    if(dlg->exec() != QDialog::Accepted)    return;
-    QPointF pt1;
-    if(sender()->objectName()=="act3")
-        pt1 = dlg->getPt();
-    qDebug()<<pt1;
+
+//    emit(pt1);
 }

@@ -21,7 +21,8 @@ public:
 
 private slots:
     void OpenPosDlg();
-
+signals:
+    void getPt(QPointF pt1);
 private:
     Ui::MainWindow *ui;
     MyScene* m_scene;

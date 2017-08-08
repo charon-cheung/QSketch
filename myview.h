@@ -6,7 +6,7 @@
 #include <QGraphicsItem>
 
 #include "myscene.h"
-
+#include "posdialog.h"
 class MyView : public QGraphicsView
 {
     Q_OBJECT
@@ -21,9 +21,10 @@ protected:
 private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
-
+    PosDialog* dlg;
     bool drawPt, drawCirPt, drawCross, drawPtPos;
     bool drawLine, drawLinePos;
+    QPointF pt1;
     enum{
         pt_size = 5,
         line_width = 5

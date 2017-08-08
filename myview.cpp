@@ -48,9 +48,9 @@ void MyView::mousePressEvent(QMouseEvent *event)
     }
     else if(drawPt && drawPtPos)
     {
-        qDebug()<<"画点的坐标";
-        m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
-                            QPen(QColor(Qt::black)), QBrush(Qt::SolidPattern));
+        qDebug()<<"画点的坐标"<<pt1;
+//        m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
+//                            QPen(QColor(Qt::black)), QBrush(Qt::SolidPattern));
 
     }
 }
@@ -62,7 +62,6 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
 //    qreal angle1= qAtan2( start.y(),start.x());
 //    qreal angle2= qAtan2( end.y(), end.x());
 //    Line->setRotation((angle2 - angle1)*180/3.14159);
-
     //    Line->setScale(event->pos().x());
 }
 
@@ -107,5 +106,10 @@ void MyView::setPt()
         drawCirPt=false;
         drawCross=false;
         drawPtPos=true;
+        dlg = new PosDialog(this);
+        if(dlg->exec() != QDialog::Accepted)    return;
+        pt1 = dlg->getPt();
+        m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
+                            QPen(QColor(Qt::black)), QBrush(Qt::SolidPattern));
     }
 }
