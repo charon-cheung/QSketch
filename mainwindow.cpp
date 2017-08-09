@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_view->setGeometry(0,0,600,400);
     m_view->scale(1, -1);
     m_view->show();
+
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
     foreach(QAction* act, ptActions)

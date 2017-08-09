@@ -6,11 +6,17 @@ MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
 //    this->setDragMode(QGraphicsView::ScrollHandDrag);
-
     m_scene = new MyScene(0);
     this->setScene(m_scene);
     drawPt = false;
     drawLine = false;
+#if 0
+    QRect viewport_rect(0, 0, this->viewport()->width(),
+                        this->viewport()->height());
+    QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
+    viewCenter = new QGraphicsRectItem(visible_scene_rect);
+    this->scene()->addItem(viewCenter);
+#endif
 }
 
 MyView::~MyView()
@@ -20,6 +26,7 @@ MyView::~MyView()
 
 void MyView::mousePressEvent(QMouseEvent *event)
 {
+    if(event->button()!=Qt::LeftButton)     return;
     qDebug()<<"my view clicked"<<qrand()%90;
 //    窗口坐标转为场景坐标
     start = this->mapToScene(event->pos());
@@ -56,6 +63,14 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     {
         Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
     }
+}
+//视图放大和缩小
+void MyView::wheelEvent(QWheelEvent *event)
+{
+    // 加这句后，放大缩小时，原点会跟随鼠标
+//    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    qreal scaleFactor = qPow(2.0, event->delta() / 240.0);
+    this->scale(scaleFactor, scaleFactor);
 }
 //捕捉点
 void MyView::catchPt(QPointF pt)

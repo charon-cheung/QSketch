@@ -13,11 +13,13 @@ class MyView : public QGraphicsView
 public:
     explicit MyView(QWidget *parent = 0);
     ~MyView();
-
+signals:
+    void changeScale(qreal t);
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
 private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
@@ -30,12 +32,17 @@ private:
     };
     QPointF start;
     QPointF end;
+    QMatrix matrix;
+
+
+    QGraphicsRectItem *viewCenter;
 private:
     void catchPt(QPointF pt);
 
 public slots:
     void setLine();
     void setPt();
+
 };
 
 #endif // MYVIEW_H

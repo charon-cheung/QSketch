@@ -12,7 +12,7 @@ class MyScene : public QGraphicsScene
 {
 public:
     MyScene(QObject *parent = Q_NULLPTR);
-
+    ~MyScene();
 private:
     QGraphicsLineItem* Line;
     QPointF start;
