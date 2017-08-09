@@ -30,6 +30,7 @@ MyView::~MyView()
 
 void MyView::mousePressEvent(QMouseEvent *event)
 {
+#if 0
     switch(event->button())
     {
     case Qt::MidButton:
@@ -60,10 +61,12 @@ void MyView::mousePressEvent(QMouseEvent *event)
     default:
         break;
     }
+#endif
 }
 
 void MyView::mouseMoveEvent(QMouseEvent *event)
 {
+#if 0
     QPointF dragStart,dragEnd,dragTrans;
     switch (mode) {
     case DRAG:
@@ -74,6 +77,7 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
         dragTrans = start - end;
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
+//        this->centerOn(dragTrans);
         origin = event->pos();
         event->accept();
 
@@ -86,11 +90,12 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
 //    qreal angle1= qAtan2( start.y(),start.x());
 //    qreal angle2= qAtan2( end.y(), end.x());
 //    Line->setRotation((angle2 - angle1)*180/3.14159);
-
+#endif
 }
 
 void MyView::mouseReleaseEvent(QMouseEvent *event)
 {
+#if 0
     switch(event->button())
     {
     case Qt::MidButton:
@@ -108,6 +113,7 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         event->ignore();
     }
 //    updateCenterRect();
+#endif
 }
 //视图放大和缩小
 void MyView::wheelEvent(QWheelEvent *event)
