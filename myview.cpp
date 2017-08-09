@@ -6,11 +6,15 @@ MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
 //    this->setDragMode(QGraphicsView::ScrollHandDrag);
-    m_scene = new MyScene(0);
-    this->setScene(m_scene);
+    mode = NORMAL;
     drawPt = false;
     drawLine = false;
-#if 0
+
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+
+    m_scene = new MyScene(0);
+    this->setScene(m_scene);
+#if 1
     QRect viewport_rect(0, 0, this->viewport()->width(),
                         this->viewport()->height());
     QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
@@ -26,51 +30,93 @@ MyView::~MyView()
 
 void MyView::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button()!=Qt::LeftButton)     return;
-    qDebug()<<"my view clicked"<<qrand()%90;
-//    窗口坐标转为场景坐标
-    start = this->mapToScene(event->pos());
-    if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
+    switch(event->button())
     {
-        m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
-                            QPen(QColor(Qt::white)), QBrush(Qt::white,Qt::SolidPattern) );
-    }
-    else if(drawPt && drawCross)    // 画X样式的点
-    {
-        QPointF p1 = start+QPoint(pt_size,pt_size);
-        QPointF p2 = start+QPoint(-pt_size,-pt_size);
-        QPointF p3 = start+QPoint(-pt_size,pt_size);
-        QPointF p4 = start+QPoint(pt_size,-pt_size);
-        m_scene->addLine(QLineF(p1, p2), QPen(QColor(Qt::white)));
-        m_scene->addLine(QLineF(p3, p4), QPen(QColor(Qt::white)));
+    case Qt::MidButton:
+        mode = DRAG;
+        origin = event->pos();
+        setCursor(Qt::ClosedHandCursor);
+        event->accept();
+        qDebug()<<"mode:"<<mode;
+        break;
+    case Qt::LeftButton:
+        qDebug()<<"my view left clicked"<<qrand()%100;
+        //    窗口坐标转为场景坐标
+        start = this->mapToScene(event->pos());
+        if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
+        {
+            m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
+                                QPen(QColor(Qt::white)), QBrush(Qt::white,Qt::SolidPattern) );
+        }
+        else if(drawPt && drawCross)    // 画X样式的点
+        {
+            QPointF p1 = start+QPoint(pt_size,pt_size);
+            QPointF p2 = start+QPoint(-pt_size,-pt_size);
+            QPointF p3 = start+QPoint(-pt_size,pt_size);
+            QPointF p4 = start+QPoint(pt_size,-pt_size);
+            m_scene->addLine(QLineF(p1, p2), QPen(QColor(Qt::white)));
+            m_scene->addLine(QLineF(p3, p4), QPen(QColor(Qt::white)));
+        }
+    default:
+        break;
     }
 }
 
 void MyView::mouseMoveEvent(QMouseEvent *event)
 {
+    QPointF dragStart,dragEnd,dragTrans;
+    switch (mode) {
+    case DRAG:
+//        Calculate the offset to drag relative to scene coordinates.
+        dragStart = this->mapToScene(origin);
+        dragEnd = this->mapToScene(event->pos());
+        qDebug()<<"start:"<<dragStart<<"end:"<<dragEnd;
+        dragTrans = start - end;
+        viewCenter->moveBy(dragTrans.x(), dragTrans.y());
+        this->centerOn(viewCenter);
+        origin = event->pos();
+        event->accept();
+
+        break;
+    default:
+        event->ignore();
+    }
 //    end = this->mapToScene(event->pos());
 
 //    qreal angle1= qAtan2( start.y(),start.x());
 //    qreal angle2= qAtan2( end.y(), end.x());
 //    Line->setRotation((angle2 - angle1)*180/3.14159);
-//    Line->setScale(event->pos().x());
+
 }
 
 void MyView::mouseReleaseEvent(QMouseEvent *event)
 {
-    end = this->mapToScene(event->pos());
-    if(drawLine && !drawLinePos)
+    switch(event->button())
     {
-        Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
+    case Qt::MidButton:
+        mode = NORMAL;
+        setCursor(Qt::ArrowCursor);
+        event->accept();
+        break;
+    case Qt::LeftButton:
+        end = this->mapToScene(event->pos());
+        if(drawLine && !drawLinePos)
+        {
+            Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
+        }
+    default:
+        event->ignore();
     }
+//    updateCenterRect();
 }
 //视图放大和缩小
 void MyView::wheelEvent(QWheelEvent *event)
 {
-    // 加这句后，放大缩小时，原点会跟随鼠标
+    // 加这句后，放大缩小时，原点会跟随鼠标移动
 //    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     qreal scaleFactor = qPow(2.0, event->delta() / 240.0);
     this->scale(scaleFactor, scaleFactor);
+    this->updateCenterRect();
 }
 //捕捉点
 void MyView::catchPt(QPointF pt)
@@ -128,4 +174,14 @@ void MyView::setPt()
         m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
                             QPen(QColor(Qt::white)), QBrush(Qt::white,Qt::SolidPattern));
     }
+}
+
+void MyView::updateCenterRect()
+{
+    QRect viewRect = this->viewport()->rect();
+    // This setPos is necessary because we translate the rect on the mouseMove event handler
+    // If we update the rect, the shape will still be translated, so we have to return
+    // it to the centre of the scene.
+    this->viewCenter->setPos(0, 0);
+    dynamic_cast<QGraphicsRectItem*>(this->viewCenter)->setRect(mapToScene(viewRect).boundingRect());
 }

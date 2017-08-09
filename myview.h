@@ -34,10 +34,19 @@ private:
     QPointF end;
     QMatrix matrix;
 
+    enum CurrentMode
+    {
+        NORMAL,
+        DRAG,
+        ZOOM_BOX
+    };
+    CurrentMode mode;
+    QPoint origin;
 
-    QGraphicsRectItem *viewCenter;
+    QGraphicsItem *viewCenter;
 private:
     void catchPt(QPointF pt);
+    void updateCenterRect();
 
 public slots:
     void setLine();
