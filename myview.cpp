@@ -34,16 +34,26 @@ void MyView::mousePressEvent(QMouseEvent *event)
     {
     case Qt::MidButton:
         mode = DRAG;
-        origin = this->mapToScene(event->pos());
-        qDebug()<<"origin:"<<origin;
+        dragStart = this->mapToScene(event->pos());
+        qDebug()<<"origin:"<<dragStart;
         setCursor(Qt::ClosedHandCursor);
         event->accept();
         break;
     case Qt::LeftButton:
-        qDebug()<<"my view left clicked"<<qrand()%100;
-        //    窗口坐标转为场景坐标
+        // 窗口坐标转为场景坐标
         start = this->mapToScene(event->pos());
-        if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
+        if(!drawLine && !drawPt)
+        {
+            mode = NORMAL;
+        }
+        mode =EDIT;
+//        if(drawLine && !drawLineXY)
+         if(0)
+        {
+
+
+        }
+        else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
         {
             m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
                                 QPen(QColor(Qt::white)), QBrush(Qt::white,Qt::SolidPattern) );
@@ -65,28 +75,37 @@ void MyView::mousePressEvent(QMouseEvent *event)
 
 void MyView::mouseMoveEvent(QMouseEvent *event)
 {
-    QPointF dragStart,dragEnd,dragTrans;
+    QPointF dragEnd,dragTrans;
     switch (mode) {
     case DRAG:
-//        Calculate the offset to drag relative to scene coordinates.
-//        dragStart = origin;
+    {
+        //        Calculate the offset to drag relative to scene coordinates.
         dragEnd = this->mapToScene(event->pos());
-        dragTrans = origin - dragEnd;
-
+        dragTrans = dragStart - dragEnd;
+        qDebug()<<dragEnd;
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
         event->accept();
         break;
-
-    default:
-        break;
-        event->ignore();
     }
-//    end = this->mapToScene(event->pos());
+    case EDIT:
+    {
+        if(mode!=EDIT)  return;
+        //        qDebug()<<"mode:"<<mode;
+        //        end = this->mapToScene(event->pos());
+        //        qDebug()<<"end:"<<end;
+        //        m_scene->addLine(QLineF(start,end) );
+        //        start = this->mapToScene(event->pos());
 
-//    qreal angle1= qAtan2( start.y(),start.x());
-//    qreal angle2= qAtan2( end.y(), end.x());
-//    Line->setRotation((angle2 - angle1)*180/3.14159);
+        //        qreal angle1= qAtan2( start.y(),start.x());
+        //        qreal angle2= qAtan2( end.y(), end.x());
+        //        Line->setRotation((angle2 - angle1)*180 / PI);
+        break;
+    }
+    default:
+        event->ignore();
+        break;
+    }
 }
 
 void MyView::mouseReleaseEvent(QMouseEvent *event)
@@ -99,11 +118,13 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         event->accept();
         break;
     case Qt::LeftButton:
+        if(mode!=EDIT)  return;
         end = this->mapToScene(event->pos());
-        if(drawLine && !drawLinePos)
+        if(drawLine && !drawLineXY)
         {
             Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
         }
+        mode = NORMAL;
     default:
         event->ignore();
     }
@@ -124,7 +145,7 @@ void MyView::wheelEvent(QWheelEvent *event)
     }
     QGraphicsView::wheelEvent(event);
 }
-//捕捉点
+//捕捉点,鼠标定位到某个点对应的全局坐标
 void MyView::catchPt(QPointF pt)
 {
     //场景坐标转全局坐标：先转为视图坐标，再转为全局坐标
@@ -139,11 +160,11 @@ void MyView::setLine()
     drawPt=false;
     if(sender()->objectName() == "actLine_1")
     {
-        drawLinePos=false;
+        drawLineXY=false;
     }
     else if(sender()->objectName() == "actLine_2")
     {
-        drawLinePos=true;
+        drawLineXY=true;
         dlg = new PosDialog(this);
         if(dlg->exec() != QDialog::Accepted)    return;
         QList<QPointF> list = dlg->getLine();
@@ -160,19 +181,19 @@ void MyView::setPt()
     {
         drawCirPt=true;
         drawCross=false;
-        drawPtPos=false;
+        drawPtXY=false;
     }
     else if(sender()->objectName() == "act2")
     {
         drawCirPt=false;
         drawCross=true;
-        drawPtPos=false;
+        drawPtXY=false;
     }
     else if(sender()->objectName() == "act3")
     {
         drawCirPt=false;
         drawCross=false;
-        drawPtPos=true;
+        drawPtXY=true;
         dlg = new PosDialog(this);
         dlg->showPt();
         if(dlg->exec() != QDialog::Accepted)    return;

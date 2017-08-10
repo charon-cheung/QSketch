@@ -7,6 +7,8 @@
 
 #include "myscene.h"
 #include "posdialog.h"
+
+#define PI 3.1415926
 class MyView : public QGraphicsView
 {
     Q_OBJECT
@@ -24,8 +26,8 @@ private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
     PosDialog* dlg;
-    bool drawPt, drawCirPt, drawCross, drawPtPos;
-    bool drawLine, drawLinePos;
+    bool drawPt, drawCirPt, drawCross, drawPtXY;
+    bool drawLine, drawLineXY;
     enum PARAMETER{
         pt_size = 3,
         line_width = 5
@@ -38,10 +40,10 @@ private:
     {
         NORMAL,
         DRAG,
-        ZOOM_BOX
+        EDIT
     };
     ViewMode mode;
-    QPointF origin;
+    QPointF dragStart;
     QGraphicsItem *viewCenter;
 private:
     void catchPt(QPointF pt);

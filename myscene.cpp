@@ -102,6 +102,6 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
     painter->drawLine(rect.left(), 0, rect.right(), 0);
 
     painter->restore();
-    qDebug()<<"draw background";
+//    qDebug()<<"draw background";
 #endif
 }

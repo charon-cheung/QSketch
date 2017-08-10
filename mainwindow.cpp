@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_view = new MyView(this);
     m_view->setGeometry(0,0,600,500);
     // 坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
-    m_view->scale(8, -8);
+    m_view->scale(6, -6);
     m_view->show();
 
 //    ui->centralWidget->setMouseTracking(true);
