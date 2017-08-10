@@ -14,12 +14,10 @@ public:
     ~MyScene();
 private:
     QGraphicsLineItem* Line;
-    QPointF start;
-    QPointF end;
-    QPointF dragStart,dragEnd,dragTrans;
-    enum{
-        width = 600,
-        height = 400
+
+    enum SIZE{
+        width = 1200,
+        height = 800
     };
     enum GridMode
     {
@@ -32,9 +30,6 @@ private:
     int min_space;
 protected:
     virtual void drawBackground(QPainter * painter, const QRectF & rect);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
 };
 

@@ -26,7 +26,7 @@ private:
     PosDialog* dlg;
     bool drawPt, drawCirPt, drawCross, drawPtPos;
     bool drawLine, drawLinePos;
-    enum{
+    enum PARAMETER{
         pt_size = 3,
         line_width = 5
     };
@@ -34,15 +34,14 @@ private:
     QPointF end;
     QMatrix matrix;
 
-    enum CurrentMode
+    enum ViewMode
     {
         NORMAL,
         DRAG,
         ZOOM_BOX
     };
-    CurrentMode mode;
-    QPoint origin;
-
+    ViewMode mode;
+    QPointF origin;
     QGraphicsItem *viewCenter;
 private:
     void catchPt(QPointF pt);

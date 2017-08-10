@@ -14,13 +14,13 @@ MyView::MyView(QWidget *parent):
 
     m_scene = new MyScene(0);
     this->setScene(m_scene);
-#if 1
+
     QRect viewport_rect(0, 0, this->viewport()->width(),
-                        this->viewport()->height());
+                        this->viewport()->height() );
     QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
     viewCenter = new QGraphicsRectItem(visible_scene_rect);
     this->scene()->addItem(viewCenter);
-#endif
+
 }
 
 MyView::~MyView()
@@ -30,15 +30,14 @@ MyView::~MyView()
 
 void MyView::mousePressEvent(QMouseEvent *event)
 {
-#if 0
     switch(event->button())
     {
     case Qt::MidButton:
         mode = DRAG;
-        origin = event->pos();
+        origin = this->mapToScene(event->pos());
+        qDebug()<<"origin:"<<origin;
         setCursor(Qt::ClosedHandCursor);
         event->accept();
-        qDebug()<<"mode:"<<mode;
         break;
     case Qt::LeftButton:
         qDebug()<<"my view left clicked"<<qrand()%100;
@@ -61,28 +60,26 @@ void MyView::mousePressEvent(QMouseEvent *event)
     default:
         break;
     }
-#endif
+    QGraphicsView::mousePressEvent(event);
 }
 
 void MyView::mouseMoveEvent(QMouseEvent *event)
 {
-#if 0
     QPointF dragStart,dragEnd,dragTrans;
     switch (mode) {
     case DRAG:
 //        Calculate the offset to drag relative to scene coordinates.
-        dragStart = this->mapToScene(origin);
+//        dragStart = origin;
         dragEnd = this->mapToScene(event->pos());
-        qDebug()<<"start:"<<dragStart<<"end:"<<dragEnd;
-        dragTrans = start - end;
+        dragTrans = origin - dragEnd;
+
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
-//        this->centerOn(dragTrans);
-        origin = event->pos();
         event->accept();
-
         break;
+
     default:
+        break;
         event->ignore();
     }
 //    end = this->mapToScene(event->pos());
@@ -90,12 +87,10 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
 //    qreal angle1= qAtan2( start.y(),start.x());
 //    qreal angle2= qAtan2( end.y(), end.x());
 //    Line->setRotation((angle2 - angle1)*180/3.14159);
-#endif
 }
 
 void MyView::mouseReleaseEvent(QMouseEvent *event)
 {
-#if 0
     switch(event->button())
     {
     case Qt::MidButton:
@@ -112,17 +107,22 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     default:
         event->ignore();
     }
-//    updateCenterRect();
-#endif
+    updateCenterRect();
+
+    QGraphicsView::mouseReleaseEvent(event);
 }
 //视图放大和缩小
 void MyView::wheelEvent(QWheelEvent *event)
 {
-    // 加这句后，放大缩小时，原点会跟随鼠标移动
-//    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    qreal scaleFactor = qPow(2.0, event->delta() / 240.0);
-    this->scale(scaleFactor, scaleFactor);
-    this->updateCenterRect();
+    if(event->modifiers() & Qt::ControlModifier)
+    {
+        // 加这句后，放大缩小时，原点会跟随鼠标移动
+//        this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        qreal scaleFactor = qPow(2.0, event->delta() / 240.0);  // ???
+        this->scale(scaleFactor, scaleFactor);
+        this->updateCenterRect();
+    }
+    QGraphicsView::wheelEvent(event);
 }
 //捕捉点
 void MyView::catchPt(QPointF pt)

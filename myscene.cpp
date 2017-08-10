@@ -40,26 +40,10 @@ MyScene::~MyScene()
 
 }
 
-void MyScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    dragStart = mouseEvent->scenePos();
-}
-
-void MyScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-    dragEnd = mouseEvent->scenePos();
-    dragTrans = dragEnd - dragStart;
-    qDebug()<<dragStart<<" "<<dragEnd;
-    QGraphicsScene::mouseMoveEvent(mouseEvent);
-}
-
-void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
-{
-
-}
-
+//如果此函数声明，但函数体为空，则场景是白色背景,不会调用 setBackgroundBrush
 void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
+#if 1
     painter->save();
 
     double x = rect.x();
@@ -119,4 +103,5 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
 
     painter->restore();
     qDebug()<<"draw background";
+#endif
 }
