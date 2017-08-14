@@ -16,5 +16,6 @@
         <file>Icon/measure.png</file>
         <file>Icon/delete.png</file>
         <file>Icon/normal.png</file>
+        <file>Icon/save.png</file>
     </qresource>
 </RCC>

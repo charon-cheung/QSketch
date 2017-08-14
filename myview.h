@@ -29,6 +29,7 @@ private:
     PosDialog* dlg;
     bool drawPt, drawCirPt, drawCross, drawPtXY;
     bool drawLine, drawLineXY,drawLineAH;
+
     enum PARAMETER{
         pt_size = 3,
         line_width = 5
@@ -37,13 +38,13 @@ private:
     QPointF end;
     QMatrix matrix;
 
-    enum ViewMode
+    enum AppMode
     {
         NORMAL,
         DRAG,
         EDIT
     };
-    ViewMode mode;
+    AppMode mode;
     QPointF dragStart;
     QGraphicsItem *viewCenter;
     QGraphicsLineItem *line;
@@ -61,6 +62,7 @@ public slots:
     void Locate();   //重置
     void setMeasure(/*QGraphicsItem* item*/);
     void Delete();
+    void SaveImage();
 };
 
 #endif // MYVIEW_H

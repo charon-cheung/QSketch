@@ -15,7 +15,7 @@ MyScene::MyScene(QObject *parent):
     this->addLine(QLineF(QPointF(0,-height/2),QPointF(0,height/2)), QPen(QColor(Qt::white)));
 //    画坐标轴刻度值
     QFont font;
-    font.setPixelSize(1);
+    font.setPixelSize(18);
     QTransform tran;
 
     QGraphicsSimpleTextItem* coord[100];
