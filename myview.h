@@ -27,7 +27,7 @@ private:
     QGraphicsLineItem* Line;
     PosDialog* dlg;
     bool drawPt, drawCirPt, drawCross, drawPtXY;
-    bool drawLine, drawLineXY;
+    bool drawLine, drawLineXY,drawLineAH;
     enum PARAMETER{
         pt_size = 3,
         line_width = 5
@@ -45,14 +45,18 @@ private:
     ViewMode mode;
     QPointF dragStart;
     QGraphicsItem *viewCenter;
+    QGraphicsLineItem *line;
 private:
     void catchPt(QPointF pt);
     void updateCenterRect();
 
 public slots:
+    void test();
     void setLine();
     void setPt();
-
+    void ShowContextMenu();  //加右键菜单
+    void reset();   //重置
+    void setDimension(/*QGraphicsItem* item*/);
 };
 
 #endif // MYVIEW_H

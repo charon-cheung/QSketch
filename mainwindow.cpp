@@ -43,7 +43,7 @@ void MainWindow::InitUi()
     ui->DrawPt->setMenu(ptMenu);
 
     QMenu* lineMenu = new QMenu(this);
-    lineActions<< ui->actLine_1 <<ui->actLine_2;
+    lineActions<< ui->actLine_1 << ui->actLine_2 << ui->actLine_3;
     lineMenu->addActions(lineActions);
     ui->DrawLine->setMenu(lineMenu);
 }

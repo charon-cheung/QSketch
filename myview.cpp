@@ -1,6 +1,7 @@
 #include "myview.h"
 #include <QDebug>
 #include <QtMath>
+#include <QMenu>
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
@@ -21,6 +22,14 @@ MyView::MyView(QWidget *parent):
     viewCenter = new QGraphicsRectItem(visible_scene_rect);
     this->scene()->addItem(viewCenter);
 
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
+            SLOT(ShowContextMenu()) );
+
+    line = this->scene()->addLine(QLineF(QPointF(0,0), QPointF(60,60)),QPen(QColor(Qt::blue)));
+    line->setFlag(QGraphicsItem::ItemIsSelectable);
+//    line->setSelected(true);
 }
 
 MyView::~MyView()
@@ -50,13 +59,12 @@ void MyView::mousePressEvent(QMouseEvent *event)
 //        if(drawLine && !drawLineXY)
          if(0)
         {
-
-
         }
         else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
         {
             m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
-                                QPen(QColor(Qt::white)), QBrush(Qt::white,Qt::SolidPattern) );
+                                QPen(QColor(Qt::white)),
+                                QBrush(Qt::white,Qt::SolidPattern) )->setSelected(true);
         }
         else if(drawPt && drawCross)    // 画X样式的点
         {
@@ -64,10 +72,11 @@ void MyView::mousePressEvent(QMouseEvent *event)
             QPointF p2 = start+QPoint(-pt_size,-pt_size);
             QPointF p3 = start+QPoint(-pt_size,pt_size);
             QPointF p4 = start+QPoint(pt_size,-pt_size);
-            m_scene->addLine(QLineF(p1, p2), QPen(QColor(Qt::white)));
-            m_scene->addLine(QLineF(p3, p4), QPen(QColor(Qt::white)));
+            m_scene->addLine(QLineF(p1, p2), QPen(QColor(Qt::white)))->setSelected(true);
+            m_scene->addLine(QLineF(p3, p4), QPen(QColor(Qt::white)))->setSelected(true);
         }
     default:
+        event->ignore();
         break;
     }
     QGraphicsView::mousePressEvent(event);
@@ -79,10 +88,10 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     switch (mode) {
     case DRAG:
     {
-        //        Calculate the offset to drag relative to scene coordinates.
+        // Calculate the offset to drag relative to scene coordinates.
         dragEnd = this->mapToScene(event->pos());
+        qDebug()<<"end:"<<dragEnd;
         dragTrans = dragStart - dragEnd;
-        qDebug()<<dragEnd;
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
         event->accept();
@@ -118,15 +127,18 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         event->accept();
         break;
     case Qt::LeftButton:
-        if(mode!=EDIT)  return;
-        end = this->mapToScene(event->pos());
-        if(drawLine && !drawLineXY)
+        if(mode==EDIT)
         {
-            Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
+            end = this->mapToScene(event->pos());
+            if(drawLine && !drawLineXY)
+            {
+                Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
+            }
+            mode = NORMAL;
         }
-        mode = NORMAL;
     default:
         event->ignore();
+        break;
     }
     updateCenterRect();
 
@@ -161,15 +173,34 @@ void MyView::setLine()
     if(sender()->objectName() == "actLine_1")
     {
         drawLineXY=false;
+        drawLineAH = false;
     }
     else if(sender()->objectName() == "actLine_2")
     {
-        drawLineXY=true;
+        drawLineXY = true;
+        drawLineAH = false;
         dlg = new PosDialog(this);
+        dlg->showLineXY();
         if(dlg->exec() != QDialog::Accepted)    return;
+
         QList<QPointF> list = dlg->getLine();
         if(list.size()!=2)  return;
-        m_scene->addLine(QLineF(list.at(0), list.at(1)) );
+        m_scene->addLine(QLineF(list.at(0), list.at(1)), QPen(QColor(Qt::white)))->setSelected(true);
+    }
+    else if(sender()->objectName() == "actLine_3")
+    {
+        drawLineXY = false;
+        drawLineAH = true;
+        dlg = new PosDialog(this);
+        dlg->showLineAH();
+        if(dlg->exec() != QDialog::Accepted)    return;
+
+        QPointF pt = dlg->getPt();
+        float angle = dlg->getAngle();
+        float length = dlg->getLength();
+        QPointF pt2(length/qSqrt(2),length/qSqrt(2));
+
+        m_scene->addLine(QLineF(pt, pt2), QPen(QColor(Qt::white)) )->setSelected(true);
     }
 }
 
@@ -199,8 +230,33 @@ void MyView::setPt()
         if(dlg->exec() != QDialog::Accepted)    return;
         QPointF pt1 = dlg->getPt();
         m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
-                            QPen(QColor(Qt::white)), QBrush(Qt::white,Qt::SolidPattern));
+                            QPen(QColor(Qt::white)),
+                            QBrush(Qt::white,Qt::SolidPattern))->setSelected(true);
     }
+}
+
+void MyView::ShowContextMenu()
+{
+    QMenu m;
+    QAction *Origin = m.addAction("定位到原点");
+    QAction *Dimension = m.addAction("标注");
+    QAction *Delete = m.addAction("删除");
+    connect(Origin,SIGNAL(triggered(bool)), this, SLOT(reset()) );
+    connect(Dimension,SIGNAL(triggered(bool)), this, SLOT(setDimension()) );
+    connect(Delete,SIGNAL(triggered(bool)), this, SLOT(setDimension()) );
+    m.exec(QCursor::pos());
+}
+
+void MyView::reset()
+{
+    this->centerOn(0,0);
+    this->scale(1, 1);
+    this->updateCenterRect();
+}
+
+void MyView::setDimension()
+{
+    this->scene()->removeItem(line);
 }
 
 void MyView::updateCenterRect()
@@ -211,4 +267,9 @@ void MyView::updateCenterRect()
     // it to the centre of the scene.
     this->viewCenter->setPos(0, 0);
     dynamic_cast<QGraphicsRectItem*>(this->viewCenter)->setRect(mapToScene(viewRect).boundingRect());
+}
+
+void MyView::test()
+{
+    qDebug()<<"test:"<<qrand()%80;
 }

@@ -1,6 +1,7 @@
 #include "posdialog.h"
 #include "ui_posdialog.h"
 #include <QDebug>
+#include <QtMath>
 
 PosDialog::PosDialog(QWidget *parent) :
     QDialog(parent),
@@ -15,6 +16,7 @@ PosDialog::PosDialog(QWidget *parent) :
     ui->pt1_y->setValidator(validator);
     ui->pt2_x->setValidator(validator);
     ui->pt2_y->setValidator(validator);
+
 }
 
 PosDialog::~PosDialog()
@@ -36,10 +38,32 @@ QList<QPointF> PosDialog::getLine()
 
 void PosDialog::showPt()
 {
-    ui->pt2_x->setVisible(false);
-    ui->pt2_y->setVisible(false);
-    ui->label_3->setVisible(false);
-    ui->label_4->setVisible(false);
+    ui->frame_2->setVisible(false);
+    ui->frame_3->setVisible(false);
+    return;
+}
+
+void PosDialog::showLineXY()
+{
+    ui->frame_3->setVisible(false);
+    return;
+}
+
+void PosDialog::showLineAH()
+{
+    ui->frame_2->setVisible(false);
+    return;
+}
+
+float PosDialog::getAngle()
+{
+    return qDegreesToRadians(ui->angle->text().toFloat());
+}
+
+float PosDialog::getLength()    //很大的非零非整数
+{
+//    return ui->length->text().toULong();
+    return ui->length->text().toFloat();
 }
 
 void PosDialog::on_accept_clicked()

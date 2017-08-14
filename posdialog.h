@@ -17,7 +17,10 @@ public:
     QPointF getPt();
     QList<QPointF> getLine();
     void showPt();
-
+    void showLineXY();
+    void showLineAH();
+    float getAngle();
+    float getLength();
 private slots:
     void on_accept_clicked();
 
@@ -27,6 +30,7 @@ private:
     Ui::PosDialog *ui;
     QDoubleValidator* validator;
     QPointF pt1,pt2;
+    int angle,length;
 };
 
 #endif // POSDIALOG_H

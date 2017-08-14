@@ -35,9 +35,7 @@ private:
 private:
     void InitUi();
 protected:
-//    void mousePressEvent(QGraphicsSceneMouseEvent* e);
-//    void mouseMoveEvent(QGraphicsSceneMoveEvent* e);
-//    void mouseReleaseEvent(QMouseEvent* e);
+
 };
 
 #endif // MAINWINDOW_H
