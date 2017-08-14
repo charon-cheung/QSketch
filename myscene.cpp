@@ -31,6 +31,7 @@ MyScene::MyScene(QObject *parent):
     space = 50;
     min_space = 10;
     mode = ALL;
+
 }
 
 MyScene::~MyScene()
@@ -41,6 +42,11 @@ MyScene::~MyScene()
 QPen MyScene::getPen()
 {
     return p;
+}
+
+QList<QGraphicsItem *> MyScene::getChosenItems()
+{
+    return chosenItems;
 }
 
 void MyScene::setPen()
@@ -56,11 +62,19 @@ void MyScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     qDebug() << "Custom scene clicked.";
     if (event->button() == Qt::LeftButton) {
         // 检测光标下是否有 item
-        QGraphicsItem *itemToRemove = NULL;
-        foreach (QGraphicsItem *item, items(event->scenePos())) {
-            qDebug()<<item->mapToScene(item->pos())<<item->type();
-            this->removeItem(item);
-        }
+//        foreach (QGraphicsItem *item, items(event->scenePos())) {
+//            矩形type为3，椭圆type为4，直线type为6
+//            qDebug()<<item->mapToScene(item->pos()) << item->type();
+//        }
+        chosenItems = items(event->scenePos());
+    }
+}
+
+void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+//        qDebug()<<"选择的item类型"<<item->type();
     }
 }
 

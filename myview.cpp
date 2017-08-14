@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QtMath>
 #include <QMenu>
-
+#include <crosspt.h>
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
@@ -20,16 +20,17 @@ MyView::MyView(QWidget *parent):
                         this->viewport()->height() );
     QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
     viewCenter = new QGraphicsRectItem(visible_scene_rect);
-    this->scene()->addItem(viewCenter);
+    this->scene()->addItem(viewCenter); //this->scene()是 QGraphicsScene*
 
     this->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
 
-    line = this->scene()->addLine(QLineF(QPointF(0,0), QPointF(60,60)),QPen(QColor(Qt::blue)));
-    line->setFlag(QGraphicsItem::ItemIsSelectable);
+//    line = this->scene()->addLine(QLineF(QPointF(0,0), QPointF(60,60)),QPen(QColor(Qt::blue)));
+//    line->setFlag(QGraphicsItem::ItemIsSelectable);
 //    line->setSelected(true);
+
 }
 
 MyView::~MyView()
@@ -68,12 +69,10 @@ void MyView::mousePressEvent(QMouseEvent *event)
         }
         else if(drawPt && drawCross)    // 画X样式的点
         {
-            QPointF p1 = start+QPoint(pt_size,pt_size);
-            QPointF p2 = start+QPoint(-pt_size,-pt_size);
-            QPointF p3 = start+QPoint(-pt_size,pt_size);
-            QPointF p4 = start+QPoint(pt_size,-pt_size);
-            m_scene->addLine(QLineF(p1, p2), QPen(QColor(Qt::white)))->setSelected(true);
-            m_scene->addLine(QLineF(p3, p4), QPen(QColor(Qt::white)))->setSelected(true);
+            CrossPt *pt = new CrossPt();
+            pt->setRect(QRect(-10, -10, 20, 20));
+            pt->setPos(start);
+            m_scene->addItem(pt);
         }
     default:
         event->ignore();
@@ -152,10 +151,37 @@ void MyView::wheelEvent(QWheelEvent *event)
         // 加这句后，放大缩小时，原点会跟随鼠标移动
 //        this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
         qreal scaleFactor = qPow(2.0, event->delta() / 240.0);  // ???
+        qDebug()<<event->delta();
         this->scale(scaleFactor, scaleFactor);
         this->updateCenterRect();
     }
     QGraphicsView::wheelEvent(event);
+}
+
+void MyView::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+    case Qt::Key_Escape:
+        this->setNormal();
+        break;
+    case Qt::Key_Home:
+        this->Locate();
+        break;
+    case Qt::Key_Plus:
+        this->scale(1.41421, 1.41421);
+        this->updateCenterRect();
+        break;
+    case Qt::Key_Minus:
+        this->scale(0.70711, 0.70711);
+        this->updateCenterRect();
+        break;
+    case Qt::Key_Delete:
+        this->Delete();
+        break;
+    default:
+        event->ignore();
+    }
 }
 //捕捉点,鼠标定位到某个点对应的全局坐标
 void MyView::catchPt(QPointF pt)
@@ -238,25 +264,51 @@ void MyView::setPt()
 void MyView::ShowContextMenu()
 {
     QMenu m;
-    QAction *Origin = m.addAction("定位到原点");
-    QAction *Dimension = m.addAction("标注");
+    QAction *Normal = m.addAction("重置为普通模式");
+    QAction *Locate = m.addAction("定位到原点");
+    QAction *Measure = m.addAction("标注");
     QAction *Delete = m.addAction("删除");
-    connect(Origin,SIGNAL(triggered(bool)), this, SLOT(reset()) );
-    connect(Dimension,SIGNAL(triggered(bool)), this, SLOT(setDimension()) );
-    connect(Delete,SIGNAL(triggered(bool)), this, SLOT(setDimension()) );
+
+    Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
+    Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
+    Measure->setIcon(QIcon(":/Icon/Icon/measure.png"));
+    Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
+
+    connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
+    connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
+    connect(Measure,SIGNAL(triggered(bool)), this, SLOT(setMeasure()) );
+    connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
+
     m.exec(QCursor::pos());
 }
 
-void MyView::reset()
+void MyView::setNormal()
+{
+    mode = NORMAL;
+    drawPt=false;
+    drawLine=false;
+}
+
+void MyView::Locate()
 {
     this->centerOn(0,0);
     this->scale(1, 1);
     this->updateCenterRect();
 }
 
-void MyView::setDimension()
+void MyView::setMeasure()
 {
-    this->scene()->removeItem(line);
+//    this->scene()->removeItem(line);
+}
+
+void MyView::Delete()
+{
+//   不是this->scene(),它是QGraphicsScene.  为什么用selectedItems()不行?
+    QList<QGraphicsItem*> items = m_scene->getChosenItems();
+    foreach(QGraphicsItem* item, items)
+    {
+        m_scene->removeItem(item);  //删除item及其子item
+    }
 }
 
 void MyView::updateCenterRect()

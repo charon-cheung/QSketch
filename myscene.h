@@ -13,7 +13,7 @@ public:
     MyScene(QObject *parent = Q_NULLPTR);
     ~MyScene();
     QPen getPen();
-
+    QList<QGraphicsItem*> getChosenItems();
 private:
     QGraphicsLineItem* Line;
     QPen p;
@@ -30,11 +30,13 @@ private:
     GridMode mode;
     int space;
     int min_space;
+    QList<QGraphicsItem*> chosenItems;
 private:
     void setPen();
 protected:
 //    virtual void drawBackground(QPainter * painter, const QRectF & rect);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // MYSCENE_H

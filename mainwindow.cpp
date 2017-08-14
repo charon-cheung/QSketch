@@ -24,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(act, &QAction::triggered,m_view, &MyView::setPt);
     foreach(QAction* act, lineActions)
         connect(act, &QAction::triggered, m_view, &MyView::setLine );
-
 }
 
 MainWindow::~MainWindow()

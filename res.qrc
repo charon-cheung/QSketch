@@ -12,5 +12,9 @@
         <file>Icon/input.png</file>
         <file>Icon/QSketch.png</file>
         <file>Icon/ruler.png</file>
+        <file>Icon/locate.png</file>
+        <file>Icon/measure.png</file>
+        <file>Icon/delete.png</file>
+        <file>Icon/normal.png</file>
     </qresource>
 </RCC>

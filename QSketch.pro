@@ -42,13 +42,15 @@ SOURCES += \
         mainwindow.cpp \
     myview.cpp \
     myscene.cpp \
-    posdialog.cpp
+    posdialog.cpp \
+    crosspt.cpp
 
 HEADERS += \
         mainwindow.h \
     myview.h \
     myscene.h \
-    posdialog.h
+    posdialog.h \
+    crosspt.h
 
 FORMS += \
         mainwindow.ui \
