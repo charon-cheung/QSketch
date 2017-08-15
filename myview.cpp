@@ -5,6 +5,7 @@
 #include <crosspt.h>
 #include <QApplication>
 #include <QDateTime>
+#include <QMessageBox>
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
@@ -29,10 +30,6 @@ MyView::MyView(QWidget *parent):
 
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
-
-//    line = this->scene()->addLine(QLineF(QPointF(0,0), QPointF(60,60)),QPen(QColor(Qt::blue)));
-//    line->setFlag(QGraphicsItem::ItemIsSelectable);
-//    line->setSelected(true);
 }
 
 MyView::~MyView()
@@ -66,8 +63,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
         else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
         {
             m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
-                                QPen(QColor(Qt::white)),
-                                QBrush(Qt::white,Qt::SolidPattern) )->setSelected(true);
+                                QPen(QColor(Qt::darkGreen)),
+                                QBrush(Qt::darkGreen,Qt::SolidPattern) )->setSelected(true);
         }
         else if(drawPt && drawCross)    // 画X样式的点
         {
@@ -226,9 +223,14 @@ void MyView::setLine()
         QPointF pt = dlg->getPt();
         float angle = dlg->getAngle();
         float length = dlg->getLength();
-        QPointF pt2(length/qSqrt(2),length/qSqrt(2));
 
-        m_scene->addLine(QLineF(pt, pt2), QPen(QColor(Qt::white)) )->setSelected(true);
+        QLineF line;
+        line.setP1(pt);
+        line.setAngle(angle);
+        line.setLength(length);
+//        QGraphicsLineItem* item;
+//        item->setLine(line);
+        m_scene->addLine(line, QPen(QColor(Qt::white)) )->setSelected(true);
     }
 }
 
@@ -302,17 +304,31 @@ void MyView::Locate()
 
 void MyView::setMeasure()
 {
-//    this->scene()->removeItem(line);
+    chosenItem = m_scene->getChosenItem();
+    if(chosenItem->type()==QGraphicsLineItem::Type)
+    {
+        QGraphicsLineItem* lineItem = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItem);
+        QPointF p1 = lineItem->line().p1();
+        QPointF p2 = lineItem->line().p2();
+        qDebug()<<lineItem->line().angle();
+    }
 }
 
 void MyView::Delete()
 {
-//   不是this->scene(),它是QGraphicsScene.  为什么用selectedItems()不行?
-    QList<QGraphicsItem*> items = m_scene->getChosenItems();
-    foreach(QGraphicsItem* item, items)
+//   不是this->scene(),它是QGraphicsScene.但为什么用selectedItems()不行?
+//    QList<QGraphicsItem*> items = m_scene->getChosenItems();
+//    foreach(QGraphicsItem* item, items)
+//    {
+//        m_scene->removeItem(item);  //删除item及其子item
+//    }
+    chosenItem = m_scene->getChosenItem();
+    if(!chosenItem)
     {
-        m_scene->removeItem(item);  //删除item及其子item
+        QMessageBox::warning(this,"警告","图形不存在或不完整!");
+        return;
     }
+    m_scene->removeItem(chosenItem);  //删除单个item,包括子item
 }
 
 void MyView::SaveImage()
@@ -323,10 +339,10 @@ void MyView::SaveImage()
 //    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
     QImage mirroredImage = image.mirrored(false, true);
     QString path = QApplication::applicationDirPath();
-    QDateTime time = QDateTime::currentDateTime();
-    QString str = time.toString("MM-dd hh-mm-ss"); //设置显示格式
-    qDebug()<<path<<"  "<<str;
-    QString file = path+ "/" +str+ ".png";
+    QDateTime currentTime = QDateTime::currentDateTime();
+    //设置显示格式,文件名不能有冒号
+    QString time = currentTime.toString("MM-dd--hh-mm-ss");
+    QString file = path+ "/" +time+ ".png";
     mirroredImage.save(file);
 }
 

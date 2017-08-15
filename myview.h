@@ -47,7 +47,7 @@ private:
     AppMode mode;
     QPointF dragStart;
     QGraphicsItem *viewCenter;
-    QGraphicsLineItem *line;
+    QGraphicsItem* chosenItem;
 private:
     void catchPt(QPointF pt);
     void updateCenterRect();
