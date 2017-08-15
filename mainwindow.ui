@@ -79,6 +79,55 @@ QPushButton::menu-indicator{image:None;}</string>
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="DrawEllipse">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>480</y>
+      <width>57</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/Shape/Shape/rectangle.png</normaloff>:/Shape/Shape/rectangle.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>57</width>
+      <height>48</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="DrawRect">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>480</y>
+      <width>64</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="res.qrc">
+      <normaloff>:/Shape/Shape/ellipse.png</normaloff>:/Shape/Shape/ellipse.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>64</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -127,6 +176,31 @@ QPushButton::menu-indicator{image:None;}</string>
   <action name="actLine_3">
    <property name="text">
     <string>角度和长度画线</string>
+   </property>
+  </action>
+  <action name="actRect_1">
+   <property name="text">
+    <string>直接画矩形</string>
+   </property>
+  </action>
+  <action name="actRect_2">
+   <property name="text">
+    <string>坐标画矩形</string>
+   </property>
+  </action>
+  <action name="actEllipse_1">
+   <property name="text">
+    <string>直接画圆</string>
+   </property>
+  </action>
+  <action name="actEllipse_2">
+   <property name="text">
+    <string>坐标画圆</string>
+   </property>
+  </action>
+  <action name="actRect_3">
+   <property name="text">
+    <string>画圆角矩形</string>
    </property>
   </action>
  </widget>

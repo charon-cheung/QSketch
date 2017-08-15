@@ -45,4 +45,14 @@ void MainWindow::InitUi()
     lineActions<< ui->actLine_1 << ui->actLine_2 << ui->actLine_3;
     lineMenu->addActions(lineActions);
     ui->DrawLine->setMenu(lineMenu);
+
+    QMenu* rectMenu = new QMenu(this);
+    rectActions<< ui->actRect_1<<ui->actRect_2<<ui->actRect_3;
+    rectMenu->addActions(rectActions);
+    ui->DrawRect->setMenu(rectMenu);
+
+    QMenu* ellipseMenu = new QMenu(this);
+    ellipseActions<< ui->actEllipse_1<< ui->actEllipse_2;
+    ellipseMenu->addActions(ellipseActions);
+    ui->DrawEllipse->setMenu(ellipseMenu);
 }

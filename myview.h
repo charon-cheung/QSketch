@@ -17,12 +17,7 @@ public:
     ~MyView();
 signals:
     void changeScale(qreal t);
-protected:
-    void mousePressEvent(QMouseEvent* event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void wheelEvent(QWheelEvent *event);
-    void keyPressEvent(QKeyEvent *event);
+
 private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
@@ -47,7 +42,6 @@ private:
     AppMode mode;
     QPointF dragStart;
     QGraphicsItem *viewCenter;
-    QGraphicsItem* chosenItem;
 private:
     void catchPt(QPointF pt);
     void updateCenterRect();
@@ -63,6 +57,13 @@ public slots:
     void setMeasure(/*QGraphicsItem* item*/);
     void Delete();
     void SaveImage();
+
+protected:
+    void mousePressEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // MYVIEW_H

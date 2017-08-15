@@ -17,6 +17,8 @@ PosDialog::PosDialog(QWidget *parent) :
     ui->pt2_x->setValidator(validator);
     ui->pt2_y->setValidator(validator);
 
+    positive = new QDoubleValidator(0,800,2,this);
+    ui->length->setValidator(positive);
 }
 
 PosDialog::~PosDialog()
@@ -57,12 +59,13 @@ void PosDialog::showLineAH()
 
 float PosDialog::getAngle()
 {
-    return qDegreesToRadians(ui->angle->text().toFloat());
+    return ui->angle->text().toFloat();
 }
 
 float PosDialog::getLength()    //很大的非零非整数
 {
-//    return ui->length->text().toULong();
+    QString length = ui->length->text();
+    if(!length.isEmpty() && length!="0")
     return ui->length->text().toFloat();
 }
 

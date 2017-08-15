@@ -7,15 +7,12 @@ MyScene::MyScene(QObject *parent):
     this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
     this->setBackgroundBrush(QBrush(Qt::black));
 //    画圆心, QPen 是圆的边缘, QBrush是圆的填充
-    Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(Qt::darkMagenta)),
-                     QBrush(Qt::darkMagenta, Qt::SolidPattern) );
+    Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(Qt::white)),
+                     QBrush(Qt::white, Qt::SolidPattern) );
 
 //    画两个坐标轴
-    X = this->addLine(QLineF(QPointF(-width/2,0), QPointF(width/2,0)), QPen(QColor(Qt::darkCyan)));
-    Y = this->addLine(QLineF(QPointF(0,-height/2),QPointF(0,height/2)), QPen(QColor(Qt::darkCyan)));
-    X->setFlag(QGraphicsItem::ItemIsSelectable,false);
-    Y->setFlag(QGraphicsItem::ItemIsSelectable,false);
-
+    X = this->addLine(QLineF(QPointF(-width/2,0), QPointF(width/2,0)), QPen(QColor(Qt::white)));
+    Y = this->addLine(QLineF(QPointF(0,-height/2),QPointF(0,height/2)), QPen(QColor(Qt::white)));
 //    画坐标轴刻度值
     QFont font;
     font.setPixelSize(18);
@@ -52,49 +49,38 @@ QList<QGraphicsItem *> MyScene::getChosenItems()
     return chosenItems;
 }
 
-QGraphicsItem* MyScene::getChosenItem()
-{
-    if(chosenItem!=X &&chosenItem!=Y && chosenItem!=Origin)
-    return chosenItem;
-}
-
 void MyScene::setPen()
 {
     p.setColor(QColor(Qt::white));
     p.setStyle(Qt::DashDotLine);
-//    p.setDashOffset(10);
-    //    p.setBrush();
+    p.setDashOffset(10);
+//    p.setBrush();
 }
 
 void MyScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug() << "Custom scene clicked"<<qrand()%100;
+    qDebug() << "Custom scene clicked.";
     if (event->button() == Qt::LeftButton) {
         // 检测光标下是否有 item
 //        foreach (QGraphicsItem *item, items(event->scenePos())) {
 //            矩形type为3，椭圆type为4，直线type为6
 //            qDebug()<<item->mapToScene(item->pos()) << item->type();
 //        }
-        chosenItem = itemAt(event->scenePos(),QTransform());
-
-        chosenItems=items(event->scenePos());
+        chosenItems = items(event->scenePos());
         if(chosenItems.contains(X))
             chosenItems.removeOne(X);
         if(chosenItems.contains(Y))
             chosenItems.removeOne(Y);
-        if(chosenItems.contains(Origin))
-            chosenItems.removeOne(Origin);
     }
 }
 
 void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-//    qDebug()<<"selected item数量:"<< chosenItems.size();
+    qDebug()<<"selected items:"<<this->selectedItems().size();
     foreach(QGraphicsItem* item, chosenItems)
     {
-//        qDebug()<<"选择的item类型:"<<item->type();
+//        qDebug()<<"选择的item类型"<<item->type();
     }
-
 }
 
 #if 0

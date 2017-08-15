@@ -28,9 +28,11 @@ private:
     MyScene* m_scene;
     MyView* m_view;
     PosDialog* dlg;
-    QMenu *ptMenu, *LineMenu;
+    QMenu *ptMenu, *lineMenu, *rectMenu, *ellipseMenu;
     QList<QAction*> ptActions;
     QList<QAction*> lineActions;
+    QList<QAction*> rectActions;
+    QList<QAction*> ellipseActions;
     QGraphicsLineItem* Line;
 private:
     void InitUi();

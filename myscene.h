@@ -14,7 +14,6 @@ public:
     ~MyScene();
     QPen getPen();
     QList<QGraphicsItem*> getChosenItems();
-    QGraphicsItem* getChosenItem();
 private:
     QGraphicsLineItem* Line;
     QPen p;
@@ -31,12 +30,12 @@ private:
     GridMode mode;
     int space;
     int min_space;
-    QGraphicsLineItem* X, *Y;
-    QGraphicsEllipseItem* Origin;
     QList<QGraphicsItem*> chosenItems;
-    QGraphicsItem* chosenItem;
+    QGraphicsLineItem  *X,*Y;
+    QGraphicsEllipseItem *Origin;
 private:
     void setPen();
+
 protected:
 //    virtual void drawBackground(QPainter * painter, const QRectF & rect);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
