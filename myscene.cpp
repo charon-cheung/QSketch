@@ -1,8 +1,5 @@
 #include "myscene.h"
 #include <QDebug>
-#include <QMessageBox>
-#include <QApplication>
-#include <QDateTime>
 
 MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
@@ -10,12 +7,12 @@ MyScene::MyScene(QObject *parent):
     this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
     this->setBackgroundBrush(QBrush(Qt::black));
 //    画圆心, QPen 是圆的边缘, QBrush是圆的填充
-    Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(Qt::white)),
-                     QBrush(Qt::white, Qt::SolidPattern) );
+    Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(Qt::darkMagenta)),
+                     QBrush(Qt::darkMagenta, Qt::SolidPattern) );
 
 //    画两个坐标轴
-    X = this->addLine(QLineF(QPointF(-width/2,0), QPointF(width/2,0)), QPen(QColor(Qt::white)));
-    Y = this->addLine(QLineF(QPointF(0,-height/2),QPointF(0,height/2)), QPen(QColor(Qt::white)));
+    X = this->addLine(QLineF(QPointF(-width/2,0), QPointF(width/2,0)), QPen(QColor(Qt::darkBlue)));
+    Y = this->addLine(QLineF(QPointF(0,-height/2),QPointF(0,height/2)), QPen(QColor(Qt::darkBlue)));
 //    画坐标轴刻度值
     QFont font;
     font.setPixelSize(18);
@@ -34,7 +31,7 @@ MyScene::MyScene(QObject *parent):
     space = 50;
     min_space = 10;
     mode = ALL;
-    this->update();
+
 }
 
 MyScene::~MyScene()
@@ -52,69 +49,12 @@ QList<QGraphicsItem *> MyScene::getChosenItems()
     return chosenItems;
 }
 
-void MyScene::Delete()
-{
-    if(!chosenItems.size())   return;
-    foreach(QGraphicsItem* item, chosenItems)
-    {
-        if(!item)
-        {
-            QMessageBox::warning(0,"删除失败","图元不存在或不完整");
-            return;
-        }
-        this->removeItem(item);  //删除item及其子item
-    }
-}
-
 void MyScene::setPen()
 {
     p.setColor(QColor(Qt::white));
     p.setStyle(Qt::DashDotLine);
     p.setDashOffset(10);
 //    p.setBrush();
-}
-
-void MyScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    qDebug() << "Custom scene clicked.";
-    if (event->button() == Qt::LeftButton) {
-        // 检测光标下是否有 item
-//        foreach (QGraphicsItem *item, items(event->scenePos())) {
-//            矩形type为3，椭圆type为4，直线type为6
-//            qDebug()<<item->mapToScene(item->pos()) << item->type();
-//        }
-        chosenItems = items(event->scenePos());
-        if(chosenItems.contains(X))
-            chosenItems.removeOne(X);
-        if(chosenItems.contains(Y))
-            chosenItems.removeOne(Y);
-        if(chosenItems.contains(Origin))
-            chosenItems.removeOne(Origin);
-    }
-}
-
-void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    qDebug()<<"selected items:"<<this->getChosenItems().size();
-    foreach(QGraphicsItem* item, chosenItems)
-    {
-//        qDebug()<<"选择的item类型"<<item->type();
-    }
-}
-
-void MyScene::SaveImage()
-{
-    QImage image(QSize(600,500),QImage::Format_RGB32);
-    QPainter painter(&image);
-    this->render(&painter);   //关键函数
-//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
-    QImage mirroredImage = image.mirrored(false, true);
-    QString path = QApplication::applicationDirPath();
-    QDateTime time = QDateTime::currentDateTime();
-    QString str = time.toString("MM-dd hh-mm-ss"); //设置显示格式
-    qDebug()<<path<<"  "<<str;
-    QString file = path+ "/" +str+ ".png";
-    mirroredImage.save(file);
 }
 
 #if 0

@@ -14,11 +14,7 @@ public:
     ~MyScene();
     QPen getPen();
     QList<QGraphicsItem*> getChosenItems();
-
-public slots:
-    void Delete();
-    void SaveImage();
-
+    QSet<QList<QGraphicsItem*>> set;
 private:
     QGraphicsLineItem* Line;
     QPen p;
@@ -43,8 +39,7 @@ private:
 
 protected:
 //    virtual void drawBackground(QPainter * painter, const QRectF & rect);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
 };
 
 #endif // MYSCENE_H

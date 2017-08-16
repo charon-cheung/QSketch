@@ -31,6 +31,8 @@ MyView::MyView(QWidget *parent):
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
 
+    this->update();
+    this->repaint();
 }
 
 MyView::~MyView()
@@ -52,9 +54,10 @@ void MyView::mousePressEvent(QMouseEvent *event)
     case Qt::LeftButton:
         // 窗口坐标转为场景坐标
         start = this->mapToScene(event->pos());
-        if(!drawLine && !drawPt)
+        if(!drawLine && !drawPt && !drawRect && !drawElli)
         {
             mode = NORMAL;
+
         }
         mode =EDIT;
 //        if(drawLine && !drawLineXY &&!drawLineAH)
@@ -65,7 +68,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
         {
             m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
                                 QPen(QColor(Qt::white)),
-                                QBrush(Qt::white,Qt::SolidPattern) )->setSelected(true);
+                                QBrush(Qt::white,Qt::SolidPattern) )->setFlag(
+                                QGraphicsItem::ItemIsSelectable, true);
         }
         else if(drawPt && drawCross)    // 画X样式的点
         {
@@ -130,6 +134,8 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         event->accept();
         break;
     case Qt::LeftButton:
+        qDebug()<<"selected items:"<<m_scene->selectedItems().size();
+
         if(mode==EDIT)
         {
             end = this->mapToScene(event->pos());
@@ -181,7 +187,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->updateCenterRect();
         break;
     case Qt::Key_Delete:
-        m_scene->Delete();
+        this->Delete();
         break;
     default:
         event->ignore();
@@ -222,7 +228,8 @@ void MyView::setLine()
             QMessageBox::warning(0,"出错了","两个点的坐标不能相同!");
             return;
         }
-        m_scene->addLine(QLineF(list.at(0), list.at(1)), QPen(QColor(Qt::white)))->setSelected(true);
+        m_scene->addLine(QLineF(list.at(0), list.at(1)),
+                         QPen(QColor(Qt::white)))->setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
     else if(sender()->objectName() == "actLine_3")
     {
@@ -240,7 +247,8 @@ void MyView::setLine()
         line.setP1(pt);
         line.setAngle(360-angle);
         line.setLength(length);
-        m_scene->addLine(line, QPen(QColor(Qt::white)) );
+        m_scene->addLine(line, QPen(QColor(Qt::white))
+                )->setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
 }
 
@@ -273,7 +281,7 @@ void MyView::setPt()
         QPointF pt1 = dlg->getPt();
         m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
                             QPen(QColor(Qt::white)),
-                            QBrush(Qt::white,Qt::SolidPattern))->setSelected(true);
+                            QBrush(Qt::white,Qt::SolidPattern))->setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
 }
 
@@ -300,7 +308,8 @@ void MyView::setRect()
         float *value= dlg->getWH();
 //        因为视图对y轴镜像，直接绘图pt是矩形的左下顶点，需要变换
         m_scene->addRect(pt.x(),pt.y()-value[1],
-                value[0],value[1],QPen(QColor(Qt::white)));
+                value[0],value[1],QPen(QColor(Qt::white))
+                )->setFlag(QGraphicsItem::ItemIsSelectable, true);
         delete[] value;
     }
     else if(sender()->objectName()=="actRect_3")
@@ -331,7 +340,8 @@ void MyView::setEllipse()
         float *value= dlg->getWH();
 //        因为视图对y轴镜像，所以pt是矩形的左下顶点,需要变换
         m_scene->addEllipse(pt.x()-value[0]/2, pt.y()-value[1]/2,
-                value[0], value[1], QPen(QColor(Qt::white)));
+                value[0], value[1], QPen(QColor(Qt::white))
+                )->setFlag(QGraphicsItem::ItemIsSelectable, true);
         delete[] value;
     }
 }
@@ -354,13 +364,8 @@ void MyView::ShowContextMenu()
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Measure,SIGNAL(triggered(bool)), this, SLOT(setMeasure()) );
-
-//    删除失败，报错item 0x1fc270a8's scene (0x0) is different from this scene,
-//    但键盘m_scene->Delete()成功
-    connect(Delete, &QAction::triggered,  m_scene, &MyScene::Delete);
-//    connect(SaveImage, &QAction::triggered, m_scene, &MyScene::SaveImage);
-//    这种方式报错：No such slot QGraphicsScene::SaveImage()
-    connect(SaveImage,SIGNAL(triggered(bool)), m_scene, SLOT(SaveImage()) );
+    connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
+    connect(SaveImage,SIGNAL(triggered(bool)), this, SLOT(SaveImage()) );
     m.exec(QCursor::pos());
 }
 
@@ -383,14 +388,34 @@ void MyView::setMeasure()
 
 }
 
-void MyView::BreakDown()
+void MyView::Delete()
 {
-
+//   不是this->scene(),它是QGraphicsScene.  为什么用selectedItems()不行?
+    QList<QGraphicsItem*> items = m_scene->getChosenItems();
+    if(!items.size())   return;
+    foreach(QGraphicsItem* item, items)
+    {
+        if(!item)
+        {
+            QMessageBox::warning(0,"删除失败","图元不存在或不完整");
+            return;
+        }
+        m_scene->removeItem(item);  //删除item及其子item
+    }
 }
 
-void MyView::Chamfer()
+void MyView::SaveImage()
 {
-
+    QImage image(this->size(),QImage::Format_RGB32);
+    QPainter painter(&image);
+    m_scene->render(&painter);   //关键函数
+//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
+    QImage mirroredImage = image.mirrored(false, true);
+    QString path = QApplication::applicationDirPath();
+    QDateTime time = QDateTime::currentDateTime();
+    QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
+    QString file = path+ "/" +str+ ".png";
+    mirroredImage.save(file);
 }
 
 void MyView::updateCenterRect()
