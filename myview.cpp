@@ -76,7 +76,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
             pt->setPos(start);
             m_scene->addItem(pt);
          }
-         else if(drawLineXY || drawLineAH)
+         else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY)
          {
              mode = NORMAL;
          }
@@ -300,8 +300,9 @@ void MyView::setRect()
 
         QPointF pt= dlg->getPt();
         float *value= dlg->getWH();
-        qDebug()<<pt<< value[0]<< value[1];
-        m_scene->addRect(pt.x(),pt.y(),value[0],value[1],QPen(QColor(Qt::white)));
+//        因为视图对y轴镜像，直接绘图pt是矩形的左下顶点，需要变换
+        m_scene->addRect(pt.x(),pt.y()-value[1],
+                value[0],value[1],QPen(QColor(Qt::white)));
         delete[] value;
     }
     else if(sender()->objectName()=="actRect_3")
@@ -314,7 +315,27 @@ void MyView::setRect()
 
 void MyView::setEllipse()
 {
-
+    drawLine=false;
+    drawPt=false;
+    drawRect=false;
+    drawElli=true;
+    if(sender()->objectName()=="actEllipse_1")
+    {
+        drawElliXY=false;
+    }
+    else if(sender()->objectName()=="actEllipse_2")
+    {
+        drawElliXY=true;
+        dlg = new PosDialog(this);
+        dlg->showEllipse();
+        if(dlg->exec() != QDialog::Accepted)    return;
+        QPointF pt= dlg->getPt();
+        float *value= dlg->getWH();
+//        因为视图对y轴镜像，所以pt是矩形的左下顶点,需要变换
+        m_scene->addEllipse(pt.x()-value[0]/2, pt.y()-value[1]/2,
+                value[0], value[1], QPen(QColor(Qt::white)));
+        delete[] value;
+    }
 }
 
 void MyView::ShowContextMenu()

@@ -20,6 +20,7 @@ public:
     void showLineXY();
     void showLineAH();
     void showRectXY();
+    void showEllipse();
 
     float getAngle();
     float getLength();

@@ -19,6 +19,8 @@ PosDialog::PosDialog(QWidget *parent) :
 
     positive = new QDoubleValidator(0,800,2,this);
     ui->length->setValidator(positive);
+    ui->width->setValidator(positive);
+    ui->height->setValidator(positive);
 }
 
 PosDialog::~PosDialog()
@@ -66,6 +68,11 @@ void PosDialog::showRectXY()
     ui->frame_3->setVisible(false);
 }
 
+void PosDialog::showEllipse()
+{
+    showRectXY();
+}
+
 float PosDialog::getAngle()
 {
     return ui->angle->text().toFloat();
@@ -83,6 +90,7 @@ float* PosDialog::getWH()
     float *value = new float[2];
     value[0]=ui->width->text().toFloat();
     value[1]=ui->height->text().toFloat();
+    if(value[0]!=0 && value!=0)
     return value;
 }
 
