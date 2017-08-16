@@ -31,8 +31,6 @@ MyView::MyView(QWidget *parent):
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
 
-    this->update();
-    this->repaint();
 }
 
 MyView::~MyView()
@@ -183,7 +181,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->updateCenterRect();
         break;
     case Qt::Key_Delete:
-        this->Delete();
+        m_scene->Delete();
         break;
     default:
         event->ignore();
@@ -356,8 +354,13 @@ void MyView::ShowContextMenu()
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Measure,SIGNAL(triggered(bool)), this, SLOT(setMeasure()) );
-    connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
-    connect(SaveImage,SIGNAL(triggered(bool)), this, SLOT(SaveImage()) );
+
+//    删除失败，报错item 0x1fc270a8's scene (0x0) is different from this scene,
+//    但键盘m_scene->Delete()成功
+    connect(Delete, &QAction::triggered,  m_scene, &MyScene::Delete);
+//    connect(SaveImage, &QAction::triggered, m_scene, &MyScene::SaveImage);
+//    这种方式报错：No such slot QGraphicsScene::SaveImage()
+    connect(SaveImage,SIGNAL(triggered(bool)), m_scene, SLOT(SaveImage()) );
     m.exec(QCursor::pos());
 }
 
@@ -380,35 +383,14 @@ void MyView::setMeasure()
 
 }
 
-void MyView::Delete()
+void MyView::BreakDown()
 {
-//   不是this->scene(),它是QGraphicsScene.  为什么用selectedItems()不行?
-    QList<QGraphicsItem*> items = m_scene->getChosenItems();
-    if(!items.size())   return;
-    foreach(QGraphicsItem* item, items)
-    {
-        if(!item)
-        {
-            QMessageBox::warning(0,"删除失败","图元不存在或不完整");
-            return;
-        }
-        m_scene->removeItem(item);  //删除item及其子item
-    }
+
 }
 
-void MyView::SaveImage()
+void MyView::Chamfer()
 {
-    QImage image(this->size(),QImage::Format_RGB32);
-    QPainter painter(&image);
-    m_scene->render(&painter);   //关键函数
-//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
-    QImage mirroredImage = image.mirrored(false, true);
-    QString path = QApplication::applicationDirPath();
-    QDateTime time = QDateTime::currentDateTime();
-    QString str = time.toString("MM-dd hh-mm-ss"); //设置显示格式
-    qDebug()<<path<<"  "<<str;
-    QString file = path+ "/" +str+ ".png";
-    mirroredImage.save(file);
+
 }
 
 void MyView::updateCenterRect()

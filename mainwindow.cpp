@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
     foreach(QAction* act, ptActions)
-        connect(act, &QAction::triggered,m_view, &MyView::setPt);
+        connect(act, &QAction::triggered, m_view, &MyView::setPt);
     foreach(QAction* act, lineActions)
         connect(act, &QAction::triggered, m_view, &MyView::setLine );
     foreach(QAction* act, rectActions)

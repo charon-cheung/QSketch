@@ -59,9 +59,9 @@ public slots:
     void setNormal();
     void Locate();   //重置
     void setMeasure(/*QGraphicsItem* item*/);
-    void Delete();
-    void SaveImage();
 
+    void BreakDown();
+    void Chamfer();
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);

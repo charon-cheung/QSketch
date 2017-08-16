@@ -1,5 +1,8 @@
 #include "myscene.h"
 #include <QDebug>
+#include <QMessageBox>
+#include <QApplication>
+#include <QDateTime>
 
 MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
@@ -31,7 +34,7 @@ MyScene::MyScene(QObject *parent):
     space = 50;
     min_space = 10;
     mode = ALL;
-
+    this->update();
 }
 
 MyScene::~MyScene()
@@ -47,6 +50,20 @@ QPen MyScene::getPen()
 QList<QGraphicsItem *> MyScene::getChosenItems()
 {
     return chosenItems;
+}
+
+void MyScene::Delete()
+{
+    if(!chosenItems.size())   return;
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        if(!item)
+        {
+            QMessageBox::warning(0,"删除失败","图元不存在或不完整");
+            return;
+        }
+        this->removeItem(item);  //删除item及其子item
+    }
 }
 
 void MyScene::setPen()
@@ -83,6 +100,21 @@ void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
 //        qDebug()<<"选择的item类型"<<item->type();
     }
+}
+
+void MyScene::SaveImage()
+{
+    QImage image(QSize(600,500),QImage::Format_RGB32);
+    QPainter painter(&image);
+    this->render(&painter);   //关键函数
+//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
+    QImage mirroredImage = image.mirrored(false, true);
+    QString path = QApplication::applicationDirPath();
+    QDateTime time = QDateTime::currentDateTime();
+    QString str = time.toString("MM-dd hh-mm-ss"); //设置显示格式
+    qDebug()<<path<<"  "<<str;
+    QString file = path+ "/" +str+ ".png";
+    mirroredImage.save(file);
 }
 
 #if 0

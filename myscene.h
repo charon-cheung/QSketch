@@ -14,6 +14,11 @@ public:
     ~MyScene();
     QPen getPen();
     QList<QGraphicsItem*> getChosenItems();
+
+public slots:
+    void Delete();
+    void SaveImage();
+
 private:
     QGraphicsLineItem* Line;
     QPen p;
