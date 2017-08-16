@@ -301,6 +301,7 @@ void MyView::setRect()
         QPointF pt= dlg->getPt();
         float *value= dlg->getWH();
         qDebug()<<pt<< value[0]<< value[1];
+        
         m_scene->addRect(pt.x(),pt.y(),value[0],value[1],QPen(QColor(Qt::white)));
         delete[] value;
     }

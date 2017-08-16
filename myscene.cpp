@@ -71,12 +71,14 @@ void MyScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             chosenItems.removeOne(X);
         if(chosenItems.contains(Y))
             chosenItems.removeOne(Y);
+        if(chosenItems.contains(Origin))
+            chosenItems.removeOne(Origin);
     }
 }
 
 void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug()<<"selected items:"<<this->selectedItems().size();
+    qDebug()<<"selected items:"<<this->getChosenItems().size();
     foreach(QGraphicsItem* item, chosenItems)
     {
 //        qDebug()<<"选择的item类型"<<item->type();

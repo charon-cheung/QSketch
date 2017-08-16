@@ -40,6 +40,7 @@ QList<QPointF> PosDialog::getLine()
 
 void PosDialog::showPt()
 {
+    ui->frame->setVisible(false);
     ui->frame_2->setVisible(false);
     ui->frame_3->setVisible(false);
     return;
@@ -47,14 +48,22 @@ void PosDialog::showPt()
 
 void PosDialog::showLineXY()
 {
+    ui->frame->setVisible(false);
     ui->frame_3->setVisible(false);
     return;
 }
 
 void PosDialog::showLineAH()
 {
+    ui->frame->setVisible(false);
     ui->frame_2->setVisible(false);
     return;
+}
+
+void PosDialog::showRectXY()
+{
+    ui->frame_2->setVisible(false);
+    ui->frame_3->setVisible(false);
 }
 
 float PosDialog::getAngle()
@@ -66,7 +75,15 @@ float PosDialog::getLength()    //很大的非零非整数
 {
     QString length = ui->length->text();
     if(!length.isEmpty() && length!="0")
-    return ui->length->text().toFloat();
+        return ui->length->text().toFloat();
+}
+
+float* PosDialog::getWH()
+{
+    float *value = new float[2];
+    value[0]=ui->width->text().toFloat();
+    value[1]=ui->height->text().toFloat();
+    return value;
 }
 
 void PosDialog::on_accept_clicked()

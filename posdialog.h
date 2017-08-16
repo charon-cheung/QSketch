@@ -19,8 +19,11 @@ public:
     void showPt();
     void showLineXY();
     void showLineAH();
+    void showRectXY();
+
     float getAngle();
     float getLength();
+    float* getWH();
 private slots:
     void on_accept_clicked();
 

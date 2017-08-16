@@ -24,6 +24,8 @@ private:
     PosDialog* dlg;
     bool drawPt, drawCirPt, drawCross, drawPtXY;
     bool drawLine, drawLineXY,drawLineAH;
+    bool drawRect, drawRectXY,drawRounded;
+    bool drawElli, drawElliXY;
 
     enum PARAMETER{
         pt_size = 3,
@@ -50,6 +52,8 @@ public slots:
     void test();
     void setLine();
     void setPt();
+    void setRect();
+    void setEllipse();
 
     void ShowContextMenu();  //加右键菜单
     void setNormal();

@@ -24,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(act, &QAction::triggered,m_view, &MyView::setPt);
     foreach(QAction* act, lineActions)
         connect(act, &QAction::triggered, m_view, &MyView::setLine );
+    foreach(QAction* act, rectActions)
+        connect(act, &QAction::triggered, m_view, &MyView::setRect );
+    foreach(QAction* act, ellipseActions)
+        connect(act, &QAction::triggered, m_view, &MyView::setEllipse );
 }
 
 MainWindow::~MainWindow()
@@ -34,7 +38,7 @@ MainWindow::~MainWindow()
 void MainWindow::InitUi()
 {
     this->setWindowTitle("QSketch");
-    this->setWindowIcon(QIcon(":/Icon/Icon/QSketch.png"));
+    this->setWindowIcon(QIcon(":/Icon/Icon/ruler.png"));
     ui->DrawPt->setFocusPolicy(Qt::NoFocus);
     QMenu* ptMenu = new QMenu(this);
     ptActions<< ui->act1 << ui->act2 << ui->act3;
