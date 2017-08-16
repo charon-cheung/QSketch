@@ -134,8 +134,6 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         event->accept();
         break;
     case Qt::LeftButton:
-        qDebug()<<"selected items:"<<m_scene->selectedItems().size();
-
         if(mode==EDIT)
         {
             end = this->mapToScene(event->pos());
@@ -145,6 +143,7 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
             }
             mode = NORMAL;
         }
+
     default:
         event->ignore();
         break;
@@ -354,18 +353,21 @@ void MyView::ShowContextMenu()
     QAction *Measure = m.addAction("标注");
     QAction *Delete = m.addAction("删除");
     QAction *SaveImage = m.addAction("保存为图片");
+    QAction *Redraw = m.addAction("清空重画");
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
     Measure->setIcon(QIcon(":/Icon/Icon/measure.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
     SaveImage->setIcon(QIcon(":/Icon/Icon/save.png"));
+    Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
 
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Measure,SIGNAL(triggered(bool)), this, SLOT(setMeasure()) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
     connect(SaveImage,SIGNAL(triggered(bool)), this, SLOT(SaveImage()) );
+    connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
     m.exec(QCursor::pos());
 }
 
@@ -391,9 +393,9 @@ void MyView::setMeasure()
 void MyView::Delete()
 {
 //   不是this->scene(),它是QGraphicsScene.  为什么用selectedItems()不行?
-    QList<QGraphicsItem*> items = m_scene->getChosenItems();
-    if(!items.size())   return;
-    foreach(QGraphicsItem* item, items)
+    chosenItems = m_scene->selectedItems();
+    if(!chosenItems.size())   return;
+    foreach(QGraphicsItem* item, chosenItems)
     {
         if(!item)
         {
@@ -416,6 +418,12 @@ void MyView::SaveImage()
     QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
     QString file = path+ "/" +str+ ".png";
     mirroredImage.save(file);
+}
+
+void MyView::Redraw()
+{
+    m_scene->clear();
+    m_scene->InitScene();
 }
 
 void MyView::updateCenterRect()

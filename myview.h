@@ -44,6 +44,8 @@ private:
     AppMode mode;
     QPointF dragStart;
     QGraphicsItem *viewCenter;
+
+    QList<QGraphicsItem*> chosenItems;
 private:
     void catchPt(QPointF pt);
     void updateCenterRect();
@@ -61,7 +63,7 @@ public slots:
     void setMeasure(/*QGraphicsItem* item*/);
     void Delete();
     void SaveImage();
-
+    void Redraw();
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);

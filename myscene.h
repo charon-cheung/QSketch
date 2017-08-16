@@ -12,6 +12,8 @@ class MyScene : public QGraphicsScene
 public:
     MyScene(QObject *parent = Q_NULLPTR);
     ~MyScene();
+
+    void InitScene();
     QPen getPen();
     QList<QGraphicsItem*> getChosenItems();
     QSet<QList<QGraphicsItem*>> set;

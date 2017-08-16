@@ -6,14 +6,28 @@ MyScene::MyScene(QObject *parent):
 {
     this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
     this->setBackgroundBrush(QBrush(Qt::black));
+    InitScene();
+
+    space = 50;
+    min_space = 10;
+    mode = ALL;
+}
+
+MyScene::~MyScene()
+{
+
+}
+
+void MyScene::InitScene()
+{
 //    画圆心, QPen 是圆的边缘, QBrush是圆的填充
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(Qt::darkMagenta)),
-                     QBrush(Qt::darkMagenta, Qt::SolidPattern) );
+                               QBrush(Qt::darkMagenta, Qt::SolidPattern) );
 
-//    画两个坐标轴
+    //    画两个坐标轴
     X = this->addLine(QLineF(QPointF(-width/2,0), QPointF(width/2,0)), QPen(QColor(Qt::darkBlue)));
     Y = this->addLine(QLineF(QPointF(0,-height/2),QPointF(0,height/2)), QPen(QColor(Qt::darkBlue)));
-//    画坐标轴刻度值
+    //    画坐标轴刻度值
     QFont font;
     font.setPixelSize(18);
     QTransform tran;
@@ -27,16 +41,6 @@ MyScene::MyScene(QObject *parent):
 //        coord[i]->setPos(i,-4);
 //        coord[i]->setBrush(QBrush(Qt::white,Qt::SolidPattern));
 //    }
-
-    space = 50;
-    min_space = 10;
-    mode = ALL;
-
-}
-
-MyScene::~MyScene()
-{
-
 }
 
 QPen MyScene::getPen()

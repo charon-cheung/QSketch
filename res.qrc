@@ -17,5 +17,6 @@
         <file>Icon/delete.png</file>
         <file>Icon/normal.png</file>
         <file>Icon/save.png</file>
+        <file>Icon/redraw.png</file>
     </qresource>
 </RCC>
