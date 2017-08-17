@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui printsupport
 QMAKE_CXXFLAGS += -Wno-unused-variable -Wno-unused-parameter
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

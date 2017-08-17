@@ -173,6 +173,5 @@ void MainWindow::on_tabView_tabCloseRequested(int index)
     foreach(QObject *obj, w->children() )
         if(obj->inherits("QGraphicsView") )
             delete obj;
-//    ui->tabView->removeTab(index);
-
+    ui->tabView->removeTab(index);
 }

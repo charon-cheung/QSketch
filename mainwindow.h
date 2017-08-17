@@ -29,6 +29,10 @@ private slots:
 
     void on_NewView_triggered();
 
+    void on_Print_triggered();
+
+    void on_tabView_tabCloseRequested(int index);
+
 signals:
     void getPt(QPointF pt1);
 private:
@@ -47,6 +51,7 @@ private:
     QGraphicsLineItem* Line;
 private:
     void InitUi();
+    void InitView();
     void InitDir();
 protected:
 
