@@ -131,6 +131,26 @@ QPushButton::menu-indicator{image:None;}</string>
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QTabWidget" name="tabView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>600</width>
+      <height>400</height>
+     </rect>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Tab 1</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>Tab 2</string>
+     </attribute>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -141,6 +161,12 @@ QPushButton::menu-indicator{image:None;}</string>
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>文件</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -149,6 +175,7 @@ QPushButton::menu-indicator{image:None;}</string>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="act1">
@@ -204,6 +231,76 @@ QPushButton::menu-indicator{image:None;}</string>
   <action name="actRect_3">
    <property name="text">
     <string>画圆角矩形</string>
+   </property>
+  </action>
+  <action name="NewView">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/new.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>新建</string>
+   </property>
+  </action>
+  <action name="Open">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/open.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>打开</string>
+   </property>
+  </action>
+  <action name="Save">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/save.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>保存</string>
+   </property>
+  </action>
+  <action name="Print">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/print.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>打印</string>
+   </property>
+  </action>
+  <action name="SaveAs">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/save_as.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>另存为</string>
+   </property>
+  </action>
+  <action name="Previous">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/previous.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>向前</string>
+   </property>
+  </action>
+  <action name="Next">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/next.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>向后</string>
    </property>
   </action>
  </widget>

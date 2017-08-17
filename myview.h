@@ -15,6 +15,9 @@ class MyView : public QGraphicsView
 public:
     explicit MyView(QWidget *parent = 0);
     ~MyView();
+    MyScene* getScene() const;
+
+
 signals:
     void changeScale(qreal t);
 
@@ -62,7 +65,6 @@ public slots:
     void Locate();   //重置
     void setMeasure(/*QGraphicsItem* item*/);
     void Delete();
-    void SaveImage();
     void Redraw();
 protected:
     void mousePressEvent(QMouseEvent* event);

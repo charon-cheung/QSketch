@@ -23,10 +23,9 @@ void MyScene::InitScene()
 //    画圆心, QPen 是圆的边缘, QBrush是圆的填充
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(Qt::darkMagenta)),
                                QBrush(Qt::darkMagenta, Qt::SolidPattern) );
-
     //    画两个坐标轴
-    X = this->addLine(QLineF(QPointF(-width/2,0), QPointF(width/2,0)), QPen(QColor(Qt::darkBlue)));
-    Y = this->addLine(QLineF(QPointF(0,-height/2),QPointF(0,height/2)), QPen(QColor(Qt::darkBlue)));
+    X = this->addLine(QLineF(QPointF(-width/2,0), QPointF(width/2,0)), QPen(QColor(Qt::blue)));
+    Y = this->addLine(QLineF(QPointF(0,-height/2),QPointF(0,height/2)), QPen(QColor(Qt::blue)));
     //    画坐标轴刻度值
     QFont font;
     font.setPixelSize(18);

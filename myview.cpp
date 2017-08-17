@@ -3,14 +3,12 @@
 #include <QtMath>
 #include <QMenu>
 #include <crosspt.h>
-#include <QApplication>
-#include <QDateTime>
 #include <QMessageBox>
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
-//    this->setDragMode(QGraphicsView::ScrollHandDrag);
+    this->setDragMode(QGraphicsView::ScrollHandDrag);
     mode = NORMAL;
     drawPt = false;
     drawLine = false;
@@ -38,6 +36,11 @@ MyView::MyView(QWidget *parent):
 MyView::~MyView()
 {
 
+}
+
+MyScene *MyView::getScene() const
+{
+    return m_scene;
 }
 
 void MyView::mousePressEvent(QMouseEvent *event)
@@ -352,21 +355,18 @@ void MyView::ShowContextMenu()
     QAction *Locate = m.addAction("定位到原点");
     QAction *Measure = m.addAction("标注");
     QAction *Delete = m.addAction("删除");
-    QAction *SaveImage = m.addAction("保存为图片");
     QAction *Redraw = m.addAction("清空重画");
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
     Measure->setIcon(QIcon(":/Icon/Icon/measure.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
-    SaveImage->setIcon(QIcon(":/Icon/Icon/save.png"));
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
 
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Measure,SIGNAL(triggered(bool)), this, SLOT(setMeasure()) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
-    connect(SaveImage,SIGNAL(triggered(bool)), this, SLOT(SaveImage()) );
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
     m.exec(QCursor::pos());
 }
@@ -404,20 +404,6 @@ void MyView::Delete()
         }
         m_scene->removeItem(item);  //删除item及其子item
     }
-}
-
-void MyView::SaveImage()
-{
-    QImage image(this->size(),QImage::Format_RGB32);
-    QPainter painter(&image);
-    m_scene->render(&painter);   //关键函数
-//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
-    QImage mirroredImage = image.mirrored(false, true);
-    QString path = QApplication::applicationDirPath();
-    QDateTime time = QDateTime::currentDateTime();
-    QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
-    QString file = path+ "/" +str+ ".png";
-    mirroredImage.save(file);
 }
 
 void MyView::Redraw()
