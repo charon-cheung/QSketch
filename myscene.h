@@ -16,7 +16,7 @@ public:
     void InitScene();
     QPen getPen();
     QList<QGraphicsItem*> getChosenItems();
-    QSet<QList<QGraphicsItem*>> set;
+    QSet<QList<QGraphicsItem*> > set;   //不要写成>>
 private:
     QGraphicsLineItem* Line;
     QPen p;

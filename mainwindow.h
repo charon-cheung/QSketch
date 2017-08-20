@@ -39,8 +39,8 @@ private:
     Ui::MainWindow *ui;
     QString dirPath;
 
-    MyScene* m_scene;
-    MyView* m_view;
+//    MyScene* m_scene;
+//    MyView* m_view;
     PosDialog* dlg;
 
     QMenu *ptMenu, *lineMenu, *rectMenu, *ellipseMenu;
@@ -48,7 +48,8 @@ private:
     QList<QAction*> lineActions;
     QList<QAction*> rectActions;
     QList<QAction*> ellipseActions;
-    QGraphicsLineItem* Line;
+//    QGraphicsLineItem* Line;
+
 private:
     void InitUi();
     void InitView();

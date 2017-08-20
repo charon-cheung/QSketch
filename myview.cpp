@@ -1,14 +1,15 @@
 #include "myview.h"
-#include <QDebug>
 #include <QtMath>
 #include <QMenu>
 #include <crosspt.h>
 #include <QMessageBox>
+#include <QGraphicsEllipseItem>
+#include <QGuiApplication>
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
-    this->setDragMode(QGraphicsView::ScrollHandDrag);
+//    this->setDragMode(QGraphicsView::ScrollHandDrag);
     mode = NORMAL;
     drawPt = false;
     drawLine = false;
@@ -28,9 +29,7 @@ MyView::MyView(QWidget *parent):
 
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
-
-    this->update();
-    this->repaint();
+    this->viewport()->update();
 }
 
 MyView::~MyView()
@@ -50,11 +49,12 @@ void MyView::mousePressEvent(QMouseEvent *event)
     case Qt::MidButton:
         mode = DRAG;
         dragStart = this->mapToScene(event->pos());
-        qDebug()<<"origin:"<<dragStart;
+//        qDebug()<<"origin:"<<dragStart;
         setCursor(Qt::ClosedHandCursor);
         event->accept();
         break;
     case Qt::LeftButton:
+
         // 窗口坐标转为场景坐标
         start = this->mapToScene(event->pos());
         if(!drawLine && !drawPt && !drawRect && !drawElli)
@@ -100,7 +100,7 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     {
         // Calculate the offset to drag relative to scene coordinates.
         dragEnd = this->mapToScene(event->pos());
-        qDebug()<<"end:"<<dragEnd;
+//        qDebug()<<"end:"<<dragEnd;
         dragTrans = dragStart - dragEnd;
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
@@ -191,6 +191,12 @@ void MyView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Delete:
         this->Delete();
         break;
+    case Qt::Key_C:
+        this->Copy();
+        break;
+    case Qt::Key_V:
+        this->Paste();
+        break;
     default:
         event->ignore();
     }
@@ -260,6 +266,7 @@ void MyView::setPt()
     drawPt=true;
     drawRect=false;
     drawElli=false;
+    changeCursor("cross");
     if(sender()->objectName() == "act1")
     {
         drawCirPt=true;
@@ -293,6 +300,7 @@ void MyView::setRect()
     drawPt=false;
     drawRect=true;
     drawElli=false;
+    changeCursor("cross");
     if(sender()->objectName()=="actRect_1")
     {
         drawRectXY=false;
@@ -328,6 +336,7 @@ void MyView::setEllipse()
     drawPt=false;
     drawRect=false;
     drawElli=true;
+    changeCursor("cross");
     if(sender()->objectName()=="actEllipse_1")
     {
         drawElliXY=false;
@@ -356,6 +365,7 @@ void MyView::ShowContextMenu()
     QAction *Measure = m.addAction("标注");
     QAction *Delete = m.addAction("删除");
     QAction *Redraw = m.addAction("清空重画");
+    QAction *Paste = m.addAction("黏贴");
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
@@ -365,9 +375,15 @@ void MyView::ShowContextMenu()
 
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
-    connect(Measure,SIGNAL(triggered(bool)), this, SLOT(setMeasure()) );
+    connect(Measure,SIGNAL(triggered(bool)), this, SLOT(Measure()) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
+    connect(Paste,SIGNAL(triggered(bool)), this, SLOT(Paste()) );
+    foreach(QGraphicsItem *item, m_scene->selectedItems())
+    {
+        item->setFocus();
+        item->setSelected(true);
+    }
     m.exec(QCursor::pos());
 }
 
@@ -385,9 +401,68 @@ void MyView::Locate()
     this->updateCenterRect();
 }
 
-void MyView::setMeasure()
+void MyView::Measure()
 {
+    qDebug()<<"set measure";
 
+}
+
+void MyView::Copy()
+{
+    QByteArray ba;
+    QDataStream s(&ba,QIODevice::WriteOnly);
+    s<<m_scene->selectedItems().size();
+    foreach(QGraphicsItem *item, m_scene->selectedItems())
+    {
+//        s<<item->rect();
+//        s<<item->pos();
+
+//        s<<item->rotation();
+//        s<<item->transformOriginPoint();
+//        s<<item->scale();
+//        s<<item->scenePos();
+//        s<<item->boundingRect();
+        QGraphicsEllipseItem *e = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+        s<<e->rect();
+        qDebug()<<"copy:"<<e->rect();
+    }
+
+    QMimeData * md = new QMimeData();
+    md->setData("QGraphicsItem",ba);
+//  Qt5.9 MinGW编译器不识别此静态函数和qApp->clipboard(), bug?
+    QClipboard *cb = QApplication::clipboard();
+    cb->setMimeData(md);
+
+}
+
+void MyView::Paste()
+{
+    QClipboard *cb = QApplication::clipboard();
+    const QMimeData * md = cb->mimeData();
+    QByteArray ba = md->data("QGraphicsItem");
+    if(ba.isEmpty()){
+        qDebug()<<"没有复制图元数据";
+        return;
+    }
+    m_scene->clearSelection();
+    QDataStream s(ba);
+    int count;
+    s>>count;
+    int type;
+
+    QPointF pos,sceneP;
+    QRectF rec;
+    for(int i=0;i<count;i++)
+    {
+        s>>rec;
+//        s>>pos;
+//        s>>sceneP;
+//        s>>rec;
+    }
+    qDebug()<<"paste"<<rec;
+    QGraphicsEllipseItem *test = new QGraphicsEllipseItem();
+    m_scene->addEllipse(rec,QPen(QColor(Qt::yellow)),QBrush(QColor(Qt::yellow)))->setPos(-80,80);
+    m_scene->addLine(QLineF(QPointF(0,0), QPointF(20,30)));
 }
 
 void MyView::Delete()
@@ -420,6 +495,13 @@ void MyView::updateCenterRect()
     // it to the centre of the scene.
     this->viewCenter->setPos(0, 0);
     dynamic_cast<QGraphicsRectItem*>(this->viewCenter)->setRect(mapToScene(viewRect).boundingRect());
+}
+
+void MyView::changeCursor(const QString& shape)
+{
+    QPixmap p;
+    p.load(":/Shape/Shape/"+shape+".png");
+    this->viewport()->setCursor(p);
 }
 
 void MyView::test()

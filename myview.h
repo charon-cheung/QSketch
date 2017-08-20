@@ -4,6 +4,11 @@
 #include <QGraphicsView>
 #include <QWidget>
 #include <QGraphicsItem>
+#include <QDebug>
+#include <QDataStream>
+#include <QMimeData>
+#include <QApplication>
+#include <QClipboard>
 
 #include "myscene.h"
 #include "posdialog.h"
@@ -52,7 +57,7 @@ private:
 private:
     void catchPt(QPointF pt);
     void updateCenterRect();
-
+    void changeCursor(const QString& shape);
 public slots:
     void test();
     void setLine();
@@ -62,10 +67,13 @@ public slots:
 
     void ShowContextMenu();  //加右键菜单
     void setNormal();
-    void Locate();   //重置
-    void setMeasure(/*QGraphicsItem* item*/);
+    void Locate();   //重置原点
+    void Measure(/*QGraphicsItem* item*/);
+    void Copy();
+    void Paste();
     void Delete();
     void Redraw();
+
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);
