@@ -21,7 +21,7 @@ public:
     explicit MyView(QWidget *parent = 0);
     ~MyView();
     MyScene* getScene() const;
-
+    void updateCenterRect();
 
 signals:
     void changeScale(qreal t);
@@ -56,7 +56,6 @@ private:
     QList<QGraphicsItem*> chosenItems;
 private:
     void catchPt(QPointF pt);
-    void updateCenterRect();
     void changeCursor(const QString& shape);
     void changeCursor(Qt::CursorShape shape);
 public slots:
@@ -69,7 +68,7 @@ public slots:
     void ShowContextMenu();  //加右键菜单
     void setNormal();
     void Locate();   //重置原点
-    void Measure(/*QGraphicsItem* item*/);
+    void Reset();   //重置放缩倍数
     void Copy();
     void Paste();
     void Delete();

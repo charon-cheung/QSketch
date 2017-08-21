@@ -138,7 +138,7 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     {
     case Qt::MidButton:
         mode = NORMAL;
-        setCursor(Qt::ArrowCursor);
+        changeCursor(Qt::ArrowCursor);
         event->accept();
         break;
     case Qt::LeftButton:
@@ -151,15 +151,14 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
             }
             mode = NORMAL;
         }
-
     default:
         event->ignore();
         break;
     }
     updateCenterRect();
-
     QGraphicsView::mouseReleaseEvent(event);
 }
+
 //视图放大和缩小
 void MyView::wheelEvent(QWheelEvent *event)
 {
@@ -369,23 +368,23 @@ void MyView::ShowContextMenu()
     QMenu m;
     QAction *Normal = m.addAction("重置为普通模式");
     QAction *Locate = m.addAction("定位到原点");
-    QAction *Measure = m.addAction("标注");
+    QAction *Reset = m.addAction("重置视图");
     QAction *Delete = m.addAction("删除");
     QAction *Redraw = m.addAction("清空重画");
     QAction *Paste = m.addAction("黏贴");
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
-    Measure->setIcon(QIcon(":/Icon/Icon/measure.png"));
+    Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
 
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
-    connect(Measure,SIGNAL(triggered(bool)), this, SLOT(Measure()) );
+    connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
-    connect(Paste,SIGNAL(triggered(bool)), this, SLOT(Paste()) );
+    connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
     foreach(QGraphicsItem *item, m_scene->selectedItems())
     {
         item->setFocus();
@@ -411,10 +410,10 @@ void MyView::Locate()
     this->updateCenterRect();
 }
 
-void MyView::Measure()
+void MyView::Reset()
 {
-    qDebug()<<"set measure";
-
+    this->resetMatrix();
+    this->scale(1,1);
 }
 
 void MyView::Copy()

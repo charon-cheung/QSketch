@@ -12,7 +12,6 @@
     <qresource prefix="/Icon">
         <file>Icon/editor.png</file>
         <file>Icon/input.png</file>
-        <file>Icon/QSketch.png</file>
         <file>Icon/ruler.png</file>
         <file>Icon/locate.png</file>
         <file>Icon/measure.png</file>
@@ -26,6 +25,14 @@
         <file>Icon/next.png</file>
         <file>Icon/previous.png</file>
         <file>Icon/cad.png</file>
+        <file>Icon/publish.png</file>
         <file>Icon/print.png</file>
+        <file>Icon/close-file.png</file>
+        <file>Icon/close-folder.png</file>
+        <file>Icon/exit.png</file>
+        <file>Icon/close.png</file>
+        <file>Icon/gph.png</file>
+        <file>Icon/start.png</file>
+        <file>Icon/reset.png</file>
     </qresource>
 </RCC>

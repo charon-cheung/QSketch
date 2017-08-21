@@ -33,6 +33,14 @@ private slots:
 
     void on_tabView_tabCloseRequested(int index);
 
+    void on_action_Current_triggered();
+
+    void on_action_All_triggered();
+
+    void on_action_Exit_triggered();
+
+    void on_startBtn_clicked();
+
 signals:
     void getPt(QPointF pt1);
 private:

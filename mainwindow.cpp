@@ -20,8 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->InitUi();
     this->InitDir();
     // 坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
-      ui->m_view->scale(6,-6);
-
+    ui->m_view->scale(2,-2);
+    ui->m_view->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
     foreach(QAction* act, ptActions)
@@ -101,13 +101,14 @@ void MainWindow::on_NewView_triggered()
     QString fullName = QFileDialog::getSaveFileName(this, tr("新建画面"),
                        dirPath+"/Files", tr("画面文件(*.gph)"));
     QString name=fullName.remove(dirPath+"/Files/");
-    name.chop(4);   //去掉扩展名
+//    name.chop(4);   //去掉扩展名
 //    QFile f(fullName);
     MyView *newView = new MyView(this);
     newView->setObjectName(name);
     ui->tabView->addTab(newView,name);
     ui->tabView->setCurrentWidget(newView);
-
+    int index = ui->tabView->currentIndex();
+    ui->tabView->setTabIcon(index, QIcon(":/Icon/Icon/gph.png"));
 }
 
 void MainWindow::on_Open_triggered()
@@ -179,4 +180,27 @@ void MainWindow::on_tabView_tabCloseRequested(int index)
         if(obj->inherits("QGraphicsView") )
             delete obj;
     ui->tabView->removeTab(index);
+}
+
+void MainWindow::on_action_Current_triggered()
+{
+    int index = ui->tabView->currentIndex();
+    on_tabView_tabCloseRequested(index);
+}
+
+void MainWindow::on_action_All_triggered()
+{
+    int count=ui->tabView->count();
+    for(int i=count-1;i>=0;i--)
+        on_tabView_tabCloseRequested(i);
+}
+
+void MainWindow::on_action_Exit_triggered()
+{
+    qApp->quit();
+}
+
+void MainWindow::on_startBtn_clicked()
+{
+    ui->tabView->setCurrentIndex(1);
 }
