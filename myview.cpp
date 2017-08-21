@@ -9,10 +9,12 @@
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
-//    this->setDragMode(QGraphicsView::ScrollHandDrag);
     mode = NORMAL;
     drawPt = false;
     drawLine = false;
+    drawRect = false;
+    drawElli = false;
+    this->setDragMode(QGraphicsView::RubberBandDrag);
     this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
@@ -62,7 +64,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
             mode = NORMAL;
 
         }
-        mode =EDIT;
+        else
+            mode =EDIT;
 //        if(drawLine && !drawLineXY &&!drawLineAH)
          if(0)
         {
@@ -96,6 +99,8 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF dragEnd,dragTrans;
     switch (mode) {
+    case NORMAL:
+         break;  // 处理QGraphicsView::mouseMoveEvent
     case DRAG:
     {
         // Calculate the offset to drag relative to scene coordinates.
@@ -125,6 +130,8 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
         event->ignore();
         break;
     }
+//    没有mouseMoveEvent时，能实现橡胶手模式，因为mode=NORMAL,鼠标事件实际是父类的moveEvent
+    QGraphicsView::mouseMoveEvent(event);
 }
 
 void MyView::mouseReleaseEvent(QMouseEvent *event)
@@ -392,6 +399,11 @@ void MyView::setNormal()
     mode = NORMAL;
     drawPt=false;
     drawLine=false;
+    drawElli = false;
+    drawRect = false;
+    QCursor c;
+    c.setShape(Qt::ArrowCursor);
+    this->viewport()->setCursor(c);
 }
 
 void MyView::Locate()
