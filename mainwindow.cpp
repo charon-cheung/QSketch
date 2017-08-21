@@ -19,8 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->InitUi();
     this->InitDir();
-
-//    const int tabH = ui->tabView->tabBar()->height();
     // 坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
       ui->m_view->scale(6,-6);
 
@@ -54,7 +52,7 @@ void MainWindow::InitUi()
 
     ui->tabView->setTabsClosable(true);
     ui->tabView->setCurrentIndex(0);
-
+    ui->tabWidget->setCurrentIndex(0);
 //    ui->DrawPt->setFocusPolicy(Qt::NoFocus);
 
     QMenu* ptMenu = new QMenu(this);

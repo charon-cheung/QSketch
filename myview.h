@@ -58,6 +58,7 @@ private:
     void catchPt(QPointF pt);
     void updateCenterRect();
     void changeCursor(const QString& shape);
+    void changeCursor(Qt::CursorShape shape);
 public slots:
     void test();
     void setLine();

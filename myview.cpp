@@ -14,24 +14,24 @@ MyView::MyView(QWidget *parent):
     drawLine = false;
     drawRect = false;
     drawElli = false;
+
     this->setDragMode(QGraphicsView::RubberBandDrag);
     this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-
-    m_scene = new MyScene(0);
-    this->setScene(m_scene);
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
 
     QRect viewport_rect(0, 0, this->viewport()->width(),
                         this->viewport()->height() );
     QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
     viewCenter = new QGraphicsRectItem(visible_scene_rect);
-    this->scene()->addItem(viewCenter); //this->scene()是 QGraphicsScene*
 
-    this->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_scene = new MyScene(0);
+    this->setScene(m_scene);
+    this->scene()->addItem(viewCenter); //this->scene()是 QGraphicsScene*
+    this->viewport()->update();
 
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
-    this->viewport()->update();
 }
 
 MyView::~MyView()
@@ -52,11 +52,10 @@ void MyView::mousePressEvent(QMouseEvent *event)
         mode = DRAG;
         dragStart = this->mapToScene(event->pos());
 //        qDebug()<<"origin:"<<dragStart;
-        setCursor(Qt::ClosedHandCursor);
+        changeCursor(Qt::ClosedHandCursor);
         event->accept();
         break;
     case Qt::LeftButton:
-
         // 窗口坐标转为场景坐标
         start = this->mapToScene(event->pos());
         if(!drawLine && !drawPt && !drawRect && !drawElli)
@@ -74,8 +73,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
         {
             m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
                                 QPen(QColor(Qt::white)),
-                                QBrush(Qt::white,Qt::SolidPattern) )->setFlag(
-                                QGraphicsItem::ItemIsSelectable, true);
+                                QBrush(Qt::white,Qt::SolidPattern) )->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         }
         else if(drawPt && drawCross)    // 画X样式的点
         {
@@ -244,7 +242,8 @@ void MyView::setLine()
             return;
         }
         m_scene->addLine(QLineF(list.at(0), list.at(1)),
-                         QPen(QColor(Qt::white)))->setFlag(QGraphicsItem::ItemIsSelectable, true);
+                         QPen(QColor(Qt::white)))->
+                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
     }
     else if(sender()->objectName() == "actLine_3")
     {
@@ -262,8 +261,8 @@ void MyView::setLine()
         line.setP1(pt);
         line.setAngle(360-angle);
         line.setLength(length);
-        m_scene->addLine(line, QPen(QColor(Qt::white))
-                )->setFlag(QGraphicsItem::ItemIsSelectable, true);
+        m_scene->addLine(line, QPen(QColor(Qt::white)))->
+                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
     }
 }
 
@@ -297,7 +296,8 @@ void MyView::setPt()
         QPointF pt1 = dlg->getPt();
         m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
                             QPen(QColor(Qt::white)),
-                            QBrush(Qt::white,Qt::SolidPattern))->setFlag(QGraphicsItem::ItemIsSelectable, true);
+                            QBrush(Qt::white,Qt::SolidPattern))->
+                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
     }
 }
 
@@ -325,8 +325,8 @@ void MyView::setRect()
         float *value= dlg->getWH();
 //        因为视图对y轴镜像，直接绘图pt是矩形的左下顶点，需要变换
         m_scene->addRect(pt.x(),pt.y()-value[1],
-                value[0],value[1],QPen(QColor(Qt::white))
-                )->setFlag(QGraphicsItem::ItemIsSelectable, true);
+                value[0],value[1],QPen(QColor(Qt::white)) )->
+                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         delete[] value;
     }
     else if(sender()->objectName()=="actRect_3")
@@ -358,8 +358,8 @@ void MyView::setEllipse()
         float *value= dlg->getWH();
 //        因为视图对y轴镜像，所以pt是矩形的左下顶点,需要变换
         m_scene->addEllipse(pt.x()-value[0]/2, pt.y()-value[1]/2,
-                value[0], value[1], QPen(QColor(Qt::white))
-                )->setFlag(QGraphicsItem::ItemIsSelectable, true);
+                value[0], value[1], QPen(QColor(Qt::white)))->
+                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         delete[] value;
     }
 }
@@ -401,9 +401,7 @@ void MyView::setNormal()
     drawLine=false;
     drawElli = false;
     drawRect = false;
-    QCursor c;
-    c.setShape(Qt::ArrowCursor);
-    this->viewport()->setCursor(c);
+    changeCursor(Qt::ArrowCursor);
 }
 
 void MyView::Locate()
@@ -514,6 +512,13 @@ void MyView::changeCursor(const QString& shape)
     QPixmap p;
     p.load(":/Shape/Shape/"+shape+".png");
     this->viewport()->setCursor(p);
+}
+
+void MyView::changeCursor(Qt::CursorShape shape)
+{
+    QCursor c;
+    c.setShape(shape);
+    this->viewport()->setCursor(c);
 }
 
 void MyView::test()

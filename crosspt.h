@@ -2,6 +2,10 @@
 #define CROSSPT_H
 #include <QGraphicsItem>
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+#include <QDrag>
+#include <QMimeData>
+
 class CrossPt : public QGraphicsItem
 {
 public:
@@ -28,6 +32,9 @@ private:
 
 private:
     void updateRect();
+
+protected:
+
 };
 
 #endif // CROSSPT_H
