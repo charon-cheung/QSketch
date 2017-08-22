@@ -18,7 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     InitUi();
     InitDir();
-    InitConnect(ui->m_view);
 
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
@@ -37,7 +36,6 @@ void MainWindow::InitUi()
     ui->mainToolBar->addAction(ui->NewView);
     ui->mainToolBar->addAction(ui->Open);
     ui->mainToolBar->addAction(ui->Save);
-    ui->mainToolBar->addAction(ui->SaveAs);
     ui->mainToolBar->addAction(ui->Print);
 
     ui->tabView->setTabsClosable(true);
@@ -66,13 +64,6 @@ void MainWindow::InitUi()
     ui->DrawEllipse->setMenu(ellipseMenu);
 
     ui->statusBar->showMessage("初始化完成");
-}
-
-void MainWindow::InitView()
-{
-//    坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
-    ui->m_view->scale(2,-2);
-    ui->m_view->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
 }
 
 void MainWindow::InitConnect(MyView* view)
@@ -106,21 +97,30 @@ void MainWindow::on_NewView_triggered()
 {
     QString fullName = QFileDialog::getSaveFileName(this, tr("新建画面"),
                        dirPath+"/Files", tr("画面文件(*.gph)"));
+    if(fullName.isEmpty())      return;
     QString name=fullName.remove(dirPath+"/Files/");
-//    name.chop(4);   //去掉扩展名
-//    QFile f(fullName);
+
     MyView *newView = new MyView(this);
     newView->setObjectName(name);
+    //    坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
+    newView->scale(2,-2);
+    newView->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
+    int count = ui->tabView->count();
+    for(int i =0;i<count;i++)
+    {
+        if(ui->tabView->tabText(i)==name)
+            on_tabView_tabCloseRequested(i);
+    }
     ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),name);
     ui->tabView->setCurrentWidget(newView);
 
     InitConnect(newView);
-//    delete newView;
 }
 
 void MainWindow::on_Open_triggered()
 {
     QString fileName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
+    if(fileName.isEmpty())      return;
     QFile f(fileName);
     if(!f.open(QIODevice::ReadOnly)){
         qDebug()<<"画面文件读取失败："<<fileName;
@@ -134,44 +134,33 @@ void MainWindow::on_Open_triggered()
     openView->setScene(doc);
     fileName.remove(dirPath+"/Files/");
     openView->setObjectName(fileName);
+    openView->scale(2,-2);
     ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),fileName);
     ui->tabView->setCurrentWidget(openView);
+
     InitConnect(openView);
-//    delete openView;
 }
 
 void MainWindow::on_Save_triggered()
-{   
+{
     int index = ui->tabView->currentIndex();
     QString tabName = ui->tabView->tabText(index);
+    if(tabName=="开始")   return;
     QDir d(dirPath+"/Files");
-    if(d.entryList().contains(tabName))
-    {
-        qDebug()<<"本来存在的文件";
+    //是否需要判断是新建的文件还是打开已有的文件?
+    QString fullName=dirPath+"/Files/"+tabName;
+    QFile f(fullName);
+    if(!f.open(QIODevice::WriteOnly)){
+        qDebug()<<"画面文件写入失败:"<<f.fileName();
+        return;
     }
-    else
-    {
-        qDebug()<<"doesn't exist in Files";
-        QString fullName=dirPath+"/Files/"+tabName;
-        qDebug()<<fullName;
 
-        QFile f(fullName);
-        if(!f.open(QIODevice::WriteOnly)){
-            qDebug()<<"画面文件写入失败:"<<f.fileName();
-            return;
-        }
-        QDataStream ds(&f);
-        MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
-        MyScene* doc = qobject_cast<MyScene*>(view->scene());
-        doc->Save(ds);
-
-        f.close();
-    }
-}
-
-void MainWindow::on_SaveAs_triggered()
-{
-
+    QDataStream ds(&f);
+    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+//    MyScene* doc = qobject_cast<MyScene*>(view->scene());
+    view->getScene()->Save(ds);
+//    doc->Save(ds);
+    f.close();
 }
 
 void MainWindow::on_Print_triggered()
@@ -180,7 +169,8 @@ void MainWindow::on_Print_triggered()
     printer.setPaperSize(QPrinter::A4);
 
     QPainter painter(&printer);
-    ui->m_view->getScene()->render(&painter);
+    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    view->getScene()->render(&painter);
 }
 
 void MainWindow::on_tabView_tabCloseRequested(int index)
@@ -195,13 +185,14 @@ void MainWindow::on_tabView_tabCloseRequested(int index)
 void MainWindow::on_action_Current_triggered()
 {
     int index = ui->tabView->currentIndex();
+    if(index==0)    return;
     on_tabView_tabCloseRequested(index);
 }
 
 void MainWindow::on_action_All_triggered()
 {
     int count=ui->tabView->count();
-    for(int i=count-1;i>=0;i--)
+    for(int i=count-1;i>0;i--)
         on_tabView_tabCloseRequested(i);
 }
 
@@ -217,11 +208,13 @@ void MainWindow::on_startBtn_clicked()
 
 void MainWindow::on_action_Pic_triggered()
 {
-    QImage image(this->size(),QImage::Format_RGB32);
-    QPainter painter(&image);
-
+    if(ui->tabView->currentIndex()==0)
+        return;
     MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    QImage image(view->size(),QImage::Format_RGB32);
+    QPainter painter(&image);
     view->getScene()->render(&painter);     //关键函数
+
 //    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
     QImage mirroredImage = image.mirrored(false, true);
     QString path = QApplication::applicationDirPath()+"/Images";
@@ -229,4 +222,24 @@ void MainWindow::on_action_Pic_triggered()
     QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
     QString file = path+ "/" +str+ ".png";
     mirroredImage.save(file);
+}
+
+void MainWindow::on_action_Open_triggered()
+{
+    on_Open_triggered();
+}
+
+void MainWindow::on_action_New_triggered()
+{
+    on_NewView_triggered();
+}
+
+void MainWindow::on_action_Save_triggered()
+{
+    on_Save_triggered();
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    on_Open_triggered();
 }

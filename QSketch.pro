@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QSketch
 TEMPLATE = app
-RC_ICONS = AutoCAD.ico
+RC_ICONS = cube.ico
 
 DESTDIR = bin
 

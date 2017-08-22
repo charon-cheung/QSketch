@@ -25,8 +25,6 @@ private slots:
 
     void on_Save_triggered();
 
-    void on_SaveAs_triggered();
-
     void on_NewView_triggered();
 
     void on_Print_triggered();
@@ -42,6 +40,14 @@ private slots:
     void on_startBtn_clicked();
 
     void on_action_Pic_triggered();
+
+    void on_action_Open_triggered();
+
+    void on_action_New_triggered();
+
+    void on_action_Save_triggered();
+
+    void on_pushButton_3_clicked();
 
 signals:
     void getPt(QPointF pt1);
@@ -62,7 +68,6 @@ private:
 
 private:
     void InitUi();
-    void InitView();
     void InitConnect(MyView* view);
     void InitDir();
 protected:

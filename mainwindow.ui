@@ -21,7 +21,7 @@
 QPushButton::menu-indicator{image:None;}</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -218,11 +218,11 @@ QPushButton::menu-indicator{image:None;}</string>
          </size>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="start">
          <attribute name="title">
-          <string> 开始</string>
+          <string>开始</string>
          </attribute>
          <widget class="QPushButton" name="startBtn">
           <property name="geometry">
@@ -251,7 +251,7 @@ QPushButton::menu-indicator{image:None;}</string>
           <property name="geometry">
            <rect>
             <x>20</x>
-            <y>280</y>
+            <y>310</y>
             <width>271</width>
             <height>41</height>
            </rect>
@@ -313,20 +313,6 @@ QPushButton::menu-indicator{image:None;}</string>
           </property>
          </widget>
         </widget>
-        <widget class="QWidget" name="draw_1">
-         <attribute name="icon">
-          <iconset resource="res.qrc">
-           <normaloff>:/Icon/Icon/gph.png</normaloff>:/Icon/Icon/gph.png</iconset>
-         </attribute>
-         <attribute name="title">
-          <string> 画面1.gph</string>
-         </attribute>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="MyView" name="m_view"/>
-          </item>
-         </layout>
-        </widget>
        </widget>
       </item>
      </layout>
@@ -345,7 +331,7 @@ QPushButton::menu-indicator{image:None;}</string>
    <widget class="QMenu" name="menu">
     <property name="geometry">
      <rect>
-      <x>242</x>
+      <x>1608</x>
       <y>104</y>
       <width>154</width>
       <height>252</height>
@@ -596,29 +582,37 @@ QPushButton::menu-indicator{image:None;}</string>
    </property>
   </action>
   <action name="action_Pic">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/picture.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>图片</string>
    </property>
   </action>
   <action name="action_PDF">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/pdf.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>PDF文件</string>
    </property>
   </action>
   <action name="actionSVG">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/svg.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>SVG</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>MyView</class>
-   <extends>QGraphicsView</extends>
-   <header location="global">myview.h</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="res.qrc"/>
  </resources>

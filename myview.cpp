@@ -58,34 +58,40 @@ void MyView::mousePressEvent(QMouseEvent *event)
     case Qt::LeftButton:
         // 窗口坐标转为场景坐标
         start = this->mapToScene(event->pos());
+        qDebug()<<"start: "<<start;
         if(!drawLine && !drawPt && !drawRect && !drawElli)
         {
             mode = NORMAL;
-
         }
-        else    mode =EDIT;
-        qDebug()<<"mode: "<<mode<<"drawPt"<<drawPt;
-//        if(drawLine && !drawLineXY &&!drawLineAH)
-        if(0)
+        else
         {
+            mode =EDIT;
+            qDebug()<<"mode: "<<mode<<"  drawPt"<<drawPt;
+            //改为press_scene
+//            MyScene * press_scene = qobject_cast<MyScene*>(this->scene());
+            MyScene * press_scene = this->getScene();
+//            if(drawLine && !drawLineXY &&!drawLineAH
+            if(0)
+            {
+            }
+            else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
+            {
+                press_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
+                                        QPen(QColor(Qt::white)),
+                                        QBrush(Qt::white,Qt::SolidPattern) )->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+            }
+            else if(drawPt && drawCross)    // 画X样式的点
+            {
+                CrossPt *pt = new CrossPt();
+                pt->setRect(QRect(-10, -10, 20, 20));
+                pt->setPos(start);
+                press_scene->addItem(pt);
+            }
+            else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY)
+            {
+                mode = NORMAL;
+            }
         }
-        else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
-        {
-            m_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
-                                QPen(QColor(Qt::white)),
-                                QBrush(Qt::white,Qt::SolidPattern) )->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        }
-        else if(drawPt && drawCross)    // 画X样式的点
-        {
-            CrossPt *pt = new CrossPt();
-            pt->setRect(QRect(-10, -10, 20, 20));
-            pt->setPos(start);
-            m_scene->addItem(pt);
-         }
-         else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY)
-         {
-             mode = NORMAL;
-         }
     default:
         event->ignore();
         break;
@@ -144,12 +150,12 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     case Qt::LeftButton:
         if(mode==EDIT)
         {
-            end = this->mapToScene(event->pos());
-            if(drawLine && !drawLineXY)
-            {
-                Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
-            }
-            mode = NORMAL;
+//            end = this->mapToScene(event->pos());
+//            if(drawLine && !drawLineXY)
+//            {
+//                Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
+//            }
+//            mode = NORMAL;
         }
     default:
         event->ignore();
@@ -183,6 +189,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Home:
         this->Locate();
+        this->Reset();
         break;
     case Qt::Key_Plus:
         this->scale(1.41421, 1.41421);
