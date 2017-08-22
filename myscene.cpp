@@ -1,6 +1,8 @@
 #include "myscene.h"
 #include <QDebug>
 
+const quint32 MAGIC = 0x6172;
+
 MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
 {
@@ -50,6 +52,46 @@ QPen MyScene::getPen()
 QList<QGraphicsItem *> MyScene::getChosenItems()
 {
     return chosenItems;
+}
+
+void MyScene::Save(QDataStream &s)
+{
+    s<< MAGIC;
+    QList<QGraphicsItem*> all = items(Qt::AscendingOrder);
+    s<<all.count();
+    foreach (QGraphicsItem* item, all) {
+        s<<"QGraphicsEllipseItem";
+        s<< (qgraphicsitem_cast<QGraphicsEllipseItem*>(item)->rect());
+        s<< (qgraphicsitem_cast<QGraphicsEllipseItem*>(item)->pos());
+//        s<<rotation();
+//        s<<item->transformOriginPoint();
+//        s<<item->opacity();
+    }
+}
+
+void MyScene::Load(QDataStream &s)
+{
+    uint mg_ver;
+    s>>mg_ver;
+    quint32 mg = (mg_ver&(0xffff));
+    quint32 ver = (mg_ver>>16);
+
+    if(mg!=MAGIC)   return;
+//    setBackgroundBrush(m_fill.GetBrush(m_fillColor));
+    int count;
+    s>>count;
+    QList<QGraphicsEllipseItem*> items;
+    for(int i=0;i<count;i++){
+        QString className;
+        s>>className;
+        QRectF rect;
+        s>>rect;
+        QPointF pos;
+        s>>pos;
+//        QGraphicsItem *item = new QGraphicsItem();
+//        this->addItem(item);
+        this->addRect(rect)->setPos(pos);
+    }
 }
 
 void MyScene::setPen()

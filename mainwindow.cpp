@@ -10,28 +10,18 @@
 #include <QFileInfo>
 #include <QDataStream>
 #include <QtPrintSupport/QPrinter>
-#include <QCursor>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->InitUi();
-    this->InitDir();
-    // 坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
-    ui->m_view->scale(2,-2);
-    ui->m_view->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
+    InitUi();
+    InitDir();
+    InitConnect();
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
-    foreach(QAction* act, ptActions)
-        connect(act, &QAction::triggered, ui->m_view, &MyView::setPt);
-    foreach(QAction* act, lineActions)
-        connect(act, &QAction::triggered, ui->m_view, &MyView::setLine );
-    foreach(QAction* act, rectActions)
-        connect(act, &QAction::triggered, ui->m_view, &MyView::setRect );
-    foreach(QAction* act, ellipseActions)
-        connect(act, &QAction::triggered, ui->m_view, &MyView::setEllipse );
+
 }
 
 MainWindow::~MainWindow()
@@ -74,11 +64,27 @@ void MainWindow::InitUi()
     ellipseActions<< ui->actEllipse_1<< ui->actEllipse_2;
     ellipseMenu->addActions(ellipseActions);
     ui->DrawEllipse->setMenu(ellipseMenu);
+
+    ui->statusBar->showMessage("初始化完成");
 }
 
 void MainWindow::InitView()
 {
+//    坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
+    ui->m_view->scale(2,-2);
+    ui->m_view->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
+}
 
+void MainWindow::InitConnect()
+{
+    foreach(QAction* act, ptActions)
+        connect(act, &QAction::triggered, ui->m_view, &MyView::setPt);
+    foreach(QAction* act, lineActions)
+        connect(act, &QAction::triggered, ui->m_view, &MyView::setLine );
+    foreach(QAction* act, rectActions)
+        connect(act, &QAction::triggered, ui->m_view, &MyView::setRect );
+    foreach(QAction* act, ellipseActions)
+        connect(act, &QAction::triggered, ui->m_view, &MyView::setEllipse );
 }
 
 void MainWindow::InitDir()
@@ -109,59 +115,55 @@ void MainWindow::on_NewView_triggered()
     ui->tabView->setCurrentWidget(newView);
     int index = ui->tabView->currentIndex();
     ui->tabView->setTabIcon(index, QIcon(":/Icon/Icon/gph.png"));
+
+
 }
 
 void MainWindow::on_Open_triggered()
 {
-
+    QString fileName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
+    qDebug()<<fileName;
+    QFile f(fileName);
+    if(!f.open(QIODevice::ReadOnly)){
+        qDebug()<<"画面文件读取失败："<<fileName;
+        return ;
+    }
+    QDataStream ds(&f);
+    MyScene *doc = new MyScene(0);
+    doc->Load(ds);
+    ui->m_view->setScene(doc);
 }
+
 //参考 GraphForm::Save()   GraphIO::ExportGraph
 void MainWindow::on_Save_triggered()
-{
-//    QString filename=QFileDialog::getSaveFileName(this,tr("save license"),tr("abc.txt"));
-//    QByteArray ba = filename.toLatin1();
-
-//    char* Filename = ba.data(); //将QString装换为char*
-
-//    FILE* pFile = fopen(Filename,"wb");
-
-//    fwrite(---,---,---,pFile);
-
-//    fclose(pFile);
+{   
     int index = ui->tabView->currentIndex();
-    QString tabText = ui->tabView->tabText(index);
+    QString tabName = ui->tabView->tabText(index);
     QDir d(dirPath+"/Files");
-    if(d.entryList().contains(tabText.append(".gph")))
+    if(d.entryList().contains(tabName))
     {
         //判断是否修改
     }
     else
     {
-        QString fullName=dirPath+"/Files/"+tabText+".gph";
-        QFile *f;
-        f->setFileName(fullName);
-        QDataStream ds(f);
-        if(!f->open(QIODevice::WriteOnly) )
-        {
-            qDebug()<<"保存时出错";
+        qDebug()<<"doesn't exist in Files";
+        QString fullName=dirPath+"/Files/"+tabName;
+        qDebug()<<fullName;
+
+        QFile f(fullName);
+        if(!f.open(QIODevice::WriteOnly)){
+            qDebug()<<"画面文件写入打开失败:"<<f.fileName();
             return;
         }
-
+        QDataStream ds(&f);
+        MyScene* doc = qobject_cast<MyScene*>(ui->m_view->scene());
+        doc->Save(ds);
     }
 }
 
 void MainWindow::on_SaveAs_triggered()
 {
-    QImage image(this->size(),QImage::Format_RGB32);
-    QPainter painter(&image);
-    ui->m_view->getScene()->render(&painter);   //关键函数
-//    因为ui->m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
-    QImage mirroredImage = image.mirrored(false, true);
-    QString path = QApplication::applicationDirPath()+"/Images";
-    QDateTime time = QDateTime::currentDateTime();
-    QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
-    QString file = path+ "/" +str+ ".png";
-    mirroredImage.save(file);
+
 }
 
 void MainWindow::on_Print_triggered()
@@ -203,4 +205,20 @@ void MainWindow::on_action_Exit_triggered()
 void MainWindow::on_startBtn_clicked()
 {
     ui->tabView->setCurrentIndex(1);
+}
+
+void MainWindow::on_action_Pic_triggered()
+{
+    QImage image(this->size(),QImage::Format_RGB32);
+    QPainter painter(&image);
+
+    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    view->getScene()->render(&painter);     //关键函数
+//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
+    QImage mirroredImage = image.mirrored(false, true);
+    QString path = QApplication::applicationDirPath()+"/Images";
+    QDateTime time = QDateTime::currentDateTime();
+    QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
+    QString file = path+ "/" +str+ ".png";
+    mirroredImage.save(file);
 }

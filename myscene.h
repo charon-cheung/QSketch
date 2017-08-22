@@ -6,17 +6,21 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
 #include <QPainter>
+#include <QDataStream>
 
 class MyScene : public QGraphicsScene
 {
+    Q_OBJECT
 public:
-    MyScene(QObject *parent = Q_NULLPTR);
-    ~MyScene();
+    explicit MyScene(QObject *parent = Q_NULLPTR);
+    virtual ~MyScene();
 
     void InitScene();
     QPen getPen();
     QList<QGraphicsItem*> getChosenItems();
-    QSet<QList<QGraphicsItem*> > set;   //不要写成>>
+    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
+    void Save(QDataStream& s);
+    void Load(QDataStream& s);
 private:
     QGraphicsLineItem* Line;
     QPen p;

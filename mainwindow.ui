@@ -218,7 +218,7 @@ QPushButton::menu-indicator{image:None;}</string>
          </size>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="start">
          <attribute name="title">

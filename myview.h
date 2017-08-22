@@ -1,6 +1,5 @@
 #ifndef MYVIEW_H
 #define MYVIEW_H
-
 #include <QGraphicsView>
 #include <QWidget>
 #include <QGraphicsItem>

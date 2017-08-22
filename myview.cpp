@@ -63,8 +63,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
             mode = NORMAL;
 
         }
-        else
-            mode =EDIT;
+        else    mode =EDIT;
+        qDebug()<<"mode: "<<mode<<"drawPt"<<drawPt;
 //        if(drawLine && !drawLineXY &&!drawLineAH)
          if(0)
         {

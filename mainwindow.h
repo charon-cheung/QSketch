@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#include "myview.h"
 
+#include "myview.h"
 #include "posdialog.h"
 #include <QMainWindow>
 #include <QGraphicsSceneMoveEvent>
@@ -41,6 +41,8 @@ private slots:
 
     void on_startBtn_clicked();
 
+    void on_action_Pic_triggered();
+
 signals:
     void getPt(QPointF pt1);
 private:
@@ -61,6 +63,7 @@ private:
 private:
     void InitUi();
     void InitView();
+    void InitConnect();
     void InitDir();
 protected:
 
