@@ -66,7 +66,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
         else    mode =EDIT;
         qDebug()<<"mode: "<<mode<<"drawPt"<<drawPt;
 //        if(drawLine && !drawLineXY &&!drawLineAH)
-         if(0)
+        if(0)
         {
         }
         else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径

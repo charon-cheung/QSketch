@@ -63,7 +63,7 @@ private:
 private:
     void InitUi();
     void InitView();
-    void InitConnect();
+    void InitConnect(MyView* view);
     void InitDir();
 protected:
 

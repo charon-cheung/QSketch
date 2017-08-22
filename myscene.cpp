@@ -1,13 +1,11 @@
 #include "myscene.h"
 #include <QDebug>
-
-const quint32 MAGIC = 0x6172;
+#include <QMessageBox>
+const int MAGIC = 123;
 
 MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
 {
-    this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
-    this->setBackgroundBrush(QBrush(QColor(0,43,54)));
     InitScene();
 
     space = 50;
@@ -22,6 +20,8 @@ MyScene::~MyScene()
 
 void MyScene::InitScene()
 {
+    this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
+    this->setBackgroundBrush(QBrush(QColor(0,43,54)));
 //    画圆心, QPen 是圆的边缘, QBrush是圆的填充
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(131,160,150)),
                                QBrush(QColor(131,160,150), Qt::SolidPattern) );
@@ -58,11 +58,23 @@ void MyScene::Save(QDataStream &s)
 {
     s<< MAGIC;
     QList<QGraphicsItem*> all = items(Qt::AscendingOrder);
-    s<<all.count();
+    s<<all.count()-3;   //去掉两个坐标轴，场景矩形
+    qDebug()<<all.count()<<qrand()%100;
+
     foreach (QGraphicsItem* item, all) {
-        s<<"QGraphicsEllipseItem";
-        s<< (qgraphicsitem_cast<QGraphicsEllipseItem*>(item)->rect());
-        s<< (qgraphicsitem_cast<QGraphicsEllipseItem*>(item)->pos());
+        if(item->type()!=4)
+            continue;
+        QString className = "QGraphicsEllipseItem";
+        s<< className;
+        QGraphicsEllipseItem* ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+//        qDebug()<< "类型:"<<item->type();
+        s<< ell->rect().x();
+        s<< ell->rect().y();
+        s<< ell->rect().width();
+        s<< ell->rect().height();
+
+        s<< ell->pos().x();
+        s<< ell->pos().y();
 //        s<<rotation();
 //        s<<item->transformOriginPoint();
 //        s<<item->opacity();
@@ -74,23 +86,34 @@ void MyScene::Load(QDataStream &s)
     uint mg_ver;
     s>>mg_ver;
     quint32 mg = (mg_ver&(0xffff));
-    quint32 ver = (mg_ver>>16);
-
-    if(mg!=MAGIC)   return;
-//    setBackgroundBrush(m_fill.GetBrush(m_fillColor));
+    if(mg!=MAGIC)
+    {
+        QMessageBox::warning(0, QStringLiteral("出错了"),
+                        QStringLiteral("打开的不是gph文件!"));
+        return;
+    }
     int count;
     s>>count;
+    qDebug()<<"读取的item个数"<<count;
+    InitScene();
     QList<QGraphicsEllipseItem*> items;
-    for(int i=0;i<count;i++){
+    for(int i=0;i< count;i++){
         QString className;
-        s>>className;
-        QRectF rect;
-        s>>rect;
-        QPointF pos;
-        s>>pos;
+        s>>className;   //不能直接用字符串
+        qreal x,y,w,h;
+        qreal px,py;
+        s >> x;
+        s >> y;
+        s >> w;
+        s >> h;
+        qDebug()<<x<<"  "<<y<<"  "<<w<<"  "<<h;
+        s >> px;
+        s >> py;
+        qDebug()<<px<<"  "<<py;
 //        QGraphicsItem *item = new QGraphicsItem();
 //        this->addItem(item);
-        this->addRect(rect)->setPos(pos);
+        this->addEllipse(x,y,w,h,QPen(QColor(Qt::white)),
+                         QBrush(Qt::white,Qt::SolidPattern))->setPos(px,py);
     }
 }
 

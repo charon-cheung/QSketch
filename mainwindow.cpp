@@ -18,10 +18,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     InitUi();
     InitDir();
-    InitConnect();
+    InitConnect(ui->m_view);
+
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
-
 }
 
 MainWindow::~MainWindow()
@@ -75,16 +75,16 @@ void MainWindow::InitView()
     ui->m_view->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
 }
 
-void MainWindow::InitConnect()
+void MainWindow::InitConnect(MyView* view)
 {
     foreach(QAction* act, ptActions)
-        connect(act, &QAction::triggered, ui->m_view, &MyView::setPt);
+        connect(act, &QAction::triggered, view, &MyView::setPt);
     foreach(QAction* act, lineActions)
-        connect(act, &QAction::triggered, ui->m_view, &MyView::setLine );
+        connect(act, &QAction::triggered, view, &MyView::setLine );
     foreach(QAction* act, rectActions)
-        connect(act, &QAction::triggered, ui->m_view, &MyView::setRect );
+        connect(act, &QAction::triggered, view, &MyView::setRect );
     foreach(QAction* act, ellipseActions)
-        connect(act, &QAction::triggered, ui->m_view, &MyView::setEllipse );
+        connect(act, &QAction::triggered, view, &MyView::setEllipse );
 }
 
 void MainWindow::InitDir()
@@ -111,18 +111,16 @@ void MainWindow::on_NewView_triggered()
 //    QFile f(fullName);
     MyView *newView = new MyView(this);
     newView->setObjectName(name);
-    ui->tabView->addTab(newView,name);
+    ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),name);
     ui->tabView->setCurrentWidget(newView);
-    int index = ui->tabView->currentIndex();
-    ui->tabView->setTabIcon(index, QIcon(":/Icon/Icon/gph.png"));
 
-
+    InitConnect(newView);
+//    delete newView;
 }
 
 void MainWindow::on_Open_triggered()
 {
     QString fileName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
-    qDebug()<<fileName;
     QFile f(fileName);
     if(!f.open(QIODevice::ReadOnly)){
         qDebug()<<"画面文件读取失败："<<fileName;
@@ -131,10 +129,17 @@ void MainWindow::on_Open_triggered()
     QDataStream ds(&f);
     MyScene *doc = new MyScene(0);
     doc->Load(ds);
-    ui->m_view->setScene(doc);
+
+    MyView *openView = new MyView(this);
+    openView->setScene(doc);
+    fileName.remove(dirPath+"/Files/");
+    openView->setObjectName(fileName);
+    ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),fileName);
+    ui->tabView->setCurrentWidget(openView);
+    InitConnect(openView);
+//    delete openView;
 }
 
-//参考 GraphForm::Save()   GraphIO::ExportGraph
 void MainWindow::on_Save_triggered()
 {   
     int index = ui->tabView->currentIndex();
@@ -142,7 +147,7 @@ void MainWindow::on_Save_triggered()
     QDir d(dirPath+"/Files");
     if(d.entryList().contains(tabName))
     {
-        //判断是否修改
+        qDebug()<<"本来存在的文件";
     }
     else
     {
@@ -152,12 +157,15 @@ void MainWindow::on_Save_triggered()
 
         QFile f(fullName);
         if(!f.open(QIODevice::WriteOnly)){
-            qDebug()<<"画面文件写入打开失败:"<<f.fileName();
+            qDebug()<<"画面文件写入失败:"<<f.fileName();
             return;
         }
         QDataStream ds(&f);
-        MyScene* doc = qobject_cast<MyScene*>(ui->m_view->scene());
+        MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+        MyScene* doc = qobject_cast<MyScene*>(view->scene());
         doc->Save(ds);
+
+        f.close();
     }
 }
 
