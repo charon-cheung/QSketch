@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
+#include <crosspt.h>
 #include <QPainter>
 #include <QDataStream>
 
@@ -17,7 +18,7 @@ public:
 
     void InitScene();
     QPen getPen();
-    QList<QGraphicsItem*> getChosenItems();
+
     QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Load(QDataStream& s);
@@ -37,7 +38,7 @@ private:
     GridMode mode;
     int space;
     int min_space;
-    QList<QGraphicsItem*> chosenItems;
+
     QGraphicsLineItem  *X,*Y;
     QGraphicsEllipseItem *Origin;
 private:

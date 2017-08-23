@@ -39,6 +39,11 @@ void CrossPt::updateRect()
 
 }
 
+int CrossPt::type() const
+{
+    return Type;
+}
+
 
 void CrossPt::setRect(const QRectF &rect)
 {

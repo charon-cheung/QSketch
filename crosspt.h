@@ -14,6 +14,9 @@ public:
     explicit CrossPt(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = Q_NULLPTR);
     ~CrossPt();
 
+    enum {Type = UserType + 1};
+    int type() const;
+
     QRectF rect() const;
     void setRect(const QRectF &rect);
     inline void setRect(qreal x, qreal y, qreal w, qreal h);
@@ -32,7 +35,6 @@ private:
 
 private:
     void updateRect();
-
 protected:
 
 };

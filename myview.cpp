@@ -19,15 +19,16 @@ MyView::MyView(QWidget *parent):
     this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
-
+    //随着鼠标点击，场景总出现几个矩形，暂时去掉
     QRect viewport_rect(0, 0, this->viewport()->width(),
                         this->viewport()->height() );
     QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
     viewCenter = new QGraphicsRectItem(visible_scene_rect);
+    qDebug()<<"viewport_rect  "<<viewport_rect;
 
     m_scene = new MyScene(0);
     this->setScene(m_scene);
-    this->scene()->addItem(viewCenter); //this->scene()是 QGraphicsScene*
+//    this->scene()->addItem(viewCenter); //this->scene()是 QGraphicsScene*
     this->viewport()->update();
 
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
@@ -43,7 +44,7 @@ MyScene *MyView::getScene() const
 {
     return m_scene;
 }
-
+#if 1
 void MyView::mousePressEvent(QMouseEvent *event)
 {
     switch(event->button())
@@ -66,9 +67,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
         else
         {
             mode =EDIT;
-            qDebug()<<"mode: "<<mode<<"  drawPt"<<drawPt;
-            //改为press_scene
-//            MyScene * press_scene = qobject_cast<MyScene*>(this->scene());
+//            qDebug()<<"mode: "<<mode<<"  drawPt"<<drawPt;
             MyScene * press_scene = this->getScene();
 //            if(drawLine && !drawLineXY &&!drawLineAH
             if(0)
@@ -164,7 +163,7 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     updateCenterRect();
     QGraphicsView::mouseReleaseEvent(event);
 }
-
+#endif
 //视图放大和缩小
 void MyView::wheelEvent(QWheelEvent *event)
 {
@@ -173,7 +172,7 @@ void MyView::wheelEvent(QWheelEvent *event)
         // 加这句后，放大缩小时，原点会跟随鼠标移动
 //        this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
         qreal scaleFactor = qPow(2.0, event->delta() / 240.0);  // ???
-        qDebug()<<event->delta();
+//        qDebug()<<event->delta();     为正负120
         this->scale(scaleFactor, scaleFactor);
         this->updateCenterRect();
     }
@@ -259,14 +258,19 @@ void MyView::setLine()
         dlg->showLineAH();
         if(dlg->exec() != QDialog::Accepted)    return;
 
-        QPointF pt = dlg->getPt();
+        QPointF pt1 = dlg->getPt();
         float angle = dlg->getAngle();
         float length = dlg->getLength();
-
+        if(pt1==QPointF(0,0))
+        {
+            QMessageBox::warning(0,"出错了","起点的坐标不能为(0,0) !");
+            return;
+        }
         QLineF line;
-        line.setP1(pt);
+        line.setP1(pt1);    //不能为(0,0),否则直线无效，为什么?
         line.setAngle(360-angle);
         line.setLength(length);
+
         m_scene->addLine(line, QPen(QColor(Qt::white)))->
                 setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
     }
@@ -300,10 +304,16 @@ void MyView::setPt()
         dlg->showPt();
         if(dlg->exec() != QDialog::Accepted)    return;
         QPointF pt1 = dlg->getPt();
-        m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
-                            QPen(QColor(Qt::white)),
-                            QBrush(Qt::white,Qt::SolidPattern))->
-                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+
+        CrossPt *pt = new CrossPt();
+        pt->setRect(QRect(-10, -10, 20, 20));
+        pt->setPos(pt1);
+        m_scene->addItem(pt);
+
+//        m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
+//                            QPen(QColor(Qt::white)),
+//                            QBrush(Qt::white,Qt::SolidPattern))->
+//                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
     }
 }
 
@@ -420,7 +430,7 @@ void MyView::Locate()
 void MyView::Reset()
 {
     this->resetMatrix();
-    this->scale(1,1);
+    this->scale(1,-1);
 }
 
 void MyView::Copy()
