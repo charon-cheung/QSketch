@@ -25,28 +25,21 @@ void MyScene::InitScene()
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
                                QBrush(QColor(122,103,238), Qt::SolidPattern) );
     Origin->setToolTip("圆心半径为3");
-    //    画两个坐标轴
+//    画两个坐标轴
     X = this->addLine(QLineF(QPointF(-width/2+1,0), QPointF(width/2-1,0)), QPen(QColor(139,54,38)));
     Y = this->addLine(QLineF(QPointF(0,-height/2+1),QPointF(0,height/2-1)), QPen(QColor(139,54,38)));
-//    qDebug()<<this->sceneRect().topLeft();
-//    qDebug()<<this->sceneRect().size();
+//    画两个箭头
+    QPolygonF poly_X,poly_Y;
+    poly_X<<QPointF(80, 0)<<QPointF(72, 3)<<QPointF(72,-3);
+    poly_Y<<QPointF(0, 80)<<QPointF(3, 72)<<QPointF(-3, 72);
+    ArrowX = this->addPolygon(poly_X,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
+    ArrowY = this->addPolygon(poly_Y,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
+
     Origin->setData(0,"origin");
     X->setData(0,"x");
     Y->setData(0,"y");
-//    画坐标轴刻度值
-    QFont font;
-    font.setPixelSize(18);
-    QTransform tran;
-
-    QGraphicsSimpleTextItem* coord[100];
-//    for(int i=0;i<100;i++)
-//    {
-//        if(i%4!=0)  continue;
-//        coord[i] = this->addSimpleText(QString::number(i),font);
-//        coord[i]->setTransform(tran.scale(1,-1));//m_view->scale(1, -1);造成文本位置不正常
-//        coord[i]->setPos(i,-4);
-//        coord[i]->setBrush(QBrush(Qt::white,Qt::SolidPattern));
-//    }
+    ArrowX->setData(0,"arrowX");
+    ArrowY->setData(0,"arrowY");
 }
 
 QPen MyScene::getPen()
@@ -59,73 +52,70 @@ void MyScene::Save(QDataStream &s)
     s<< MAGIC;
     QList<QGraphicsItem*> all = items(this->sceneRect(),
                                       Qt::IntersectsItemShape,Qt::AscendingOrder);
-    s<<all.count()-4;
-//    qDebug()<<"item的个数:"<<all.count()<<qrand()%100;
-    //去掉两个坐标轴,原点,场景矩形. 为什么场景矩形也算进items ?
-    foreach (QGraphicsItem* item, all)
+    //去掉两个坐标轴和两个箭头,原点,场景矩形. 为什么场景矩形也算进items ?
+    s<<all.count()-6;
+    Export(s, all);
+}
+
+void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
+{
+    foreach (QGraphicsItem* item, items)
     {
-//        qDebug()<<item->type();
-        if(item->data(0).toString()=="origin"||item->data(0).toString()=="x"||item->data(0).toString()=="y")
+        if(item->data(0).toString()=="origin"||item->data(0).toString()=="x"
+                ||item->data(0).toString()=="y"||item->data(0).toString()=="arrowX"||item->data(0).toString()=="arrowY")
         {
             continue;
         }
         QString className;
-        if(item->type()==3)     //矩形
+        if(item->type()==3 || item->type()==4 || item->type()==CrossPt::Type)     //矩形
         {
-            QGraphicsRectItem* rectangle = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-//            if(rectangle->rect()==QRectF(-24.5,-7,49,14) ||rectangle->rect()==QRectF(-179,-93.5,358,187))
-//            {
-//                qDebug()<<"刚出现的矩形和点鼠标后的矩形";
-//                continue;
-//            }
-            qDebug()<<rectangle->rect();
-            className = "QGraphicsRectItem";
-            s<< className;
-            s<< rectangle->rect().x();
-            s<< rectangle->rect().y();
-            s<< rectangle->rect().width();
-            s<< rectangle->rect().height();
-
-            s<< rectangle->pos().x();
-            s<< rectangle->pos().y();
-        }
-        else if(item->type()==4)
-        {
-            className = "QGraphicsEllipseItem";
-            s<< className;
-            QGraphicsEllipseItem* ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-            s<< ell->rect().x();
-            s<< ell->rect().y();
-            s<< ell->rect().width();
-            s<< ell->rect().height();
-
-            s<< ell->pos().x();
-            s<< ell->pos().y();
-//            s<<rotation();
-//            s<<item->transformOriginPoint();
-//            s<<item->opacity();
+//            QGraphicsItem *rectangle = item;
+            if(item->type()==3)
+            {
+                className = "QGraphicsRectItem";
+                QGraphicsRectItem* rectangle = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+                s<< className;
+                s<< rectangle->rect().x();
+                s<< rectangle->rect().y();
+                s<< rectangle->rect().width();
+                s<< rectangle->rect().height();
+                s<< rectangle->pos().x();
+                s<< rectangle->pos().y();
+            }
+            else if(item->type()==4)
+            {
+                className = "QGraphicsEllipseItem";
+                QGraphicsEllipseItem* rectangle = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+                s<< className;
+                s<< rectangle->rect().x();
+                s<< rectangle->rect().y();
+                s<< rectangle->rect().width();
+                s<< rectangle->rect().height();
+                s<< rectangle->pos().x();
+                s<< rectangle->pos().y();
+            }
+            else if(item->type()== CrossPt::Type)
+            {
+                className = "CrossPt";
+                CrossPt* rectangle = qgraphicsitem_cast<CrossPt*>(item);
+                s<< className;
+                s<< rectangle->rect().x();
+                s<< rectangle->rect().y();
+                s<< rectangle->rect().width();
+                s<< rectangle->rect().height();
+                s<< rectangle->pos().x();
+                s<< rectangle->pos().y();
+            }
         }
         else if(item->type()==6)
         {
             className = "QGraphicsLineItem";
-            s<< className;
             QGraphicsLineItem* Line = qgraphicsitem_cast<QGraphicsLineItem*>(item);
+            s<< className;
             s<< Line->line().x1();
             s<< Line->line().y1();
             s<< Line->line().x2();
             s<< Line->line().y2();
-        }
-        else if(item->type()== CrossPt::Type)
-        {
-            className = "CrossPt";
-            s<< className;
-            CrossPt* pt = qgraphicsitem_cast<CrossPt*>(item);
-            s<< pt->rect().x();
-            s<< pt->rect().y();
-            s<< pt->rect().width();
-            s<< pt->rect().height();
-            s<< pt->pos().x();
-            s<< pt->pos().y();
         }
     }
 }
@@ -145,8 +135,11 @@ void MyScene::Load(QDataStream &s)
     InitScene();
     int count;
     s>>count;
-    qDebug()<<"读取的item个数"<<count;
+    Import(s,count);
+}
 
+void MyScene::Import(QDataStream &s, int count)
+{
     for(int i=0;i<=count;i++)
     {
         QString className;
@@ -185,6 +178,11 @@ void MyScene::Load(QDataStream &s)
             this->addLine(x1,y1,x2,y2,QPen(QColor(Qt::white)) );
         }
     }
+}
+
+void MyScene::Paste(QDataStream& s,int count)
+{
+
 }
 
 void MyScene::setPen()

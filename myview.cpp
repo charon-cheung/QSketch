@@ -33,6 +33,21 @@ MyView::MyView(QWidget *parent):
 
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
+
+//    画坐标轴刻度值
+    QFont font;
+    font.setPixelSize(12);
+    QTransform tran;
+
+//    QGraphicsSimpleTextItem* coord[20];
+//    for(int i=0;i<20;i++)
+//    {
+//        this->resetMatrix();
+//        coord[i] = m_scene->addSimpleText(QString::number(i),font);
+//        coord[i]->setTransform(tran.scale(1,-1));//m_view->scale(1, -1);造成文本位置不正常
+//        coord[i]->setPos(i*5,-5);
+//        coord[i]->setBrush(QBrush(Qt::white,Qt::SolidPattern));
+//    }
 }
 
 MyView::~MyView()
@@ -52,17 +67,16 @@ void MyView::mousePressEvent(QMouseEvent *event)
     case Qt::MidButton:
         mode = DRAG;
         dragStart = this->mapToScene(event->pos());
-//        qDebug()<<"origin:"<<dragStart;
         changeCursor(Qt::ClosedHandCursor);
         event->accept();
         break;
     case Qt::LeftButton:
         // 窗口坐标转为场景坐标
         start = this->mapToScene(event->pos());
-        qDebug()<<"start: "<<start;
         if(!drawLine && !drawPt && !drawRect && !drawElli)
         {
             mode = NORMAL;
+
         }
         else
         {
@@ -91,6 +105,12 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 mode = NORMAL;
             }
         }
+    case Qt::RightButton:
+    {
+        if(copied)
+            pastePos = this->mapToScene(event->pos());
+        break;
+    }
     default:
         event->ignore();
         break;
@@ -103,12 +123,14 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     QPointF dragEnd,dragTrans;
     switch (mode) {
     case NORMAL:
-         break;  // 处理QGraphicsView::mouseMoveEvent
+    {
+//        QPointF movePt=this->mapToScene(event->pos());
+        break;  // 需要处理QGraphicsView::mouseMoveEvent
+    }
     case DRAG:
     {
         // Calculate the offset to drag relative to scene coordinates.
         dragEnd = this->mapToScene(event->pos());
-//        qDebug()<<"end:"<<dragEnd;
         dragTrans = dragStart - dragEnd;
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
@@ -218,6 +240,12 @@ void MyView::catchPt(QPointF pt)
     QPointF f= mapFromScene(pt);
     f = mapToGlobal(f.toPoint());
     QCursor::setPos(f.toPoint());
+    qDebug()<<f;
+}
+
+void MyView::showInfo()
+{
+
 }
 
 void MyView::setLine()
@@ -388,20 +416,28 @@ void MyView::ShowContextMenu()
     QAction *Reset = m.addAction("重置视图");
     QAction *Delete = m.addAction("删除");
     QAction *Redraw = m.addAction("清空重画");
+    QAction *Copy = m.addAction("复制");
     QAction *Paste = m.addAction("黏贴");
+    QAction* Info = m.addAction("属性");
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
+    Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
+    Paste->setIcon(QIcon(":/Icon/Icon/paste.png"));
+    Info->setIcon(QIcon(":/Icon/Icon/info.png"));
 
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
+    connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
+    connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );    
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
-    connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
+    connect(Info,SIGNAL(triggered(bool)), this, SLOT(showInfo()) );
+
     foreach(QGraphicsItem *item, m_scene->selectedItems())
     {
         item->setFocus();
@@ -425,6 +461,7 @@ void MyView::Locate()
     this->centerOn(0,0);
     this->scale(1, 1);
     this->updateCenterRect();
+    catchPt(QPointF(0,0));
 }
 
 void MyView::Reset()
@@ -437,58 +474,59 @@ void MyView::Copy()
 {
     QByteArray ba;
     QDataStream s(&ba,QIODevice::WriteOnly);
-    s<<m_scene->selectedItems().size();
-    foreach(QGraphicsItem *item, m_scene->selectedItems())
-    {
-//        s<<item->rect();
-//        s<<item->pos();
-
-//        s<<item->rotation();
-//        s<<item->transformOriginPoint();
-//        s<<item->scale();
-//        s<<item->scenePos();
-//        s<<item->boundingRect();
-        QGraphicsEllipseItem *e = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-        s<<e->rect();
-        qDebug()<<"copy:"<<e->rect();
-    }
+    s<< m_scene->selectedItems().size();
+    this->getScene()->Export(s,m_scene->selectedItems());
 
     QMimeData * md = new QMimeData();
-    md->setData("QGraphicsItem",ba);
-//  Qt5.9 MinGW编译器不识别此静态函数和qApp->clipboard(), bug?
+    md->setData("GraphicsItem",ba);
+//  只有本机的Qt5.9 MinGW编译器不识别此静态函数和qApp->clipboard(),why?
     QClipboard *cb = QApplication::clipboard();
     cb->setMimeData(md);
-
 }
 
 void MyView::Paste()
 {
     QClipboard *cb = QApplication::clipboard();
     const QMimeData * md = cb->mimeData();
-    QByteArray ba = md->data("QGraphicsItem");
+    QByteArray ba = md->data("GraphicsItem");
     if(ba.isEmpty()){
         qDebug()<<"没有复制图元数据";
         return;
     }
     m_scene->clearSelection();
+
     QDataStream s(ba);
     int count;
     s>>count;
-    int type;
 
-    QPointF pos,sceneP;
-    QRectF rec;
-    for(int i=0;i<count;i++)
+
+//    this->getScene()->Import(s,count);
+    for(int i=0;i<=count;i++)
     {
-        s>>rec;
-//        s>>pos;
-//        s>>sceneP;
-//        s>>rec;
+        QString className;
+        s>>className;   //不能直接用字符串
+        if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem" || className=="CrossPt")
+        {
+            qreal x,y,w,h;
+            s >> x;
+            s >> y;
+            s >> w;
+            s >> h;
+            if(className=="QGraphicsEllipseItem")
+            {
+                this->getScene()->addEllipse(pastePos.x(),pastePos.y(),w,h,QPen(QColor(Qt::white)));
+            }
+            else if(className=="QGraphicsRectItem")
+                this->getScene()->addRect(pastePos.x(),pastePos.y(),w,h,QPen(QColor(Qt::white)));
+            else if(className=="CrossPt")
+            {   //圆形边界复制成功，叉号复制到了原点
+                CrossPt *pt = new CrossPt();
+                pt->setRect(QRect(pastePos.x(),pastePos.y(),w,h));
+//                pt->setPos(pastePos);
+                this->getScene()->addItem(pt);
+            }
+        }
     }
-    qDebug()<<"paste"<<rec;
-    QGraphicsEllipseItem *test = new QGraphicsEllipseItem();
-    m_scene->addEllipse(rec,QPen(QColor(Qt::yellow)),QBrush(QColor(Qt::yellow)))->setPos(-80,80);
-    m_scene->addLine(QLineF(QPointF(0,0), QPointF(20,30)));
 }
 
 void MyView::Delete()

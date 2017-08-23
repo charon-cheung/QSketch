@@ -21,7 +21,11 @@ public:
 
     QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
+    void Export(QDataStream& s,QList<QGraphicsItem*> items);
+
     void Load(QDataStream& s);
+    void Import(QDataStream& s,int count);
+    void Paste(QDataStream& s,int count);
 private:
     QGraphicsLineItem* Line;
     QPen p;
@@ -39,7 +43,8 @@ private:
     int space;
     int min_space;
 
-    QGraphicsLineItem  *X,*Y;
+    QGraphicsLineItem  *X, *Y;
+    QGraphicsPolygonItem *ArrowX, *ArrowY;
     QGraphicsEllipseItem *Origin;
 private:
     void setPen();

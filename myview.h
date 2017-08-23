@@ -51,10 +51,10 @@ private:
     AppMode mode;
     QPointF dragStart;
     QGraphicsItem *viewCenter;
-
+    QPointF pastePos;
+    bool copied;
     QList<QGraphicsItem*> chosenItems;
 private:
-    void catchPt(QPointF pt);
     void changeCursor(const QString& shape);
     void changeCursor(Qt::CursorShape shape);
 public slots:
@@ -72,7 +72,8 @@ public slots:
     void Paste();
     void Delete();
     void Redraw();
-
+    void catchPt(QPointF pt);
+    void showInfo();
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);

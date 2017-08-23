@@ -35,5 +35,8 @@
         <file>Icon/pdf.png</file>
         <file>Icon/svg.png</file>
         <file>Icon/picture.png</file>
+        <file>Icon/copy.png</file>
+        <file>Icon/paste.png</file>
+        <file>Icon/info.png</file>
     </qresource>
 </RCC>
