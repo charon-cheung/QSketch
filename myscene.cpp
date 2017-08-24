@@ -24,7 +24,7 @@ void MyScene::InitScene()
 //    画圆心, QPen 是圆的边缘, QBrush是圆的填充
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
                                QBrush(QColor(122,103,238), Qt::SolidPattern) );
-    Origin->setToolTip("圆心半径为3");
+    Origin->setToolTip("原点");
 //    画两个坐标轴
     X = this->addLine(QLineF(QPointF(-width/2+1,0), QPointF(width/2-1,0)), QPen(QColor(139,54,38)));
     Y = this->addLine(QLineF(QPointF(0,-height/2+1),QPointF(0,height/2-1)), QPen(QColor(139,54,38)));
@@ -164,7 +164,7 @@ void MyScene::Import(QDataStream &s, int count)
             else if(className=="CrossPt")
             {
                 CrossPt *pt = new CrossPt();
-                pt->setRect(QRect(x,y,w,h));
+                pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(px,py);
                 this->addItem(pt);
             }
@@ -179,11 +179,6 @@ void MyScene::Import(QDataStream &s, int count)
             this->addLine(x1,y1,x2,y2,QPen(QColor(Qt::white)) );
         }
     }
-}
-
-void MyScene::Paste(QDataStream& s,int count)
-{
-
 }
 
 void MyScene::setPen()

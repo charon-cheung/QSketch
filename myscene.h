@@ -25,7 +25,7 @@ public:
 
     void Load(QDataStream& s);
     void Import(QDataStream& s,int count);
-    void Paste(QDataStream& s,int count);
+
 private:
     QGraphicsLineItem* Line;
     QPen p;

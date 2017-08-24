@@ -9,3 +9,6 @@
 2. 无法完美实现“画图”的效果，第1,2次绘图有问题
 3. 无法用菜单删除多个item，焦点丢失
 5. setAngle()的参数为什么是360-angle?
+6. 只有自定义的CrossPt类调用setPos得到的坐标是场景坐标，Qt类得到的都是图元坐标
+7. QObject::connect: Incompatible sender/receiver arguments
+        QAction::triggered(bool) --> MyView::Paste(QPointF)

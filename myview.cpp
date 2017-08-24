@@ -14,17 +14,16 @@ MyView::MyView(QWidget *parent):
     drawLine = false;
     drawRect = false;
     drawElli = false;
-
+    copied = false;
     this->setDragMode(QGraphicsView::RubberBandDrag);
     this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     //随着鼠标点击，场景总出现几个矩形，暂时去掉
     QRect viewport_rect(0, 0, this->viewport()->width(),
-                        this->viewport()->height() );
+                        this->viewport()->height() );  //98X28
     QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
     viewCenter = new QGraphicsRectItem(visible_scene_rect);
-    qDebug()<<"viewport_rect  "<<viewport_rect;
 
     m_scene = new MyScene(0);
     this->setScene(m_scene);
@@ -66,7 +65,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
     {
     case Qt::MidButton:
         mode = DRAG;
-        dragStart = this->mapToScene(event->pos());
+        dragBegin = this->mapToScene(event->pos());
         changeCursor(Qt::ClosedHandCursor);
         event->accept();
         break;
@@ -76,13 +75,13 @@ void MyView::mousePressEvent(QMouseEvent *event)
         if(!drawLine && !drawPt && !drawRect && !drawElli)
         {
             mode = NORMAL;
+//            if(copied)
 
         }
         else
         {
             mode =EDIT;
-//            qDebug()<<"mode: "<<mode<<"  drawPt"<<drawPt;
-            MyScene * press_scene = this->getScene();
+            MyScene * press_scene = m_scene;
 //            if(drawLine && !drawLineXY &&!drawLineAH
             if(0)
             {
@@ -96,8 +95,9 @@ void MyView::mousePressEvent(QMouseEvent *event)
             else if(drawPt && drawCross)    // 画X样式的点
             {
                 CrossPt *pt = new CrossPt();
-                pt->setRect(QRect(-10, -10, 20, 20));
-                pt->setPos(start);
+                pt->setBoundingRect(QRect(-5, -5, 10, 10));
+                pt->setPos(start);  //不是图元坐标，是场景坐标
+                pt->setSelected(false);
                 press_scene->addItem(pt);
             }
             else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY)
@@ -124,14 +124,15 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     switch (mode) {
     case NORMAL:
     {
-//        QPointF movePt=this->mapToScene(event->pos());
+        mouseMovePos = this->mapToScene(event->pos());
+        qDebug()<<"movePt:"<<mouseMovePos;
         break;  // 需要处理QGraphicsView::mouseMoveEvent
     }
     case DRAG:
     {
         // Calculate the offset to drag relative to scene coordinates.
         dragEnd = this->mapToScene(event->pos());
-        dragTrans = dragStart - dragEnd;
+        dragTrans = dragBegin - dragEnd;
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
         event->accept();
@@ -203,6 +204,11 @@ void MyView::wheelEvent(QWheelEvent *event)
 
 void MyView::keyPressEvent(QKeyEvent *event)
 {
+    if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_C)
+        this->Copy();
+    else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_V)
+        this->Paste();      //还是鼠标右击的位置，必须接受事件
+
     switch(event->key())
     {
     case Qt::Key_Escape:
@@ -223,11 +229,17 @@ void MyView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Delete:
         this->Delete();
         break;
-    case Qt::Key_C:
-        this->Copy();
+    case Qt::Key_Up:
+        this->Translate(UP);
         break;
-    case Qt::Key_V:
-        this->Paste();
+    case Qt::Key_Down:
+        this->Translate(DOWN);
+        break;
+    case Qt::Key_Left:
+        this->Translate(LEFT);
+        break;
+    case Qt::Key_Right:
+        this->Translate(RIGHT);
         break;
     default:
         event->ignore();
@@ -240,12 +252,33 @@ void MyView::catchPt(QPointF pt)
     QPointF f= mapFromScene(pt);
     f = mapToGlobal(f.toPoint());
     QCursor::setPos(f.toPoint());
-    qDebug()<<f;
 }
 
 void MyView::showInfo()
 {
+    chosenItems = m_scene->selectedItems();
+    QString type;
+    QPointF pos;
+    QSize size;
 
+    if(chosenItems.size()==0)   return;
+    foreach (QGraphicsItem* item, chosenItems)
+    {
+        if(item->type()==4)
+        {
+            QGraphicsEllipseItem* ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+//            qDebug()<<ell->pos();   // 图元坐标，一直为(0,0)
+            qDebug()<<ell->rect().x()<<ell->rect().y()<<ell->rect().width()<<ell->rect().height();
+        }
+        else if(item->type()==CrossPt::Type)
+        {
+            type = "X形点";
+            pos=item->pos();
+            size = QSize(2,2);
+            qDebug()<<"坐标:"<<pos;
+        }
+    }
+//    QMessageBox::information(0, "图元信息",QString("图元类型: 1%").arg(type),);
 }
 
 void MyView::setLine()
@@ -338,8 +371,9 @@ void MyView::setPt()
         QPointF pt1 = dlg->getPt();
 
         CrossPt *pt = new CrossPt();
-        pt->setRect(QRect(-10, -10, 20, 20));
+        pt->setBoundingRect(QRect(-5, -5, 10, 10));
         pt->setPos(pt1);
+        pt->setSelected(false);
         m_scene->addItem(pt);
 
 //        m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
@@ -422,6 +456,7 @@ void MyView::ShowContextMenu()
     QAction *Redraw = m.addAction("清空重画");
     QAction *Copy = m.addAction("复制");
     QAction *Paste = m.addAction("黏贴");
+    Paste->setObjectName("Paste");
     QAction* Info = m.addAction("属性");
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
@@ -438,7 +473,7 @@ void MyView::ShowContextMenu()
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
-    connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );    
+    connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
     connect(Info,SIGNAL(triggered(bool)), this, SLOT(showInfo()) );
 
@@ -478,7 +513,9 @@ void MyView::Copy()
 {
     QByteArray ba;
     QDataStream s(&ba,QIODevice::WriteOnly);
-    s<< m_scene->selectedItems().size();
+    int count = m_scene->selectedItems().size();
+    if(count==0)    return;
+    s<< count;
     this->getScene()->Export(s,m_scene->selectedItems());
 
     QMimeData * md = new QMimeData();
@@ -486,6 +523,7 @@ void MyView::Copy()
 //  只有本机的Qt5.9 MinGW编译器不识别此静态函数和qApp->clipboard(),why?
     QClipboard *cb = QApplication::clipboard();
     cb->setMimeData(md);
+    copied = true;
 }
 
 void MyView::Paste()
@@ -498,13 +536,10 @@ void MyView::Paste()
         return;
     }
     m_scene->clearSelection();
-
+    QPointF pos = this->getScenePos();
     QDataStream s(ba);
     int count;
     s>>count;
-
-
-//    this->getScene()->Import(s,count);
     for(int i=0;i<=count;i++)
     {
         QString className;
@@ -526,10 +561,10 @@ void MyView::Paste()
                     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
             else if(className=="CrossPt")
             {
-                //圆形边界粘贴成功，叉号复制到了原点
                 CrossPt *pt = new CrossPt();
-                pt->setRect(QRect(x,y,w,h));
+                pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(pastePos);
+                pt->setSelected(false);
                 this->getScene()->addItem(pt);
             }
         }
@@ -552,7 +587,6 @@ void MyView::Paste()
 
 void MyView::Delete()
 {
-//   不是this->scene(),它是QGraphicsScene.  为什么用selectedItems()不行?
     chosenItems = m_scene->selectedItems();
     if(!chosenItems.size())   return;
     foreach(QGraphicsItem* item, chosenItems)
@@ -570,6 +604,23 @@ void MyView::Redraw()
 {
     m_scene->clear();
     m_scene->InitScene();
+}
+
+void MyView::Translate(int direction)
+{
+    chosenItems = m_scene->selectedItems();
+    if(!chosenItems.size())   return;
+
+    if(direction == UP)
+        m_translate.translate(0, PACE);
+    else if(direction == DOWN)
+        m_translate.translate(0, -PACE);
+    else if(direction == LEFT)
+        m_translate.translate(-PACE, 0);
+    else if(direction == RIGHT)
+        m_translate.translate(PACE, 0);
+    foreach(QGraphicsItem* item, chosenItems)
+        item->setTransform(m_translate);
 }
 
 void MyView::updateCenterRect()
@@ -594,6 +645,16 @@ void MyView::changeCursor(Qt::CursorShape shape)
     QCursor c;
     c.setShape(shape);
     this->viewport()->setCursor(c);
+}
+
+QPointF MyView::getScenePos()
+{
+    QCursor c;
+    QPoint cursorPos = c.pos();
+    QPoint viewPos = this->mapFromGlobal(cursorPos);
+    QPointF scenePos = this->mapToScene(viewPos);
+    return scenePos;
+//    qDebug()<<cursorPos<<viewPos<<scenePos;
 }
 
 void MyView::test()

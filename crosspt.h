@@ -1,9 +1,9 @@
 #ifndef CROSSPT_H
 #define CROSSPT_H
 #include <QGraphicsItem>
+#include <QGraphicsScene>
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
-#include <QDrag>
 #include <QMimeData>
 
 class CrossPt : public QGraphicsItem
@@ -18,15 +18,15 @@ public:
     int type() const;
 
     QRectF rect() const;
-    void setRect(const QRectF &rect);
-    inline void setRect(qreal x, qreal y, qreal w, qreal h);
+    void setBoundingRect(const QRectF &rect);
+    inline void setBoundingRect(qreal x, qreal y, qreal w, qreal h);
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) Q_DECL_OVERRIDE;
 
 private:
     enum {
-        pt_size = 4
+        pt_size = 2
     };
     QPointF pt;
     QRectF m_rect;
@@ -36,6 +36,9 @@ private:
 private:
     void updateRect();
 protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 };
 

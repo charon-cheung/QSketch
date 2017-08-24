@@ -1,9 +1,10 @@
 #include "crosspt.h"
 #include <QPen>
 #include <QBrush>
+#include <QDebug>
 
 CrossPt::CrossPt(QGraphicsItem *parent)
-        :QGraphicsItem(parent)
+    :QGraphicsItem(parent)
 {
     // 可选择、可移动
     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
@@ -11,12 +12,12 @@ CrossPt::CrossPt(QGraphicsItem *parent)
 
 CrossPt::CrossPt(const QRectF &rect, QGraphicsItem *parent)
 {
-    setRect(rect);
+    setBoundingRect(rect);
 }
 
 CrossPt::CrossPt(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent)
 {
-    setRect(x,y,w,h);
+    setBoundingRect(x,y,w,h);
 }
 
 CrossPt::~CrossPt()
@@ -29,9 +30,9 @@ QRectF CrossPt::rect() const
     return m_rect;
 }
 
-void CrossPt::setRect(qreal x, qreal y, qreal w, qreal h)
+void CrossPt::setBoundingRect(qreal x, qreal y, qreal w, qreal h)
 {
-    setRect(QRectF(x, y, w, h));
+    setBoundingRect(QRectF(x, y, w, h));
 }
 
 void CrossPt::updateRect()
@@ -39,13 +40,33 @@ void CrossPt::updateRect()
 
 }
 
+void CrossPt::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(event->button()==Qt::MidButton)  return;
+    if(isSelected())
+        this->setSelected(false);
+    else
+        this->setSelected(true);
+    update();
+    QGraphicsItem::mousePressEvent(event);
+}
+
+void CrossPt::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseMoveEvent(event);
+}
+
+void CrossPt::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseReleaseEvent(event);
+}
+
 int CrossPt::type() const
 {
     return Type;
 }
 
-
-void CrossPt::setRect(const QRectF &rect)
+void CrossPt::setBoundingRect(const QRectF &rect)
 {
     if (m_rect == rect)
         return;
@@ -61,7 +82,6 @@ QRectF CrossPt::boundingRect() const
 {
     if (m_boundingRect.isNull())
         m_boundingRect = m_rect;
-
     return m_boundingRect;
 }
 
@@ -70,19 +90,37 @@ void CrossPt::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    // 反走样
+    QColor c = this->scene()->backgroundBrush().color();
+    //    未选择时的边界矩形样式
+    QPen pen_1;
+    pen_1.setColor(c);
+    //    选择时的边界矩形样式
+    QPen pen_2;
+    pen_2.setColor(Qt::white);
+    pen_2.setStyle(Qt::DashLine);
+    pen_2.setWidthF(0.2);
+    //如何设置虚线的间距 ?
+    QVector<qreal> dashes;
+    dashes <<10<<10<<10<<10;    //个数应为偶数
+    pen_2.setDashPattern(dashes);
+    //QPen::setDashPattern: Pattern not of even length
+    // 反走样,画边界矩形
+    if(!this->isSelected())
+        painter->setPen(pen_1);
+    else
+        painter->setPen(pen_2);
     painter->setRenderHint(QPainter::Antialiasing, true);
-    painter->drawEllipse(m_rect);
-
-    QPen p;
-    p.setWidth(1);
-    p.setColor(QColor(0, 160, 230));
-    p.setBrush(QColor(247, 160, 57));
-
+    painter->drawRect(m_rect);
+    //画两条线
     QPointF p1 = pt+QPoint(pt_size,pt_size);
     QPointF p2 = pt+QPoint(-pt_size,-pt_size);
     QPointF p3 = pt+QPoint(-pt_size,pt_size);
     QPointF p4 = pt+QPoint(pt_size,-pt_size);
+
+    QPen p;
+    p.setWidth(2);
+    p.setColor(QColor(0, 160, 230));
+    p.setBrush(QColor(247, 160, 57));
 
     painter->setPen(p);
     painter->drawLine(QLineF(p1,p2));

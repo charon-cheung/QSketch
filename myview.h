@@ -40,19 +40,28 @@ private:
     };
     QPointF start;
     QPointF end;
-    QMatrix matrix;
-
+    QPointF mouseMovePos;
     enum AppMode
     {
         NORMAL,
         DRAG,
         EDIT
     };
+    enum Direction
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+        PACE
+    };
+
     AppMode mode;
-    QPointF dragStart;
+    QPointF dragBegin;
     QGraphicsItem *viewCenter;
     QPointF pastePos;
     bool copied;
+    QTransform m_translate;
     QList<QGraphicsItem*> chosenItems;
 private:
     void changeCursor(const QString& shape);
@@ -72,12 +81,14 @@ public slots:
     void Paste();
     void Delete();
     void Redraw();
+    void Translate(int direction);
     void catchPt(QPointF pt);
     void showInfo();
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent *event);
 };
