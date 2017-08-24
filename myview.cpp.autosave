@@ -478,7 +478,9 @@ void MyView::Copy()
 {
     QByteArray ba;
     QDataStream s(&ba,QIODevice::WriteOnly);
-    s<< m_scene->selectedItems().size();
+    int count = m_scene->selectedItems().size();
+    if(count==0)    ret
+    s<< 
     this->getScene()->Export(s,m_scene->selectedItems());
 
     QMimeData * md = new QMimeData();
@@ -503,8 +505,6 @@ void MyView::Paste()
     int count;
     s>>count;
 
-
-//    this->getScene()->Import(s,count);
     for(int i=0;i<=count;i++)
     {
         QString className;
@@ -526,7 +526,6 @@ void MyView::Paste()
                     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
             else if(className=="CrossPt")
             {
-                //圆形边界粘贴成功，叉号复制到了原点
                 CrossPt *pt = new CrossPt();
                 pt->setRect(QRect(x,y,w,h));
                 pt->setPos(pastePos);
@@ -552,8 +551,7 @@ void MyView::Paste()
 
 void MyView::Delete()
 {
-//   不是this->scene(),它是QGraphicsScene.  为什么用selectedItems()不行?
-    chosenItems = m_scene->selectedItems();
+    chosenItems = this->getScene()->selectedItems();
     if(!chosenItems.size())   return;
     foreach(QGraphicsItem* item, chosenItems)
     {
