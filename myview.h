@@ -22,9 +22,6 @@ public:
     MyScene* getScene() const;
     void updateCenterRect();
 
-signals:
-    void changeScale(qreal t);
-
 private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
@@ -34,7 +31,7 @@ private:
     bool drawRect, drawRectXY,drawRounded;
     bool drawElli, drawElliXY;
 
-    enum PARAMETER{
+    enum Parameter{
         pt_size = 3,
         line_width = 5
     };
@@ -64,10 +61,12 @@ private:
     QTransform m_translate;
     QList<QGraphicsItem*> chosenItems;
 private:
+    void test();
     void changeCursor(const QString& shape);
     void changeCursor(Qt::CursorShape shape);
+    QPointF getScenePos();
+    void selectAll();
 public slots:
-    void test();
     void setLine();
     void setPt();
     void setRect();
@@ -77,6 +76,7 @@ public slots:
     void setNormal();
     void Locate();   //重置原点
     void Reset();   //重置放缩倍数
+    void Cut();
     void Copy();
     void Paste();
     void Delete();

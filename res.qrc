@@ -38,5 +38,6 @@
         <file>Icon/copy.png</file>
         <file>Icon/paste.png</file>
         <file>Icon/info.png</file>
+        <file>Icon/cut.png</file>
     </qresource>
 </RCC>

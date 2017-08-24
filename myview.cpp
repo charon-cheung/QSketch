@@ -107,8 +107,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
         }
     case Qt::RightButton:
     {
-        if(copied)
-            pastePos = this->mapToScene(event->pos());
+
         break;
     }
     default:
@@ -124,8 +123,6 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     switch (mode) {
     case NORMAL:
     {
-        mouseMovePos = this->mapToScene(event->pos());
-        qDebug()<<"movePt:"<<mouseMovePos;
         break;  // 需要处理QGraphicsView::mouseMoveEvent
     }
     case DRAG:
@@ -206,8 +203,12 @@ void MyView::keyPressEvent(QKeyEvent *event)
 {
     if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_C)
         this->Copy();
+    if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_X)
+        this->Cut();
     else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_V)
-        this->Paste();      //还是鼠标右击的位置，必须接受事件
+        this->Paste();
+    else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_A)
+        this->selectAll();
 
     switch(event->key())
     {
@@ -322,7 +323,7 @@ void MyView::setLine()
         QPointF pt1 = dlg->getPt();
         float angle = dlg->getAngle();
         float length = dlg->getLength();
-        if(pt1==QPointF(0,0))
+        if(pt1==QPointF(0,0) || length==0)
         {
             QMessageBox::warning(0,"出错了","起点的坐标不能为(0,0) !");
             return;
@@ -454,9 +455,9 @@ void MyView::ShowContextMenu()
     QAction *Reset = m.addAction("重置视图");
     QAction *Delete = m.addAction("删除");
     QAction *Redraw = m.addAction("清空重画");
+    QAction *Cut = m.addAction("剪切");
     QAction *Copy = m.addAction("复制");
     QAction *Paste = m.addAction("黏贴");
-    Paste->setObjectName("Paste");
     QAction* Info = m.addAction("属性");
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
@@ -464,6 +465,7 @@ void MyView::ShowContextMenu()
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
+    Cut->setIcon(QIcon(":/Icon/Icon/cut.png"));
     Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
     Paste->setIcon(QIcon(":/Icon/Icon/paste.png"));
     Info->setIcon(QIcon(":/Icon/Icon/info.png"));
@@ -472,16 +474,17 @@ void MyView::ShowContextMenu()
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
+    connect(Cut,SIGNAL(triggered(bool)), this,  SLOT(Cut()) );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
     connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
     connect(Info,SIGNAL(triggered(bool)), this, SLOT(showInfo()) );
 
-    foreach(QGraphicsItem *item, m_scene->selectedItems())
-    {
-        item->setFocus();
-        item->setSelected(true);
-    }
+//    foreach(QGraphicsItem *item, m_scene->selectedItems())
+//    {
+//        item->setFocus();
+//        item->setSelected(true);
+//    }
     m.exec(QCursor::pos());
 }
 
@@ -507,6 +510,12 @@ void MyView::Reset()
 {
     this->resetMatrix();
     this->scale(1,-1);
+}
+
+void MyView::Cut()
+{
+    Copy();
+    Delete();
 }
 
 void MyView::Copy()
@@ -536,7 +545,9 @@ void MyView::Paste()
         return;
     }
     m_scene->clearSelection();
+//    鼠标的当前场景坐标,实际是文字“粘贴”的位置,所以用键盘的效果更好
     QPointF pos = this->getScenePos();
+
     QDataStream s(ba);
     int count;
     s>>count;
@@ -553,17 +564,17 @@ void MyView::Paste()
             s >> h;
             if(className=="QGraphicsEllipseItem")
             {
-                this->getScene()->addEllipse(pastePos.x(),pastePos.y(),w,h,QPen(QColor(Qt::white)))->
+                this->getScene()->addEllipse(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)))->
                         setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
             }
             else if(className=="QGraphicsRectItem")
-                this->getScene()->addRect(pastePos.x(),pastePos.y(),w,h,QPen(QColor(Qt::white)))->
+                this->getScene()->addRect(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)))->
                     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
             else if(className=="CrossPt")
             {
                 CrossPt *pt = new CrossPt();
                 pt->setBoundingRect(QRect(x,y,w,h));
-                pt->setPos(pastePos);
+                pt->setPos(pos);
                 pt->setSelected(false);
                 this->getScene()->addItem(pt);
             }
@@ -578,7 +589,7 @@ void MyView::Paste()
             QGraphicsLineItem *Line = this->getScene()->addLine(x1,y1,x2,y2,QPen(QColor(Qt::white)) );
             QTransform t;
 //            复制的是直线的两个端点，只能平移
-            t.translate(pastePos.x(),pastePos.y());
+            t.translate(pos.x(),pos.y());
             Line->setTransform(t);
             Line->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         }
@@ -646,7 +657,7 @@ void MyView::changeCursor(Qt::CursorShape shape)
     c.setShape(shape);
     this->viewport()->setCursor(c);
 }
-
+//将鼠标的全局坐标转为场景坐标
 QPointF MyView::getScenePos()
 {
     QCursor c;
@@ -655,6 +666,18 @@ QPointF MyView::getScenePos()
     QPointF scenePos = this->mapToScene(viewPos);
     return scenePos;
 //    qDebug()<<cursorPos<<viewPos<<scenePos;
+}
+
+void MyView::selectAll()
+{
+    QList<QGraphicsItem*> all = m_scene->items(m_scene->sceneRect(),
+                       Qt::IntersectsItemShape,Qt::AscendingOrder);
+    foreach (QGraphicsItem* item, all) {
+        if(item->data(0).isNull())  //去掉场景初始化的5个图元
+        {
+            item->setSelected(true);
+        }
+    }
 }
 
 void MyView::test()

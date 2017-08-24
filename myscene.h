@@ -19,7 +19,7 @@ public:
     void InitScene();
     QPen getPen();
 
-    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
+//    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
 

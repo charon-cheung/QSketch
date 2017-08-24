@@ -102,6 +102,7 @@ void MainWindow::on_NewView_triggered()
 
     MyView *newView = new MyView(this);
     newView->setObjectName(name);
+    newView->setFocus();    //获得焦点
     // 坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
     newView->scale(2,-2);
     newView->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
