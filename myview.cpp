@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QGraphicsEllipseItem>
 #include <QGuiApplication>
+#include <QStatusBar>
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
@@ -208,7 +209,10 @@ void MyView::keyPressEvent(QKeyEvent *event)
     else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_V)
         this->Paste();
     else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_A)
+    {
         this->selectAll();
+        showStatus("已经选择所有的图元");
+    }
 
     switch(event->key())
     {
@@ -216,8 +220,11 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->setNormal();
         break;
     case Qt::Key_Home:
+    {
         this->Locate();
         this->Reset();
+        showStatus("重置");
+    }
         break;
     case Qt::Key_Plus:
         this->scale(1.41421, 1.41421);
@@ -231,16 +238,28 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->Delete();
         break;
     case Qt::Key_Up:
+    {
         this->Translate(UP);
+        showStatus("向上平移5个单位");
+    }
         break;
     case Qt::Key_Down:
+    {
         this->Translate(DOWN);
+        showStatus("向下平移5个单位");
+    }
         break;
     case Qt::Key_Left:
+    {
         this->Translate(LEFT);
+        showStatus("向左平移5个单位");
+    }
         break;
     case Qt::Key_Right:
+    {
         this->Translate(RIGHT);
+        showStatus("向右平移5个单位");
+    }
         break;
     default:
         event->ignore();
@@ -496,6 +515,7 @@ void MyView::setNormal()
     drawElli = false;
     drawRect = false;
     changeCursor(Qt::ArrowCursor);
+    showStatus("切换为普通模式");
 }
 
 void MyView::Locate()
@@ -504,6 +524,7 @@ void MyView::Locate()
     this->scale(1, 1);
     this->updateCenterRect();
     catchPt(QPointF(0,0));
+    showStatus("鼠标切换至原点");
 }
 
 void MyView::Reset()
@@ -615,6 +636,7 @@ void MyView::Redraw()
 {
     m_scene->clear();
     m_scene->InitScene();
+    showStatus("清空画面");
 }
 
 void MyView::Translate(int direction)
@@ -676,6 +698,19 @@ void MyView::selectAll()
         if(item->data(0).isNull())  //去掉场景初始化的5个图元
         {
             item->setSelected(true);
+        }
+    }
+}
+
+void MyView::showStatus(QString msg)
+{
+    QObjectList list = this->topLevelWidget()->children();
+    foreach(QObject* obj, list)
+    {
+        if(obj->objectName()=="statusBar")
+        {
+            QStatusBar *status = qobject_cast<QStatusBar*>(obj);
+            status->showMessage(msg);
         }
     }
 }

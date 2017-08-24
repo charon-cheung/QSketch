@@ -41,7 +41,6 @@ void MainWindow::InitUi()
     ui->tabView->setTabsClosable(true);
     ui->tabView->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
-//    ui->DrawPt->setFocusPolicy(Qt::NoFocus);
 
     QMenu* ptMenu = new QMenu(this);
     ptActions<< ui->act1 << ui->act2 << ui->act3;
@@ -202,7 +201,16 @@ void MainWindow::on_action_Exit_triggered()
 
 void MainWindow::on_startBtn_clicked()
 {
-    ui->tabView->setCurrentIndex(1);
+    MyView *newView = new MyView(this);
+    newView->setObjectName("画面1.gph");
+    newView->setFocus();    //获得焦点
+    newView->scale(2,-2);
+    newView->updateCenterRect();
+
+    ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
+    ui->tabView->setCurrentWidget(newView);
+
+    InitConnect(newView);
 }
 
 void MainWindow::on_action_Pic_triggered()

@@ -66,6 +66,8 @@ private:
     void changeCursor(Qt::CursorShape shape);
     QPointF getScenePos();
     void selectAll();
+    void showStatus(QString msg);
+
 public slots:
     void setLine();
     void setPt();
