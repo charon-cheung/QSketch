@@ -50,7 +50,7 @@ private:
         DOWN,
         LEFT,
         RIGHT,
-        PACE
+        PACE =5
     };
 
     AppMode mode;
@@ -59,14 +59,16 @@ private:
     QPointF pastePos;
     bool copied;
     QTransform m_translate;
+    bool m_movable;
     QList<QGraphicsItem*> chosenItems;
 private:
     void test();
     void changeCursor(const QString& shape);
     void changeCursor(Qt::CursorShape shape);
     QPointF getScenePos();
-    void selectAll();
+    void selectAll(bool flag);
     void showStatus(QString msg);
+    QString getItemInfo(QString type, QPointF pos, QSizeF size);
 
 public slots:
     void setLine();
@@ -78,6 +80,8 @@ public slots:
     void setNormal();
     void Locate();   //重置原点
     void Reset();   //重置放缩倍数
+    void SetMovable(bool flag);
+
     void Cut();
     void Copy();
     void Paste();
@@ -85,7 +89,7 @@ public slots:
     void Redraw();
     void Translate(int direction);
     void catchPt(QPointF pt);
-    void showInfo();
+    void showItemsInfo();
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);

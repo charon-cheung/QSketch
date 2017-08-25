@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QDataStream>
 #include <QtPrintSupport/QPrinter>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     InitUi();
     InitDir();
-
+    m_save = false;
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
 }
@@ -92,6 +93,38 @@ void MainWindow::InitDir()
     return;
 }
 
+void MainWindow::ShowSaveBox()
+{
+    int index = ui->tabView->currentIndex();
+    QWidget* w = ui->tabView->widget(index);
+
+    QMessageBox msg;
+    msg.setText(tr("      是否需要保存 ?"));
+
+    QPushButton* Save = msg.addButton(tr("保存"), QMessageBox::ActionRole);
+    QPushButton* NotSave = msg.addButton(tr("不保存"), QMessageBox::ActionRole);
+    QPushButton* Cancel = msg.addButton(tr("取消"), QMessageBox::ActionRole);
+    //    不显示最大化和最小化按钮,必须用两行完成
+    msg.setWindowFlags(msg.windowFlags() & ~Qt::WindowMinMaxButtonsHint);
+    msg.setWindowFlags(msg.windowFlags() | Qt::WindowStaysOnTopHint);
+    msg.exec();
+
+    if(msg.clickedButton() == Save)
+    {
+        this->on_Save_triggered();
+        ui->tabView->removeTab(index);
+    }
+    else if (msg.clickedButton() == NotSave)
+    {
+        foreach(QObject *obj, w->children() )
+            if(obj->inherits("QGraphicsView") )
+                delete obj;
+        ui->tabView->removeTab(index);
+    }
+    else if (msg.clickedButton() == Cancel)
+        msg.close();
+}
+
 void MainWindow::on_NewView_triggered()
 {
     QString fullName = QFileDialog::getSaveFileName(this, tr("新建画面"),
@@ -122,7 +155,7 @@ void MainWindow::on_Open_triggered()
     QString fileName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
     if(fileName.isEmpty())      return;
     QFile f(fileName);
-    if(!f.open(QIODevice::ReadOnly)){
+    if(!f.open(QIODevice::ReadWrite)){
         qDebug()<<"画面文件读取失败："<<fileName;
         return ;
     }
@@ -159,6 +192,7 @@ void MainWindow::on_Save_triggered()
     MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
     view->getScene()->Save(ds);
     f.close();
+    m_save = true;
 }
 
 void MainWindow::on_Print_triggered()
@@ -174,10 +208,15 @@ void MainWindow::on_Print_triggered()
 void MainWindow::on_tabView_tabCloseRequested(int index)
 {
     QWidget* w = ui->tabView->widget(index);
-    foreach(QObject *obj, w->children() )
-        if(obj->inherits("QGraphicsView") )
-            delete obj;
-    ui->tabView->removeTab(index);
+    if(m_save)
+    {
+        foreach(QObject *obj, w->children() )
+            if(obj->inherits("QGraphicsView") )
+                delete obj;
+        ui->tabView->removeTab(index);
+    }
+    else
+        ShowSaveBox();
 }
 
 void MainWindow::on_action_Current_triggered()

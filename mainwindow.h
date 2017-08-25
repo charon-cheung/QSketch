@@ -64,12 +64,12 @@ private:
     QList<QAction*> lineActions;
     QList<QAction*> rectActions;
     QList<QAction*> ellipseActions;
-//    QGraphicsLineItem* Line;
-
+    bool m_save;
 private:
     void InitUi();
     void InitConnect(MyView* view);
     void InitDir();
+    void ShowSaveBox();
 protected:
 
 };

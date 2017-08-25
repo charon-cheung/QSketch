@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QDoubleValidator>
+#include <myscene.h>
+
 namespace Ui {
 class PosDialog;
 }
@@ -32,7 +34,7 @@ private slots:
 
 private:
     Ui::PosDialog *ui;
-    QDoubleValidator* validator, *positive;
+    QDoubleValidator *X, *Y, *Positive,*Angle;
     QPointF pt1,pt2;
     int angle,length;
 };

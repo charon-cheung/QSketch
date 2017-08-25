@@ -4,7 +4,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
-#include <QMimeData>
+#include <QGraphicsSceneEvent>
 
 class CrossPt : public QGraphicsItem
 {
@@ -39,7 +39,6 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
 };
 
 #endif // CROSSPT_H

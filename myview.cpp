@@ -59,7 +59,7 @@ MyScene *MyView::getScene() const
 {
     return m_scene;
 }
-#if 1
+
 void MyView::mousePressEvent(QMouseEvent *event)
 {
     switch(event->button())
@@ -67,7 +67,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
     case Qt::MidButton:
         mode = DRAG;
         dragBegin = this->mapToScene(event->pos());
-        changeCursor(Qt::ClosedHandCursor);
+        changeCursor("drag");
+        showStatus("当前为平移模式");
         event->accept();
         break;
     case Qt::LeftButton:
@@ -76,13 +77,11 @@ void MyView::mousePressEvent(QMouseEvent *event)
         if(!drawLine && !drawPt && !drawRect && !drawElli)
         {
             mode = NORMAL;
-//            if(copied)
-
         }
         else
         {
             mode =EDIT;
-            MyScene * press_scene = m_scene;
+            MyScene * press_scene = this->getScene();
 //            if(drawLine && !drawLineXY &&!drawLineAH
             if(0)
             {
@@ -91,7 +90,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
             {
                 press_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
                                         QPen(QColor(Qt::white)),
-                                        QBrush(Qt::white,Qt::SolidPattern) )->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+                                        QBrush(Qt::white,Qt::SolidPattern) )->setFlag(QGraphicsItem::ItemIsSelectable);
             }
             else if(drawPt && drawCross)    // 画X样式的点
             {
@@ -184,7 +183,7 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     updateCenterRect();
     QGraphicsView::mouseReleaseEvent(event);
 }
-#endif
+
 //视图放大和缩小
 void MyView::wheelEvent(QWheelEvent *event)
 {
@@ -210,7 +209,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->Paste();
     else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_A)
     {
-        this->selectAll();
+        this->selectAll(true);
         showStatus("已经选择所有的图元");
     }
 
@@ -218,6 +217,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
     {
     case Qt::Key_Escape:
         this->setNormal();
+        this->selectAll(false);
         break;
     case Qt::Key_Home:
     {
@@ -233,6 +233,15 @@ void MyView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Minus:
         this->scale(0.70711, 0.70711);
         this->updateCenterRect();
+        break;
+    case Qt::Key_M :
+        if(m_movable)
+            this->SetMovable(false);
+        else
+            this->SetMovable(true);
+        break;
+    case Qt::Key_N :
+        this->SetMovable(false);
         break;
     case Qt::Key_Delete:
         this->Delete();
@@ -265,6 +274,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         event->ignore();
     }
 }
+
 //捕捉点,鼠标定位到某个点对应的全局坐标
 void MyView::catchPt(QPointF pt)
 {
@@ -274,31 +284,70 @@ void MyView::catchPt(QPointF pt)
     QCursor::setPos(f.toPoint());
 }
 
-void MyView::showInfo()
+void MyView::showItemsInfo()
 {
     chosenItems = m_scene->selectedItems();
     QString type;
     QPointF pos;
-    QSize size;
+    QSizeF size;
+    QString info;
 
     if(chosenItems.size()==0)   return;
     foreach (QGraphicsItem* item, chosenItems)
     {
-        if(item->type()==4)
+        switch(item->type())
         {
-            QGraphicsEllipseItem* ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-//            qDebug()<<ell->pos();   // 图元坐标，一直为(0,0)
-            qDebug()<<ell->rect().x()<<ell->rect().y()<<ell->rect().width()<<ell->rect().height();
+        case 3:
+            {
+                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+                type = "矩形";
+                pos = R->rect().center();
+                size = R->rect().size();
+                info = getItemInfo(type, pos, size);
+                break;
+            }
+            case 4:
+            {
+                QGraphicsEllipseItem* Ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+//                qDebug()<<Ell->pos();   // 图元坐标，一直为(0,0)
+                type = "椭圆";
+                pos = Ell->rect().center(); // 场景坐标
+                qDebug()<<"椭圆"<<pos;
+                size = Ell->rect().size();
+                info = getItemInfo(type, pos, size);
+                break;
+            }
+            case CrossPt::Type :
+            {
+                type = "X形点";
+                pos = item->pos();
+                size = QSize(2,2);
+                info = getItemInfo(type, pos, size);
+                break;
+            }
+        case QGraphicsLineItem::Type :
+        {
+            QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(item);
+            qreal x1=L->line().p1().x();
+            qreal y1=L->line().p1().y();
+            qreal x2=L->line().p2().x();
+            qreal y2=L->line().p2().y();
+            qreal length = L->line().length();
+            qreal angle = 360 - L->line().angle();
+            if(angle > 360)   angle -= 360;
+
+            type = "直线";
+            info =  QString("图元类型: %1 \n").arg(type);
+            info += QString("两个点的坐标: (%2 . %3) 和 (%4 . %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
+            info += QString("直线长度: %4   直线角度: %5").arg(length).arg(angle);
+            break;
         }
-        else if(item->type()==CrossPt::Type)
-        {
-            type = "X形点";
-            pos=item->pos();
-            size = QSize(2,2);
-            qDebug()<<"坐标:"<<pos;
+        default:
+            break;
         }
     }
-//    QMessageBox::information(0, "图元信息",QString("图元类型: 1%").arg(type),);
+    QMessageBox::information(0, "图元信息",info);
+    QMessageBox::information(0, "第二",info);
 }
 
 void MyView::setLine()
@@ -307,6 +356,9 @@ void MyView::setLine()
     drawPt=false;
     drawRect=false;
     drawElli=false;
+    changeCursor("cross");
+    showStatus("当前为编辑模式");
+
     if(sender()->objectName() == "actLine_1")
     {
         drawLineXY=false;
@@ -329,7 +381,7 @@ void MyView::setLine()
         }
         m_scene->addLine(QLineF(list.at(0), list.at(1)),
                          QPen(QColor(Qt::white)))->
-                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+                setFlag(QGraphicsItem::ItemIsSelectable);
     }
     else if(sender()->objectName() == "actLine_3")
     {
@@ -357,7 +409,7 @@ void MyView::setLine()
             return;
         }
         m_scene->addLine(line, QPen(QColor(Qt::white)))->
-                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+                setFlag(QGraphicsItem::ItemIsSelectable);
     }
 }
 
@@ -368,6 +420,8 @@ void MyView::setPt()
     drawRect=false;
     drawElli=false;
     changeCursor("cross");
+    showStatus("当前为编辑模式");
+
     if(sender()->objectName() == "act1")
     {
         drawCirPt=true;
@@ -399,7 +453,7 @@ void MyView::setPt()
 //        m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
 //                            QPen(QColor(Qt::white)),
 //                            QBrush(Qt::white,Qt::SolidPattern))->
-//                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+//                setFlag(QGraphicsItem::ItemIsSelectable);
     }
 }
 
@@ -410,6 +464,8 @@ void MyView::setRect()
     drawRect=true;
     drawElli=false;
     changeCursor("cross");
+    showStatus("当前为编辑模式");
+
     if(sender()->objectName()=="actRect_1")
     {
         drawRectXY=false;
@@ -428,7 +484,7 @@ void MyView::setRect()
 //        因为视图对y轴镜像，直接绘图pt是矩形的左下顶点，需要变换
         m_scene->addRect(pt.x(),pt.y()-value[1],
                 value[0],value[1],QPen(QColor(Qt::white)) )->
-                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+                setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
     }
     else if(sender()->objectName()=="actRect_3")
@@ -446,6 +502,8 @@ void MyView::setEllipse()
     drawRect=false;
     drawElli=true;
     changeCursor("cross");
+    showStatus("当前为编辑模式");
+
     if(sender()->objectName()=="actEllipse_1")
     {
         drawElliXY=false;
@@ -461,7 +519,7 @@ void MyView::setEllipse()
 //        因为视图对y轴镜像，所以pt是矩形的左下顶点,需要变换
         m_scene->addEllipse(pt.x()-value[0]/2, pt.y()-value[1]/2,
                 value[0], value[1], QPen(QColor(Qt::white)))->
-                setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+                setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
     }
 }
@@ -472,6 +530,7 @@ void MyView::ShowContextMenu()
     QAction *Normal = m.addAction("重置为普通模式");
     QAction *Locate = m.addAction("定位到原点");
     QAction *Reset = m.addAction("重置视图");
+    QAction *Movable = m.addAction("设置为可动");
     QAction *Delete = m.addAction("删除");
     QAction *Redraw = m.addAction("清空重画");
     QAction *Cut = m.addAction("剪切");
@@ -482,6 +541,7 @@ void MyView::ShowContextMenu()
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
+    Movable->setIcon(QIcon(":/Shape/Shape/movable.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
     Cut->setIcon(QIcon(":/Icon/Icon/cut.png"));
@@ -492,18 +552,14 @@ void MyView::ShowContextMenu()
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
+    connect(Movable,SIGNAL(triggered(bool)), this,  SLOT(SetMovable(bool)) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
     connect(Cut,SIGNAL(triggered(bool)), this,  SLOT(Cut()) );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
     connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
-    connect(Info,SIGNAL(triggered(bool)), this, SLOT(showInfo()) );
+    connect(Info,SIGNAL(triggered(bool)), this, SLOT(showItemsInfo()) );
 
-//    foreach(QGraphicsItem *item, m_scene->selectedItems())
-//    {
-//        item->setFocus();
-//        item->setSelected(true);
-//    }
     m.exec(QCursor::pos());
 }
 
@@ -531,6 +587,26 @@ void MyView::Reset()
 {
     this->resetMatrix();
     this->scale(1,-1);
+}
+
+void MyView::SetMovable(bool flag)
+{
+    chosenItems = m_scene->selectedItems();
+    if(!chosenItems.size())   return;
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        item->setFlag(QGraphicsItem::ItemIsMovable, flag);
+        if(item->flags()==( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable ))
+        {
+            m_movable = true;
+            showStatus("当前所选图元已经可拖动");
+        }
+        else
+        {
+            m_movable = false;
+            showStatus("当前所选图元无法再拖动");
+        }
+    }
 }
 
 void MyView::Cut()
@@ -586,11 +662,11 @@ void MyView::Paste()
             if(className=="QGraphicsEllipseItem")
             {
                 this->getScene()->addEllipse(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)))->
-                        setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+                        setFlag(QGraphicsItem::ItemIsSelectable);
             }
             else if(className=="QGraphicsRectItem")
                 this->getScene()->addRect(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)))->
-                    setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+                    setFlag(QGraphicsItem::ItemIsSelectable);
             else if(className=="CrossPt")
             {
                 CrossPt *pt = new CrossPt();
@@ -612,7 +688,7 @@ void MyView::Paste()
 //            复制的是直线的两个端点，只能平移
             t.translate(pos.x(),pos.y());
             Line->setTransform(t);
-            Line->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+            Line->setFlag(QGraphicsItem::ItemIsSelectable);
         }
     }
 }
@@ -653,7 +729,10 @@ void MyView::Translate(int direction)
     else if(direction == RIGHT)
         m_translate.translate(PACE, 0);
     foreach(QGraphicsItem* item, chosenItems)
+    {
         item->setTransform(m_translate);
+    }
+//    qDebug()<<item->mapToScene(item->pos());  //不是场景坐标,是item->scenePos();初始为(0,0),每向右平移，坐标就增加(5,0)
 }
 
 void MyView::updateCenterRect()
@@ -679,6 +758,7 @@ void MyView::changeCursor(Qt::CursorShape shape)
     c.setShape(shape);
     this->viewport()->setCursor(c);
 }
+
 //将鼠标的全局坐标转为场景坐标
 QPointF MyView::getScenePos()
 {
@@ -690,14 +770,14 @@ QPointF MyView::getScenePos()
 //    qDebug()<<cursorPos<<viewPos<<scenePos;
 }
 
-void MyView::selectAll()
+void MyView::selectAll(bool flag)
 {
     QList<QGraphicsItem*> all = m_scene->items(m_scene->sceneRect(),
                        Qt::IntersectsItemShape,Qt::AscendingOrder);
     foreach (QGraphicsItem* item, all) {
         if(item->data(0).isNull())  //去掉场景初始化的5个图元
         {
-            item->setSelected(true);
+            item->setSelected(flag);
         }
     }
 }
@@ -713,6 +793,15 @@ void MyView::showStatus(QString msg)
             status->showMessage(msg);
         }
     }
+}
+
+QString MyView::getItemInfo(QString type, QPointF pos, QSizeF size)
+{
+    QString info;
+    info = QString("图元类型: %1 \n").arg(type);
+    info += QString("图元坐标: (%2 . %3)     \n").arg(pos.x()).arg(pos.y());
+    info += QString("图元大小: %4 X %5").arg(size.width()).arg(size.height());
+    return info;
 }
 
 void MyView::test()

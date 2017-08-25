@@ -8,6 +8,8 @@
         <file>Shape/rectangle.png</file>
         <file>Shape/text.png</file>
         <file>Shape/cross.png</file>
+        <file>Shape/drag.png</file>
+        <file>Shape/movable.png</file>
     </qresource>
     <qresource prefix="/Icon">
         <file>Icon/editor.png</file>

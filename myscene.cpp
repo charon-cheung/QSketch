@@ -34,6 +34,7 @@ void MyScene::InitScene()
     poly_Y<<QPointF(0, 80)<<QPointF(3, 72)<<QPointF(-3, 72);
     ArrowX = this->addPolygon(poly_X,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
     ArrowY = this->addPolygon(poly_Y,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
+
     // 给数据, 用于跟添加的图元区分
     Origin->setData(0,"origin");
     X->setData(0,"x");
@@ -156,7 +157,7 @@ void MyScene::Import(QDataStream &s, int count)
             s >> px;
             s >> py;
 //            qDebug()<<px<<"  "<<py;
-//            没有设置Flags
+//            暂时没有设置Flags
             if(className=="QGraphicsEllipseItem")
                 this->addEllipse(x,y,w,h,QPen(QColor(Qt::white)))->setPos(px,py);
             else if(className=="QGraphicsRectItem")

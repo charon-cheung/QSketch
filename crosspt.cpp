@@ -6,8 +6,8 @@
 CrossPt::CrossPt(QGraphicsItem *parent)
     :QGraphicsItem(parent)
 {
-    // 可选择、可移动
-    setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+    // 可选择
+    setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
 CrossPt::CrossPt(const QRectF &rect, QGraphicsItem *parent)
@@ -42,7 +42,7 @@ void CrossPt::updateRect()
 
 void CrossPt::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(event->button()==Qt::MidButton)  return;
+    if(event->button() != Qt::LeftButton)  return;
     if(isSelected())
         this->setSelected(false);
     else
@@ -53,11 +53,12 @@ void CrossPt::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void CrossPt::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    QGraphicsItem::mouseMoveEvent(event);
+//    QGraphicsItem::mouseMoveEvent(event);
 }
 
 void CrossPt::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    this->setSelected(false);
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -99,11 +100,11 @@ void CrossPt::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     pen_2.setColor(Qt::white);
     pen_2.setStyle(Qt::DashLine);
     pen_2.setWidthF(0.2);
-    //如何设置虚线的间距 ?
+
     QVector<qreal> dashes;
-    dashes <<10<<10<<10<<10;    //个数应为偶数
+    dashes <<15<<15<<15<<15;    //个数应为偶数
     pen_2.setDashPattern(dashes);
-    //QPen::setDashPattern: Pattern not of even length
+
     // 反走样,画边界矩形
     if(!this->isSelected())
         painter->setPen(pen_1);

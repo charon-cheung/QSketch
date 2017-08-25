@@ -13,12 +13,16 @@ class MyScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
+    enum SIZE{
+        width = 1200,
+        height = 800
+    };
+public:
     explicit MyScene(QObject *parent = Q_NULLPTR);
     virtual ~MyScene();
 
     void InitScene();
     QPen getPen();
-
 //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
@@ -29,10 +33,6 @@ public:
 private:
     QGraphicsLineItem* Line;
     QPen p;
-    enum SIZE{
-        width = 1200,
-        height = 800
-    };
     enum GridMode
     {
         ALL,
