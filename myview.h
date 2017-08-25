@@ -66,7 +66,7 @@ private:
     void changeCursor(const QString& shape);
     void changeCursor(Qt::CursorShape shape);
     QPointF getScenePos();
-    void selectAll(bool flag);
+    void selectAll(bool state);
     void showStatus(QString msg);
     QString getItemInfo(QString type, QPointF pos, QSizeF size);
 
@@ -80,7 +80,7 @@ public slots:
     void setNormal();
     void Locate();   //重置原点
     void Reset();   //重置放缩倍数
-    void SetMovable(bool flag);
+    void SetMovable(bool state);
 
     void Cut();
     void Copy();

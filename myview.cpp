@@ -1,11 +1,12 @@
 #include "myview.h"
 #include <QtMath>
 #include <QMenu>
-#include <crosspt.h>
 #include <QMessageBox>
 #include <QGraphicsEllipseItem>
 #include <QGuiApplication>
 #include <QStatusBar>
+#include <crosspt.h>
+#include <circlept.h>
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
@@ -88,16 +89,22 @@ void MyView::mousePressEvent(QMouseEvent *event)
             }
             else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
             {
-                press_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
-                                        QPen(QColor(Qt::white)),
-                                        QBrush(Qt::white,Qt::SolidPattern) )->setFlag(QGraphicsItem::ItemIsSelectable);
+//                press_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
+//                                        QPen(QColor(Qt::white)),
+//                                        QBrush(Qt::white,Qt::SolidPattern) )->
+//                            setFlag(QGraphicsItem::ItemIsSelectable);
+                CirclePt *pt = new CirclePt();
+//                场景对y轴对称,所以不是(-5,5,10,10),取下左点
+                pt->setBoundingRect(QRect(-5, -5, 10, 10));
+                pt->setPos(start);  //这里不是图元坐标，是场景坐标
+                press_scene->addItem(pt);
             }
             else if(drawPt && drawCross)    // 画X样式的点
             {
                 CrossPt *pt = new CrossPt();
                 pt->setBoundingRect(QRect(-5, -5, 10, 10));
-                pt->setPos(start);  //不是图元坐标，是场景坐标
-                pt->setSelected(false);
+                pt->setPos(start);
+//                pt->setSelected(false);
                 press_scene->addItem(pt);
             }
             else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY)
@@ -105,11 +112,11 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 mode = NORMAL;
             }
         }
-    case Qt::RightButton:
-    {
+//    case Qt::RightButton:
+//    {
 
-        break;
-    }
+//        break;
+//    }
     default:
         event->ignore();
         break;
@@ -240,8 +247,8 @@ void MyView::keyPressEvent(QKeyEvent *event)
         else
             this->SetMovable(true);
         break;
-    case Qt::Key_N :
-        this->SetMovable(false);
+    case Qt::Key_R :
+        this->showItemsInfo();
         break;
     case Qt::Key_Delete:
         this->Delete();
@@ -275,7 +282,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
     }
 }
 
-//捕捉点,鼠标定位到某个点对应的全局坐标
+//捕捉点,鼠标定位到某个场景点对应的全局坐标
 void MyView::catchPt(QPointF pt)
 {
     //场景坐标转全局坐标：先转为视图坐标，再转为全局坐标
@@ -347,7 +354,7 @@ void MyView::showItemsInfo()
         }
     }
     QMessageBox::information(0, "图元信息",info);
-    QMessageBox::information(0, "第二",info);
+//    QMessageBox::information(0, "第二",info);
 }
 
 void MyView::setLine()
@@ -589,13 +596,13 @@ void MyView::Reset()
     this->scale(1,-1);
 }
 
-void MyView::SetMovable(bool flag)
+void MyView::SetMovable(bool state)
 {
     chosenItems = m_scene->selectedItems();
     if(!chosenItems.size())   return;
     foreach(QGraphicsItem* item, chosenItems)
     {
-        item->setFlag(QGraphicsItem::ItemIsMovable, flag);
+        item->setFlag(QGraphicsItem::ItemIsMovable, state);
         if(item->flags()==( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable ))
         {
             m_movable = true;
@@ -770,14 +777,14 @@ QPointF MyView::getScenePos()
 //    qDebug()<<cursorPos<<viewPos<<scenePos;
 }
 
-void MyView::selectAll(bool flag)
+void MyView::selectAll(bool state)
 {
     QList<QGraphicsItem*> all = m_scene->items(m_scene->sceneRect(),
                        Qt::IntersectsItemShape,Qt::AscendingOrder);
     foreach (QGraphicsItem* item, all) {
         if(item->data(0).isNull())  //去掉场景初始化的5个图元
         {
-            item->setSelected(flag);
+            item->setSelected(state);
         }
     }
 }

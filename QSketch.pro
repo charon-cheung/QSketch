@@ -43,14 +43,16 @@ SOURCES += \
     myview.cpp \
     myscene.cpp \
     posdialog.cpp \
-    crosspt.cpp
+    crosspt.cpp \
+    circlept.cpp
 
 HEADERS += \
         mainwindow.h \
     myview.h \
     myscene.h \
     posdialog.h \
-    crosspt.h
+    crosspt.h \
+    circlept.h
 
 FORMS += \
         mainwindow.ui \

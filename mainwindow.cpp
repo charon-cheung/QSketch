@@ -160,11 +160,10 @@ void MainWindow::on_Open_triggered()
         return ;
     }
     QDataStream ds(&f);
-    MyScene *doc = new MyScene(0);
-    doc->Load(ds);
-
     MyView *openView = new MyView(this);
-    openView->setScene(doc);
+    //MyView已经包含了一个MyScene对象,不能再定义一个对象,否则打开的是另一个场景,无法编辑
+    openView->getScene()->Load(ds);
+
     fileName.remove(dirPath+"/Files/");
     openView->setObjectName(fileName);
     openView->scale(2,-2);
