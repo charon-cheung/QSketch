@@ -20,7 +20,6 @@
         <file>Icon/delete.png</file>
         <file>Icon/normal.png</file>
         <file>Icon/save.png</file>
-        <file>Icon/redraw.png</file>
         <file>Icon/save_as.png</file>
         <file>Icon/open.png</file>
         <file>Icon/new.png</file>
@@ -41,5 +40,6 @@
         <file>Icon/paste.png</file>
         <file>Icon/info.png</file>
         <file>Icon/cut.png</file>
+        <file>Icon/redraw.png</file>
     </qresource>
 </RCC>

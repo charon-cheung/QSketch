@@ -2,9 +2,10 @@
 #include <QtMath>
 #include <QMenu>
 #include <QMessageBox>
-#include <QGraphicsEllipseItem>
+//#include <QGraphicsEllipseItem>
 #include <QGuiApplication>
 #include <QStatusBar>
+#include <QDebug>
 #include <crosspt.h>
 #include <circlept.h>
 
@@ -17,6 +18,7 @@ MyView::MyView(QWidget *parent):
     drawRect = false;
     drawElli = false;
     copied = false;
+    m_movable = false;
     this->setDragMode(QGraphicsView::RubberBandDrag);
     this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -89,10 +91,6 @@ void MyView::mousePressEvent(QMouseEvent *event)
             }
             else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
             {
-//                press_scene->addEllipse(start.x()-pt_size, start.y()-pt_size, 2*pt_size, 2*pt_size,
-//                                        QPen(QColor(Qt::white)),
-//                                        QBrush(Qt::white,Qt::SolidPattern) )->
-//                            setFlag(QGraphicsItem::ItemIsSelectable);
                 CirclePt *pt = new CirclePt();
 //                场景对y轴对称,所以不是(-5,5,10,10),取下左点
                 pt->setBoundingRect(QRect(-5, -5, 10, 10));
@@ -332,6 +330,14 @@ void MyView::showItemsInfo()
                 info = getItemInfo(type, pos, size);
                 break;
             }
+        case CirclePt::Type :
+        {
+            type = "圆形点";
+            pos = item->pos();
+            size = QSize(2,2);
+            info = getItemInfo(type, pos, size);
+            break;
+        }
         case QGraphicsLineItem::Type :
         {
             QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(item);
@@ -451,16 +457,10 @@ void MyView::setPt()
         if(dlg->exec() != QDialog::Accepted)    return;
         QPointF pt1 = dlg->getPt();
 
-        CrossPt *pt = new CrossPt();
+        CirclePt *pt = new CirclePt();
         pt->setBoundingRect(QRect(-5, -5, 10, 10));
         pt->setPos(pt1);
-        pt->setSelected(false);
         m_scene->addItem(pt);
-
-//        m_scene->addEllipse(pt1.x()-pt_size, pt1.y()-pt_size, 2*pt_size, 2*pt_size,
-//                            QPen(QColor(Qt::white)),
-//                            QBrush(Qt::white,Qt::SolidPattern))->
-//                setFlag(QGraphicsItem::ItemIsSelectable);
     }
 }
 
@@ -593,7 +593,7 @@ void MyView::Locate()
 void MyView::Reset()
 {
     this->resetMatrix();
-    this->scale(1,-1);
+    this->scale(2,-2);
 }
 
 void MyView::SetMovable(bool state)
@@ -659,7 +659,8 @@ void MyView::Paste()
     {
         QString className;
         s>>className;   //不能直接用字符串
-        if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem" || className=="CrossPt")
+        if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem"
+                || className=="CrossPt"|| className=="CirclePt")
         {
             qreal x,y,w,h;
             s >> x;
@@ -679,7 +680,13 @@ void MyView::Paste()
                 CrossPt *pt = new CrossPt();
                 pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(pos);
-                pt->setSelected(false);
+                this->getScene()->addItem(pt);
+            }
+            else if(className=="CirclePt")
+            {
+                CirclePt *pt = new CirclePt();
+                pt->setBoundingRect(QRect(x,y,w,h));
+                pt->setPos(pos);
                 this->getScene()->addItem(pt);
             }
         }

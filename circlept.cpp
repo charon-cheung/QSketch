@@ -40,6 +40,7 @@ void CirclePt::updateRect()
 
 }
 
+//三个函数如果不加父类的事件,无法实现拖动、Ctrl多选
 void CirclePt::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(event->button() != Qt::LeftButton)  return;
@@ -53,13 +54,13 @@ void CirclePt::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void CirclePt::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-//    QGraphicsItem::mouseMoveEvent(event);
+    QGraphicsItem::mouseMoveEvent(event);
 }
 
 void CirclePt::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 //    this->setSelected(false);
-//    QGraphicsItem::mouseReleaseEvent(event);
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 int CirclePt::type() const

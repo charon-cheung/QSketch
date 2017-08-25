@@ -68,9 +68,9 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             continue;
         }
         QString className;
-        if(item->type()==3 || item->type()==4 || item->type()==CrossPt::Type)     //矩形
+        if(item->type()==3 || item->type()==4 || item->type()==CrossPt::Type ||
+                item->type()==CirclePt::Type )
         {
-//            QGraphicsItem *rectangle = item;
             if(item->type()==3)
             {
                 className = "QGraphicsRectItem";
@@ -99,6 +99,18 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             {
                 className = "CrossPt";
                 CrossPt* rectangle = qgraphicsitem_cast<CrossPt*>(item);
+                s<< className;
+                s<< rectangle->rect().x();
+                s<< rectangle->rect().y();
+                s<< rectangle->rect().width();
+                s<< rectangle->rect().height();
+                s<< rectangle->pos().x();
+                s<< rectangle->pos().y();
+            }
+            else if(item->type()== CirclePt::Type)
+            {
+                className = "CirclePt";
+                CirclePt* rectangle = qgraphicsitem_cast<CirclePt*>(item);
                 s<< className;
                 s<< rectangle->rect().x();
                 s<< rectangle->rect().y();
@@ -145,7 +157,8 @@ void MyScene::Import(QDataStream &s, int count)
     {
         QString className;
         s>>className;   //不能直接用字符串
-        if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem" || className=="CrossPt")
+        if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem"
+                || className=="CrossPt"|| className=="CirclePt" )
         {
             qreal x,y,w,h;
             qreal px,py;
@@ -169,6 +182,13 @@ void MyScene::Import(QDataStream &s, int count)
                 pt->setPos(px,py);
                 this->addItem(pt);
             }
+            else if(className=="CirclePt")
+            {
+                CirclePt *pt = new CirclePt();
+                pt->setBoundingRect(QRect(x,y,w,h));
+                pt->setPos(px,py);
+                this->addItem(pt);
+            }
         }
         else if(className=="QGraphicsLineItem")
         {
@@ -187,7 +207,7 @@ void MyScene::setPen()
     p.setColor(QColor(Qt::white));
     p.setStyle(Qt::DashDotLine);
     p.setDashOffset(10);
-    //    p.setBrush();
+    p.setBrush(Qt::darkMagenta);
 }
 
 #if 0

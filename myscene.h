@@ -1,12 +1,8 @@
 #ifndef MYSCENE_H
 #define MYSCENE_H
 
-#include <QGraphicsScene>
-#include <QMouseEvent>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsItem>
 #include <crosspt.h>
-#include <QPainter>
+#include <circlept.h>
 #include <QDataStream>
 
 class MyScene : public QGraphicsScene

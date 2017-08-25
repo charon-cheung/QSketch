@@ -1,14 +1,11 @@
 #ifndef MYVIEW_H
 #define MYVIEW_H
 #include <QGraphicsView>
-#include <QWidget>
-#include <QGraphicsItem>
-#include <QDebug>
-#include <QDataStream>
+//#include <QWidget>
 #include <QMimeData>
 #include <QApplication>
 #include <QClipboard>
-
+#include <QMouseEvent>
 #include "myscene.h"
 #include "posdialog.h"
 
@@ -90,6 +87,7 @@ public slots:
     void Translate(int direction);
     void catchPt(QPointF pt);
     void showItemsInfo();
+
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);

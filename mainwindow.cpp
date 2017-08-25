@@ -1,15 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QCursor>
-#include <QGraphicsItem>
-#include <QTransform>
+//#include <QCursor>
+//#include <QTransform>
 #include <QDateTime>
-#include <QApplication>
+#include <QDebug>
 #include <QFileDialog>
 #include <QFile>
-#include <QFileInfo>
-#include <QDataStream>
 #include <QtPrintSupport/QPrinter>
+#include <QPagedPaintDevice>
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -171,6 +169,7 @@ void MainWindow::on_Open_triggered()
     ui->tabView->setCurrentWidget(openView);
 
     InitConnect(openView);
+    m_save = false;
 }
 
 void MainWindow::on_Save_triggered()
@@ -196,11 +195,24 @@ void MainWindow::on_Save_triggered()
 
 void MainWindow::on_Print_triggered()
 {
+    int index = ui->tabView->currentIndex();
+    QString tabName = ui->tabView->tabText(index);
+    if(tabName=="开始")   return;
     QPrinter printer(QPrinter::HighResolution);
     printer.setPaperSize(QPrinter::A4);
+    printer.setPageOrientation(QPageLayout::Landscape);     //横向
+//    printer.setColorMode(QPrinter::Color);    //不设置打印机时，加这两句会无法打印
+//    printer.setOutputFormat(QPrinter::PdfFormat);
+    QPagedPaintDevice::Margins m;
+    m.bottom=10;
+    m.top=10;
+    m.left=10;
+    m.right=10;
+    printer.setMargins(m);
 
     QPainter painter(&printer);
     MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    view->scale(1,-1);      // 不做变换,打印出来还是关于y轴对称的
     view->getScene()->render(&painter);
 }
 

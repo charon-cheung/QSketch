@@ -4,7 +4,6 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneEvent>
 
 class CrossPt : public QGraphicsItem
 {

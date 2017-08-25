@@ -53,13 +53,13 @@ void CrossPt::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void CrossPt::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-//    QGraphicsItem::mouseMoveEvent(event);
+    QGraphicsItem::mouseMoveEvent(event);
 }
 
 void CrossPt::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 //    this->setSelected(false);
-//    QGraphicsItem::mouseReleaseEvent(event);
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 int CrossPt::type() const

@@ -4,8 +4,6 @@
 #include "myview.h"
 #include "posdialog.h"
 #include <QMainWindow>
-#include <QGraphicsSceneMoveEvent>
-#include <QGraphicsLineItem>
 
 namespace Ui {
 class MainWindow;
@@ -70,6 +68,7 @@ private:
     void InitConnect(MyView* view);
     void InitDir();
     void ShowSaveBox();
+
 protected:
 
 };
