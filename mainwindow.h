@@ -3,6 +3,7 @@
 
 #include "myview.h"
 #include "posdialog.h"
+#include "QRecentFilesMenu.h"
 #include <QMainWindow>
 
 namespace Ui {
@@ -47,6 +48,10 @@ private slots:
 
     void on_pushButton_3_clicked();
 
+    void loadFile(const QString &name);
+
+    void Modified();
+
 signals:
     void getPt(QPointF pt1);
 private:
@@ -56,13 +61,14 @@ private:
 //    MyScene* m_scene;
 //    MyView* m_view;
     PosDialog* dlg;
-
+    QRecentFilesMenu *recentFilesMenu;
     QMenu *ptMenu, *lineMenu, *rectMenu, *ellipseMenu;
     QList<QAction*> ptActions;
     QList<QAction*> lineActions;
     QList<QAction*> rectActions;
     QList<QAction*> ellipseActions;
-    bool m_save;
+    bool m_modified;
+    QString modify_time;
 private:
     void InitUi();
     void InitConnect(MyView* view);

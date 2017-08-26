@@ -9,6 +9,10 @@
 #include <QtPrintSupport/QPrinter>
 #include <QPagedPaintDevice>
 #include <QMessageBox>
+#include <QSettings>
+#include <QFileSystemWatcher>
+#include <QDateTime>
+#include <QDate>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,20 +21,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     InitUi();
     InitDir();
-    m_save = false;
+    m_modified = false;
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
 }
 
 MainWindow::~MainWindow()
 {
+    QSettings settings;
+    settings.setValue("recentFiles", recentFilesMenu->saveState());
     delete ui;
 }
 
 void MainWindow::InitUi()
 {
     this->setWindowTitle("QSketch");
-    this->setWindowIcon(QIcon(":/Icon/Icon/cad.png"));
+    this->setWindowIcon(QIcon(":/Icon/Icon/cube.png"));
 
     ui->mainToolBar->addAction(ui->NewView);
     ui->mainToolBar->addAction(ui->Open);
@@ -40,6 +46,12 @@ void MainWindow::InitUi()
     ui->tabView->setTabsClosable(true);
     ui->tabView->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
+    // 最近打开的文件记录
+    QSettings settings;
+    recentFilesMenu = new QRecentFilesMenu(tr("Recent Files"), ui->openMenu);
+    recentFilesMenu->restoreState(settings.value("recentFiles").toByteArray());
+    ui->openMenu->insertMenu(ui->action_Save, recentFilesMenu);
+    connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(loadFile(const QString &)));
 
     QMenu* ptMenu = new QMenu(this);
     ptActions<< ui->act1 << ui->act2 << ui->act3;
@@ -132,6 +144,7 @@ void MainWindow::on_NewView_triggered()
 
     MyView *newView = new MyView(this);
     newView->setObjectName(name);
+    newView->setNew(true);
     newView->setFocus();    //获得焦点
     // 坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
     newView->scale(2,-2);
@@ -146,30 +159,42 @@ void MainWindow::on_NewView_triggered()
     ui->tabView->setCurrentWidget(newView);
 
     InitConnect(newView);
+//    QFileSystemWatcher *watcher = new QFileSystemWatcher(this);
+//    qDebug()<<"new view"<<ui->tabView->tabText(ui->tabView->currentIndex());
+//    watcher->addPath(dirPath+"/Files/"+ui->tabView->tabText(ui->tabView->currentIndex()));
+////    先修改再保存，才能知道有没有修改
+//    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
 }
 
 void MainWindow::on_Open_triggered()
 {
-    QString fileName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
-    if(fileName.isEmpty())      return;
-    QFile f(fileName);
+    QString fullName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
+    if(fullName.isEmpty())      return;
+    QFile f(fullName);
     if(!f.open(QIODevice::ReadWrite)){
-        qDebug()<<"画面文件读取失败："<<fileName;
+        qDebug()<<"画面文件读取失败："<<fullName;
         return ;
     }
+    loadFile(fullName);
+
     QDataStream ds(&f);
     MyView *openView = new MyView(this);
     //MyView已经包含了一个MyScene对象,不能再定义一个对象,否则打开的是另一个场景,无法编辑
     openView->getScene()->Load(ds);
 
-    fileName.remove(dirPath+"/Files/");
-    openView->setObjectName(fileName);
+    QString name = fullName.remove(dirPath+"/Files/");
+//    openView->setObjectName(name);
     openView->scale(2,-2);
-    ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),fileName);
+    ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),name);
     ui->tabView->setCurrentWidget(openView);
+    ui->tabView->setTabToolTip(ui->tabView->currentIndex(),modify_time);
 
     InitConnect(openView);
-    m_save = false;
+
+    QFileSystemWatcher *watcher = new QFileSystemWatcher(this);
+    watcher->addPath(dirPath+"/Files/"+fullName);
+//    先修改再保存，才能知道有没有修改
+    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
 }
 
 void MainWindow::on_Save_triggered()
@@ -177,6 +202,7 @@ void MainWindow::on_Save_triggered()
     int index = ui->tabView->currentIndex();
     QString tabName = ui->tabView->tabText(index);
     if(tabName=="开始")   return;
+
     QDir d(dirPath+"/Files");
     //是否需要判断是新建的文件还是打开已有的文件?
     QString fullName=dirPath+"/Files/"+tabName;
@@ -190,7 +216,7 @@ void MainWindow::on_Save_triggered()
     MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
     view->getScene()->Save(ds);
     f.close();
-    m_save = true;
+    view->setSaved(true);
 }
 
 void MainWindow::on_Print_triggered()
@@ -212,14 +238,15 @@ void MainWindow::on_Print_triggered()
 
     QPainter painter(&printer);
     MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
-    view->scale(1,-1);      // 不做变换,打印出来还是关于y轴对称的
+
     view->getScene()->render(&painter);
 }
 
 void MainWindow::on_tabView_tabCloseRequested(int index)
 {
     QWidget* w = ui->tabView->widget(index);
-    if(m_save)
+    MyView* view = qobject_cast<MyView*>(w);
+    if(view->IsSaved())
     {
         foreach(QObject *obj, w->children() )
             if(obj->inherits("QGraphicsView") )
@@ -252,7 +279,8 @@ void MainWindow::on_action_Exit_triggered()
 void MainWindow::on_startBtn_clicked()
 {
     MyView *newView = new MyView(this);
-    newView->setObjectName("画面1.gph");
+    newView->setNew(true);
+//    newView->setObjectName("画面1.gph");
     newView->setFocus();    //获得焦点
     newView->scale(2,-2);
     newView->updateCenterRect();
@@ -299,4 +327,30 @@ void MainWindow::on_action_Save_triggered()
 void MainWindow::on_pushButton_3_clicked()
 {
     on_Open_triggered();
+}
+
+void MainWindow::loadFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::ReadWrite)) {
+        QMessageBox::warning(this, tr("Recent Files"),
+                             tr("Cannot read file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+        return;
+    }
+
+    QTextStream in(&file);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    QApplication::restoreOverrideCursor();
+    setWindowFilePath(fileName);
+
+    recentFilesMenu->addRecentFile(fileName);
+}
+
+void MainWindow::Modified()
+{
+    m_modified = true;
+    QDateTime time = QDateTime::currentDateTime();
+    modify_time = time.toString("上次修改时间: MM-dd hh:mm:ss"); //设置显示格式
 }

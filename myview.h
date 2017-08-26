@@ -18,7 +18,10 @@ public:
     ~MyView();
     MyScene* getScene() const;
     void updateCenterRect();
-
+    void setSaved(bool flag);
+    bool IsSaved();
+    void setNew(bool flag);
+    bool IsNew();
 private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
@@ -55,11 +58,13 @@ private:
     QGraphicsItem *viewCenter;
     QPointF pastePos;
     bool copied;
-    QTransform m_translate;
     bool m_movable;
+    bool m_saved, m_new;
+    QTransform m_translate;
     QList<QGraphicsItem*> chosenItems;
 private:
     void test();
+
     void changeCursor(const QString& shape);
     void changeCursor(Qt::CursorShape shape);
     QPointF getScenePos();

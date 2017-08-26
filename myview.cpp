@@ -2,7 +2,6 @@
 #include <QtMath>
 #include <QMenu>
 #include <QMessageBox>
-//#include <QGraphicsEllipseItem>
 #include <QGuiApplication>
 #include <QStatusBar>
 #include <QDebug>
@@ -19,6 +18,8 @@ MyView::MyView(QWidget *parent):
     drawElli = false;
     copied = false;
     m_movable = false;
+    m_saved = false;
+    m_new = false;
     this->setDragMode(QGraphicsView::RubberBandDrag);
     this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -70,7 +71,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
     case Qt::MidButton:
         mode = DRAG;
         dragBegin = this->mapToScene(event->pos());
-        changeCursor("drag");
+        changeCursor("movable");
         showStatus("当前为平移模式");
         event->accept();
         break;
@@ -80,10 +81,12 @@ void MyView::mousePressEvent(QMouseEvent *event)
         if(!drawLine && !drawPt && !drawRect && !drawElli)
         {
             mode = NORMAL;
+            showStatus("当前为普通模式");
         }
         else
         {
             mode =EDIT;
+            showStatus("当前为编辑模式");
             MyScene * press_scene = this->getScene();
 //            if(drawLine && !drawLineXY &&!drawLineAH
             if(0)
@@ -170,6 +173,7 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         mode = NORMAL;
         changeCursor(Qt::ArrowCursor);
         event->accept();
+        showStatus("当前为普通模式");
         break;
     case Qt::LeftButton:
         if(mode==EDIT)
@@ -821,4 +825,30 @@ QString MyView::getItemInfo(QString type, QPointF pos, QSizeF size)
 void MyView::test()
 {
     qDebug()<<"test:"<<qrand()%80;
+}
+
+void MyView::setSaved(bool flag)
+{
+    m_saved = flag;
+}
+
+bool MyView::IsSaved()
+{
+    if(m_saved)
+        return true;
+    else
+        return false;
+}
+
+void MyView::setNew(bool flag)
+{
+    m_new = flag;
+}
+
+bool MyView::IsNew()
+{
+    if(m_new)
+        return true;
+    else
+        return false;
 }

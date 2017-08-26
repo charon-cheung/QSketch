@@ -44,7 +44,8 @@ SOURCES += \
     myscene.cpp \
     posdialog.cpp \
     crosspt.cpp \
-    circlept.cpp
+    circlept.cpp \
+    QRecentFilesMenu.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -52,7 +53,8 @@ HEADERS += \
     myscene.h \
     posdialog.h \
     crosspt.h \
-    circlept.h
+    circlept.h \
+    QRecentFilesMenu.h
 
 FORMS += \
         mainwindow.ui \

@@ -41,5 +41,6 @@
         <file>Icon/info.png</file>
         <file>Icon/cut.png</file>
         <file>Icon/redraw.png</file>
+        <file>Icon/cube.png</file>
     </qresource>
 </RCC>

@@ -6,9 +6,9 @@
 4. 剪切，复制，黏贴，旋转，镜像，对齐，撤销，放缩
 
 #### 问题：
-1. 普通模式首次拖动Item时，会有橡胶手
+1. 增加草图模式
 2. 无法完美实现“画图”的效果，第1,2次绘图有问题
-3. 无法用菜单删除多个item，焦点丢失
+3. 最近打开文件记录和文件修改时间 无法在关闭程序后保存
 5. setAngle()的参数为什么是360-angle?
 6. 只有自定义的CrossPt类调用setPos得到的坐标是场景坐标，Qt类得到的都是图元坐标
 7. QObject::connect: Incompatible sender/receiver arguments QAction::triggered(bool) --> MyView::Paste(QPointF)
