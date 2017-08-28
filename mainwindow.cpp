@@ -13,6 +13,7 @@
 #include <QFileSystemWatcher>
 #include <QDateTime>
 #include <QDate>
+#include <QColorDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     InitActions();
     InitMenus();
     InitDir();
+//    TabNameList.clear();
     m_modified = false;
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
@@ -54,9 +56,14 @@ void MainWindow::InitActions()
     ui->mainToolBar->addAction(ui->Save);
     ui->mainToolBar->addAction(ui->Print);
     ui->mainToolBar->addSeparator();
+
     ui->mainToolBar->addAction(ui->action_Normal);
     ui->mainToolBar->addAction(ui->action_Reset);
     ui->mainToolBar->addAction(ui->action_Redraw);
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addWidget(ui->PenWidth);
+    ui->mainToolBar->addWidget(ui->PenStyle);
+    ui->mainToolBar->addWidget(ui->ColorPicker);
 }
 
 void MainWindow::InitMenus()
@@ -66,7 +73,7 @@ void MainWindow::InitMenus()
     recentFilesMenu = new QRecentFilesMenu(tr("Recent Files"), ui->openMenu);
     recentFilesMenu->restoreState(settings.value("recentFiles").toByteArray());
     ui->openMenu->insertMenu(ui->action_Save, recentFilesMenu);
-    connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(loadFile(const QString &)));
+    connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(LoadFile(const QString &)));
 //    几种绘图
     QMenu* ptMenu = new QMenu(this);
     ptActions<< ui->act1 << ui->act2 << ui->act3;
@@ -169,7 +176,7 @@ void MainWindow::on_NewView_triggered()
     newView->setNew(true);
     newView->setFocus();    //获得焦点
     // 坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
-    newView->scale(2,-2);
+    newView->scale(1,-1);
     newView->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
     int count = ui->tabView->count();
     for(int i =0;i<count;i++)
@@ -181,11 +188,6 @@ void MainWindow::on_NewView_triggered()
     ui->tabView->setCurrentWidget(newView);
 
     InitConnect(newView);
-//    QFileSystemWatcher *watcher = new QFileSystemWatcher(this);
-//    qDebug()<<"new view"<<ui->tabView->tabText(ui->tabView->currentIndex());
-//    watcher->addPath(dirPath+"/Files/"+ui->tabView->tabText(ui->tabView->currentIndex()));
-////    先修改再保存，才能知道有没有修改
-//    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
 }
 
 void MainWindow::on_Open_triggered()
@@ -193,20 +195,24 @@ void MainWindow::on_Open_triggered()
     QString fullName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
     if(fullName.isEmpty())      return;
     QFile f(fullName);
+    QString name = fullName.remove(dirPath+"/Files/");
+    if(TabNameList.contains(name))
+        return;
+    else
+        TabNameList<<name;
+
     if(!f.open(QIODevice::ReadWrite)){
         qDebug()<<"画面文件读取失败："<<fullName;
         return ;
     }
-    loadFile(fullName);
+    LoadFile(fullName);
 
     QDataStream ds(&f);
     MyView *openView = new MyView(this);
     //MyView已经包含了一个MyScene对象,不能再定义一个对象,否则打开的是另一个场景,无法编辑
     openView->getScene()->Load(ds);
 
-    QString name = fullName.remove(dirPath+"/Files/");
-//    openView->setObjectName(name);
-    openView->scale(2,-2);
+    openView->scale(1,-1);
     ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),name);
     ui->tabView->setCurrentWidget(openView);
     ui->tabView->setTabToolTip(ui->tabView->currentIndex(),modify_time);
@@ -216,7 +222,7 @@ void MainWindow::on_Open_triggered()
     QFileSystemWatcher *watcher = new QFileSystemWatcher(this);
     watcher->addPath(dirPath+"/Files/"+fullName);
 //    先修改再保存，才能知道有没有修改
-    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
+//    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
 }
 
 void MainWindow::on_Save_triggered()
@@ -235,17 +241,16 @@ void MainWindow::on_Save_triggered()
     }
 
     QDataStream ds(&f);
-//    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
-    getCurrentView()->getScene()->Save(ds);
+    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    view->getScene()->Save(ds);
     f.close();
-    getCurrentView()->setSaved(true);
+    view->setSaved(true);
+    return;
 }
 
 void MainWindow::on_Print_triggered()
 {
-    int index = ui->tabView->currentIndex();
-    QString tabName = ui->tabView->tabText(index);
-    if(tabName=="开始")   return;
+    if(!getCurrentView())   return;
     QPrinter printer(QPrinter::HighResolution);
     printer.setPaperSize(QPrinter::A4);
     printer.setPageOrientation(QPageLayout::Landscape);     //横向
@@ -259,15 +264,13 @@ void MainWindow::on_Print_triggered()
     printer.setMargins(m);
 
     QPainter painter(&printer);
-//    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
-
     getCurrentView()->getScene()->render(&painter);
 }
 
 void MainWindow::on_tabView_tabCloseRequested(int index)
 {
     QWidget* w = ui->tabView->widget(index);
-//    MyView* view = qobject_cast<MyView*>(w);
+    if(!getCurrentView())   return;
     if(getCurrentView()->IsSaved())
     {
         foreach(QObject *obj, w->children() )
@@ -302,7 +305,6 @@ void MainWindow::on_startBtn_clicked()
 {
     newView = new MyView(this);
     newView->setNew(true);
-//    newView->setObjectName("画面1.gph");
     newView->setFocus();    //获得焦点
     newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
     newView->updateCenterRect();
@@ -315,9 +317,8 @@ void MainWindow::on_startBtn_clicked()
 
 void MainWindow::on_action_Pic_triggered()
 {
-    if(ui->tabView->currentIndex()==0)
+    if(!getCurrentView())
         return;
-//    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
     QImage image(getCurrentView()->size(),QImage::Format_RGB32);
     QPainter painter(&image);
     getCurrentView()->getScene()->render(&painter);     //关键函数
@@ -351,22 +352,10 @@ void MainWindow::on_pushButton_3_clicked()
     on_Open_triggered();
 }
 
-void MainWindow::loadFile(const QString &fileName)
+void MainWindow::LoadFile(const QString &fileName)
 {
-    QFile file(fileName);
-    if (!file.open(QFile::ReadWrite)) {
-        QMessageBox::warning(this, tr("Recent Files"),
-                             tr("Cannot read file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
-        return;
-    }
-
-    QTextStream in(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::restoreOverrideCursor();
-    setWindowFilePath(fileName);
-
     recentFilesMenu->addRecentFile(fileName);
 }
 
@@ -394,4 +383,12 @@ void MainWindow::on_action_Redraw_triggered()
 {
     if(!getCurrentView())   return;
     getCurrentView()->Redraw();
+}
+
+void MainWindow::on_ColorPicker_clicked()
+{
+    QColor color = QColorDialog::getColor(Qt::white,0);
+    qDebug()<<color;
+
+
 }

@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
 
 class CirclePt : public QGraphicsItem
 {
@@ -39,6 +40,10 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 };
 
 #endif // CIRCLEPT_H

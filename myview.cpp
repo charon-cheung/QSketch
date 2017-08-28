@@ -528,7 +528,7 @@ void MyView::ShowContextMenu()
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Movable->setIcon(QIcon(":/Shape/Shape/movable.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
-
+    Rotate->setIcon(QIcon(":/Icon/Icon/rotate.png"));
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
     Cut->setIcon(QIcon(":/Icon/Icon/cut.png"));
     Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
@@ -724,7 +724,7 @@ void MyView::Redraw()
 {
     m_scene->clear();
     m_scene->InitScene();
-    showStatus("清空画面");
+    showStatus("已经清空画面");
 }
 
 void MyView::Translate(int direction)

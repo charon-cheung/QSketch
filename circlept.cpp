@@ -75,6 +75,22 @@ void CirclePt::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
+void CirclePt::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    qDebug()<<"hover enter";
+    QGraphicsItem::hoverEnterEvent(event);
+}
+
+void CirclePt::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+
+}
+
+void CirclePt::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+
+}
+
 int CirclePt::type() const
 {
     return Type;

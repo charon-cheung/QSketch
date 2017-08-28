@@ -1,13 +1,12 @@
 #include "myscene.h"
 #include <QDebug>
 #include <QMessageBox>
-const int MAGIC = 123;
+const int MAGIC = 0x1234;
 
 MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
 {
     InitScene();
-//    InitGaduation();
     space = 50;
     min_space = 10;
     mode = ALL;
@@ -44,17 +43,17 @@ void MyScene::InitScene()
     ArrowY->setData(0,"arrowY");
 
     QFont font;
-    font.setPointSizeF(8);
+    font.setPointSizeF(10);
     font.setFamily("Inconsolata");
     //两个文字
     X = this->addSimpleText("X轴",font);
-    X->setPos(100,-5);
+    X->setPos(120,-5);
     qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());
     X->setTransform(QTransform::fromScale(1,-1));
     X->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
 
     Y = this->addSimpleText("Y轴",font);
-    Y->setPos(-20,100);
+    Y->setPos(-30,120);
     Y->setTransform(QTransform::fromScale(1,-1));
     Y->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
 }
@@ -151,10 +150,9 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
 
 void MyScene::Load(QDataStream &s)
 {
-    uint mg_ver;
-    s>>mg_ver;
-    quint32 mg = (mg_ver&(0xffff));
-    if(mg!=MAGIC)
+    int magic;
+    s>>magic;
+    if(magic!=MAGIC)
     {
         QMessageBox::warning(0, QStringLiteral("出错了"),
                              QStringLiteral("打开的不是gph文件!"));

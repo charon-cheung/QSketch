@@ -48,7 +48,7 @@ private slots:
 
     void on_pushButton_3_clicked();
 
-    void loadFile(const QString &name);
+    void LoadFile(const QString &name);
 
     QString getModifyTime();
 
@@ -58,12 +58,14 @@ private slots:
 
     void on_action_Redraw_triggered();
 
+    void on_ColorPicker_clicked();
+
 signals:
     void getPt(QPointF pt1);
 private:
     Ui::MainWindow *ui;
     QString dirPath;
-
+    QStringList TabNameList;
 //    MyScene* m_scene;
 //    MyView* m_view;
     PosDialog* dlg;
