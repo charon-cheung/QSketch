@@ -1,11 +1,9 @@
 #ifndef MYVIEW_H
 #define MYVIEW_H
 #include <QGraphicsView>
-//#include <QWidget>
 #include <QMimeData>
-#include <QApplication>
-#include <QClipboard>
 #include <QMouseEvent>
+#include <QGraphicsSimpleTextItem>
 #include "myscene.h"
 #include "posdialog.h"
 
@@ -66,6 +64,7 @@ private:
 private:
     inline void test();
     void Init();
+
     inline void changeCursor(const QString& shape);
     inline void changeCursor(Qt::CursorShape shape);
     QPointF getScenePos();

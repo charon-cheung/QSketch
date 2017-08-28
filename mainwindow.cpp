@@ -282,7 +282,7 @@ void MainWindow::on_startBtn_clicked()
     newView->setNew(true);
 //    newView->setObjectName("画面1.gph");
     newView->setFocus();    //获得焦点
-    newView->scale(2,-2);
+    newView->scale(2,-2);   // 翻转y轴,默认y轴正方向指向下方
     newView->updateCenterRect();
 
     ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");

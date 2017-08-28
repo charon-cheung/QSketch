@@ -7,6 +7,7 @@ MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
 {
     InitScene();
+    InitGaduation();
     space = 50;
     min_space = 10;
     mode = ALL;
@@ -41,6 +42,21 @@ void MyScene::InitScene()
     AxisY->setData(0,"y");
     ArrowX->setData(0,"arrowX");
     ArrowY->setData(0,"arrowY");
+}
+
+//不能放在MyView,编译通过,运行出错
+void MyScene::InitGaduation()
+{
+    QFont font;
+    font.setPointSizeF(0.3);
+
+    for(int i=0;i<20;i++)
+    {
+        coord[i] = this->addSimpleText(QString::number(i),font);
+        coord[i]->setTransform(QTransform::fromScale(1,-1));//m_view->scale(1, -1);造成文本位置不正常
+        coord[i]->setPos(i,-0.5);
+        coord[i]->setBrush(QBrush(Qt::white,Qt::SolidPattern));
+    }
 }
 
 //QList<MyView*> MyScene::getViews() const

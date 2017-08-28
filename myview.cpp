@@ -2,16 +2,16 @@
 #include <QtMath>
 #include <QMenu>
 #include <QMessageBox>
-#include <QGuiApplication>
+#include <QApplication>
+#include <QClipboard>
 #include <QStatusBar>
 #include <QDebug>
-#include <crosspt.h>
-#include <circlept.h>
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
     Init();
+
     //随着鼠标点击，场景总出现几个矩形，暂时去掉
     QRect viewport_rect(0, 0, this->viewport()->width(),
                         this->viewport()->height() );  //98X28
@@ -20,26 +20,11 @@ MyView::MyView(QWidget *parent):
 
     m_scene = new MyScene(0);
     this->setScene(m_scene);
-//    this->scene()->addItem(viewCenter); //this->scene()是 QGraphicsScene*
+//    m_scene->addItem(viewCenter); //this->scene()是 QGraphicsScene*
     this->viewport()->update();
 
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
-
-//    画坐标轴刻度值
-    QFont font;
-    font.setPixelSize(12);
-    QTransform tran;
-
-//    QGraphicsSimpleTextItem* coord[20];
-//    for(int i=0;i<20;i++)
-//    {
-//        this->resetMatrix();
-//        coord[i] = m_scene->addSimpleText(QString::number(i),font);
-//        coord[i]->setTransform(tran.scale(1,-1));//m_view->scale(1, -1);造成文本位置不正常
-//        coord[i]->setPos(i*5,-5);
-//        coord[i]->setBrush(QBrush(Qt::white,Qt::SolidPattern));
-//    }
 }
 
 MyView::~MyView()
@@ -556,7 +541,7 @@ void MyView::ShowContextMenu()
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
     connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
-    connect(Info,SIGNAL(triggered(bool)), this, SLOT(showItemsInfo()) );
+    connect(Info,SIGNAL(triggered(bool)), this, SLOT(showItemInfo()) );
 
     m.exec(QCursor::pos());
 }
