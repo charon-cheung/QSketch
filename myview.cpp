@@ -166,13 +166,11 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     QGraphicsView::mouseReleaseEvent(event);
 }
 
-//视图放大和缩小
+//视图放大和缩小,可跟随鼠标
 void MyView::wheelEvent(QWheelEvent *event)
 {
     if(event->modifiers() & Qt::ControlModifier)
     {
-        // 加这句后，放大缩小时，原点会跟随鼠标移动
-//        this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
         qreal scaleFactor = qPow(2.0, event->delta() / 240.0);  // ???
 //        qDebug()<<event->delta();     为正负120
         this->scale(scaleFactor, scaleFactor);
@@ -346,13 +344,13 @@ void MyView::setLine()
     drawPt=false;
     drawRect=false;
     drawElli=false;
-    changeCursor("cross");
-    showStatus("当前为编辑模式");
 
     if(sender()->objectName() == "actLine_1")
     {
         drawLineXY=false;
         drawLineAH = false;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
     }
     else if(sender()->objectName() == "actLine_2")
     {
@@ -409,20 +407,22 @@ void MyView::setPt()
     drawPt=true;
     drawRect=false;
     drawElli=false;
-    changeCursor("cross");
-    showStatus("当前为编辑模式");
 
     if(sender()->objectName() == "act1")
     {
         drawCirPt=true;
         drawCross=false;
         drawPtXY=false;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
     }
     else if(sender()->objectName() == "act2")
     {
         drawCirPt=false;
         drawCross=true;
         drawPtXY=false;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
     }
     else if(sender()->objectName() == "act3")
     {
@@ -447,13 +447,13 @@ void MyView::setRect()
     drawPt=false;
     drawRect=true;
     drawElli=false;
-    changeCursor("cross");
-    showStatus("当前为编辑模式");
 
     if(sender()->objectName()=="actRect_1")
     {
         drawRectXY=false;
         drawRounded=false;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
     }
     else if(sender()->objectName()=="actRect_2")
     {
@@ -485,12 +485,12 @@ void MyView::setEllipse()
     drawPt=false;
     drawRect=false;
     drawElli=true;
-    changeCursor("cross");
-    showStatus("当前为编辑模式");
 
     if(sender()->objectName()=="actEllipse_1")
     {
         drawElliXY=false;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
     }
     else if(sender()->objectName()=="actEllipse_2")
     {
@@ -516,6 +516,7 @@ void MyView::ShowContextMenu()
     QAction *Reset = m.addAction("重置视图");
     QAction *Movable = m.addAction("设置为可动");
     QAction *Delete = m.addAction("删除");
+    QAction *Rotate = m.addAction("旋转");
     QAction *Redraw = m.addAction("清空重画");
     QAction *Cut = m.addAction("剪切");
     QAction *Copy = m.addAction("复制");
@@ -527,6 +528,7 @@ void MyView::ShowContextMenu()
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Movable->setIcon(QIcon(":/Shape/Shape/movable.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
+
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
     Cut->setIcon(QIcon(":/Icon/Icon/cut.png"));
     Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
@@ -538,6 +540,7 @@ void MyView::ShowContextMenu()
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Movable,SIGNAL(triggered(bool)), this,  SLOT(SetMovable(bool)) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
+    connect(Rotate,SIGNAL(triggered(bool)), this, SLOT(Rotate()) );
     connect(Cut,SIGNAL(triggered(bool)), this,  SLOT(Cut()) );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
     connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
@@ -571,6 +574,8 @@ void MyView::Reset()
 {
     this->resetMatrix();
     this->scale(2,-2);
+    this->centerOn(0,0);
+    this->updateCenterRect();
 }
 
 void MyView::SetMovable(bool state)
@@ -699,6 +704,22 @@ void MyView::Delete()
     }
 }
 
+void MyView::Rotate()
+{
+    chosenItems = m_scene->selectedItems();
+    if(!chosenItems.size())   return;
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        qDebug()<<"旋转前的坐标:"<<item->pos();
+//        qDebug()<<item->mapToScene(item->pos());
+        //绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
+        item->setTransformOriginPoint(item->mapFromScene(0,0));
+        item->setRotation(90);
+        item->update();
+        qDebug()<<"旋转后的坐标:"<<item->pos();
+    }
+}
+
 void MyView::Redraw()
 {
     m_scene->clear();
@@ -790,7 +811,7 @@ QString MyView::getItemInfo(QString type, QPointF pos, QSizeF size)
 {
     QString info;
     info = QString("图元类型: %1 \n").arg(type);
-    info += QString("图元坐标: (%2 . %3)     \n").arg(pos.x()).arg(pos.y());
+    info += QString("图元坐标: (%2 , %3)     \n").arg(pos.x()).arg(pos.y());
     info += QString("图元大小: %4 X %5").arg(size.width()).arg(size.height());
     return info;
 }
@@ -816,7 +837,7 @@ void MyView::Init()
     this->setRenderHints(QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
-    //锚点以鼠标为准,放缩效果跟网络地图一样
+    //锚点以鼠标为准,放缩时效果跟网络地图一样
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 //    qDebug()<<this->matrix();   //默认是单位矩阵
 //    QMatrix m(10,0,0,10,0,0);

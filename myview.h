@@ -88,6 +88,7 @@ public slots:
     void Copy();
     void Paste();
     void Delete();
+    void Rotate();
     void Redraw();
     void Translate(int direction);
     void catchPt(QPointF pt);

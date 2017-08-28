@@ -20,8 +20,6 @@ public:
     virtual ~MyScene();
 
     void InitScene();
-    void InitGaduation();
-
     inline QPen getPen();
 //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
@@ -47,7 +45,6 @@ private:
     QGraphicsPolygonItem *ArrowX, *ArrowY;
     QGraphicsEllipseItem *Origin;
     QGraphicsSimpleTextItem* X, *Y;
-//    QGraphicsSimpleTextItem* coord[20];
 
 private:
     inline void setPen();

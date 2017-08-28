@@ -30,6 +30,18 @@ QRectF CirclePt::rect() const
     return m_rect;
 }
 
+void CirclePt::setBoundingRect(const QRectF &rect)
+{
+    if (m_rect == rect)
+        return;
+
+    prepareGeometryChange();
+    m_rect = rect;
+    m_boundingRect = QRectF();
+    updateRect();
+    update();
+}
+
 void CirclePt::setBoundingRect(qreal x, qreal y, qreal w, qreal h)
 {
     setBoundingRect(QRectF(x, y, w, h));
@@ -66,18 +78,6 @@ void CirclePt::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 int CirclePt::type() const
 {
     return Type;
-}
-
-void CirclePt::setBoundingRect(const QRectF &rect)
-{
-    if (m_rect == rect)
-        return;
-
-    prepareGeometryChange();
-    m_rect = rect;
-    m_boundingRect = QRectF();
-    updateRect();
-    update();
 }
 
 QRectF CirclePt::boundingRect() const

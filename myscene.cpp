@@ -49,6 +49,7 @@ void MyScene::InitScene()
     //两个文字
     X = this->addSimpleText("X轴",font);
     X->setPos(100,-5);
+    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());
     X->setTransform(QTransform::fromScale(1,-1));
     X->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
 
@@ -56,19 +57,6 @@ void MyScene::InitScene()
     Y->setPos(-20,100);
     Y->setTransform(QTransform::fromScale(1,-1));
     Y->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
-}
-
-//不能放在MyView,编译通过,运行出错
-void MyScene::InitGaduation()
-{
-
-//    for(int i=0;i<40;i++)
-//    {
-//        coord[i] = this->addSimpleText(QString::number(i),font);
-//        coord[i]->setTransform(QTransform::fromScale(1,-1));//m_view->scale(1, -1);造成文本位置不正常
-//        coord[i]->setPos(i,-1);
-//        coord[i]->setBrush(QBrush(Qt::white,Qt::SolidPattern));
-//    }
 }
 
 QPen MyScene::getPen()

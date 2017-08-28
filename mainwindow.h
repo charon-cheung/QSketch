@@ -52,6 +52,12 @@ private slots:
 
     QString getModifyTime();
 
+    void on_action_Reset_triggered();
+
+    void on_action_Normal_triggered();
+
+    void on_action_Redraw_triggered();
+
 signals:
     void getPt(QPointF pt1);
 private:
@@ -69,12 +75,15 @@ private:
     QList<QAction*> ellipseActions;
     bool m_modified;
     QString modify_time;
+    MyView *newView;
 private:
     void InitUi();
+    void InitActions();
+    void InitMenus();
     void InitConnect(MyView* view);
     void InitDir();
     void ShowSaveBox();
-
+    MyView* getCurrentView();
 protected:
 
 };

@@ -572,6 +572,36 @@ QPushButton::menu-indicator{image:None;}</string>
     <string>SVG</string>
    </property>
   </action>
+  <action name="action_Reset">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/reset.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>重置</string>
+   </property>
+  </action>
+  <action name="action_Normal">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/normal.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>普通模式</string>
+   </property>
+  </action>
+  <action name="action_Redraw">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/redraw.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>清空重画</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

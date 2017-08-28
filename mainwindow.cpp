@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     InitUi();
+    InitActions();
+    InitMenus();
     InitDir();
     m_modified = false;
 //    ui->centralWidget->setMouseTracking(true);
@@ -38,14 +40,27 @@ void MainWindow::InitUi()
     this->setWindowTitle("QSketch");
     this->setWindowIcon(QIcon(":/Icon/Icon/cube.png"));
 
+    ui->tabView->setTabsClosable(true);
+    ui->tabView->setCurrentIndex(0);
+    ui->tabWidget->setCurrentIndex(0);
+
+    ui->statusBar->showMessage("初始化完成");
+}
+
+void MainWindow::InitActions()
+{
     ui->mainToolBar->addAction(ui->NewView);
     ui->mainToolBar->addAction(ui->Open);
     ui->mainToolBar->addAction(ui->Save);
     ui->mainToolBar->addAction(ui->Print);
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addAction(ui->action_Normal);
+    ui->mainToolBar->addAction(ui->action_Reset);
+    ui->mainToolBar->addAction(ui->action_Redraw);
+}
 
-    ui->tabView->setTabsClosable(true);
-    ui->tabView->setCurrentIndex(0);
-    ui->tabWidget->setCurrentIndex(0);
+void MainWindow::InitMenus()
+{
     // 最近打开的文件记录
     QSettings settings;
     recentFilesMenu = new QRecentFilesMenu(tr("Recent Files"), ui->openMenu);
@@ -72,8 +87,6 @@ void MainWindow::InitUi()
     ellipseActions<< ui->actEllipse_1<< ui->actEllipse_2;
     ellipseMenu->addActions(ellipseActions);
     ui->DrawEllipse->setMenu(ellipseMenu);
-
-    ui->statusBar->showMessage("初始化完成");
 }
 
 void MainWindow::InitConnect(MyView* view)
@@ -133,6 +146,15 @@ void MainWindow::ShowSaveBox()
     }
     else if (msg.clickedButton() == Cancel)
         msg.close();
+}
+
+MyView *MainWindow::getCurrentView()
+{
+    MyView *view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    if(!view)
+        return NULL;
+    else
+        return view;
 }
 
 void MainWindow::on_NewView_triggered()
@@ -213,10 +235,10 @@ void MainWindow::on_Save_triggered()
     }
 
     QDataStream ds(&f);
-    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
-    view->getScene()->Save(ds);
+//    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    getCurrentView()->getScene()->Save(ds);
     f.close();
-    view->setSaved(true);
+    getCurrentView()->setSaved(true);
 }
 
 void MainWindow::on_Print_triggered()
@@ -237,16 +259,16 @@ void MainWindow::on_Print_triggered()
     printer.setMargins(m);
 
     QPainter painter(&printer);
-    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+//    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
 
-    view->getScene()->render(&painter);
+    getCurrentView()->getScene()->render(&painter);
 }
 
 void MainWindow::on_tabView_tabCloseRequested(int index)
 {
     QWidget* w = ui->tabView->widget(index);
-    MyView* view = qobject_cast<MyView*>(w);
-    if(view->IsSaved())
+//    MyView* view = qobject_cast<MyView*>(w);
+    if(getCurrentView()->IsSaved())
     {
         foreach(QObject *obj, w->children() )
             if(obj->inherits("QGraphicsView") )
@@ -278,11 +300,11 @@ void MainWindow::on_action_Exit_triggered()
 
 void MainWindow::on_startBtn_clicked()
 {
-    MyView *newView = new MyView(this);
+    newView = new MyView(this);
     newView->setNew(true);
 //    newView->setObjectName("画面1.gph");
     newView->setFocus();    //获得焦点
-    newView->scale(2,-2);   // 翻转y轴,默认y轴正方向指向下方
+    newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
     newView->updateCenterRect();
 
     ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
@@ -295,10 +317,10 @@ void MainWindow::on_action_Pic_triggered()
 {
     if(ui->tabView->currentIndex()==0)
         return;
-    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
-    QImage image(view->size(),QImage::Format_RGB32);
+//    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    QImage image(getCurrentView()->size(),QImage::Format_RGB32);
     QPainter painter(&image);
-    view->getScene()->render(&painter);     //关键函数
+    getCurrentView()->getScene()->render(&painter);     //关键函数
 
 //    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
     QImage mirroredImage = image.mirrored(false, true);
@@ -354,4 +376,22 @@ QString MainWindow::getModifyTime()
     QDateTime time = QDateTime::currentDateTime();
     modify_time = time.toString("上次修改时间: MM-dd hh:mm:ss"); //设置显示格式
     return modify_time;
+}
+
+void MainWindow::on_action_Reset_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->Reset();
+}
+
+void MainWindow::on_action_Normal_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->setNormal();
+}
+
+void MainWindow::on_action_Redraw_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->Redraw();
 }
