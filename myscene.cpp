@@ -7,7 +7,7 @@ MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
 {
     InitScene();
-    InitGaduation();
+//    InitGaduation();
     space = 50;
     min_space = 10;
     mode = ALL;
@@ -42,32 +42,34 @@ void MyScene::InitScene()
     AxisY->setData(0,"y");
     ArrowX->setData(0,"arrowX");
     ArrowY->setData(0,"arrowY");
+
+    QFont font;
+    font.setPointSizeF(8);
+    font.setFamily("Inconsolata");
+    //两个文字
+    X = this->addSimpleText("X轴",font);
+    X->setPos(100,-5);
+    X->setTransform(QTransform::fromScale(1,-1));
+    X->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
+
+    Y = this->addSimpleText("Y轴",font);
+    Y->setPos(-20,100);
+    Y->setTransform(QTransform::fromScale(1,-1));
+    Y->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
 }
 
 //不能放在MyView,编译通过,运行出错
 void MyScene::InitGaduation()
 {
-    QFont font;
-    font.setPointSizeF(0.3);
 
-    for(int i=0;i<20;i++)
-    {
-        coord[i] = this->addSimpleText(QString::number(i),font);
-        coord[i]->setTransform(QTransform::fromScale(1,-1));//m_view->scale(1, -1);造成文本位置不正常
-        coord[i]->setPos(i,-0.5);
-        coord[i]->setBrush(QBrush(Qt::white,Qt::SolidPattern));
-    }
-}
-
-//QList<MyView*> MyScene::getViews() const
-//{
-//    QList<MyView*> views;
-//    foreach (QGraphicsView* v, this->views()) {
-//        MyView* view = qobject_cast<MyView*>(v);
-//        views.push_back(view);
+//    for(int i=0;i<40;i++)
+//    {
+//        coord[i] = this->addSimpleText(QString::number(i),font);
+//        coord[i]->setTransform(QTransform::fromScale(1,-1));//m_view->scale(1, -1);造成文本位置不正常
+//        coord[i]->setPos(i,-1);
+//        coord[i]->setBrush(QBrush(Qt::white,Qt::SolidPattern));
 //    }
-//    return views;
-//}
+}
 
 QPen MyScene::getPen()
 {

@@ -22,7 +22,6 @@ public:
     void InitScene();
     void InitGaduation();
 
-//    QList<MyView*> getViews() const;
     inline QPen getPen();
 //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
@@ -47,7 +46,8 @@ private:
     QGraphicsLineItem  *AxisX, *AxisY;
     QGraphicsPolygonItem *ArrowX, *ArrowY;
     QGraphicsEllipseItem *Origin;
-    QGraphicsSimpleTextItem* coord[20];
+    QGraphicsSimpleTextItem* X, *Y;
+//    QGraphicsSimpleTextItem* coord[20];
 
 private:
     inline void setPen();

@@ -178,7 +178,8 @@ void MyView::wheelEvent(QWheelEvent *event)
         this->scale(scaleFactor, scaleFactor);
         this->updateCenterRect();
     }
-    QGraphicsView::wheelEvent(event);
+    else
+        QGraphicsView::wheelEvent(event);
 }
 
 void MyView::keyPressEvent(QKeyEvent *event)
@@ -810,10 +811,16 @@ void MyView::Init()
     m_movable = false;
     m_saved = false;
     m_new = false;
+
     this->setDragMode(QGraphicsView::RubberBandDrag);
-    this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    this->setRenderHints(QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
+    //锚点以鼠标为准,放缩效果跟网络地图一样
+    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+//    qDebug()<<this->matrix();   //默认是单位矩阵
+//    QMatrix m(10,0,0,10,0,0);
+//    this->setMatrix(m);
 }
 
 void MyView::setSaved(bool flag)
