@@ -34,7 +34,7 @@ private slots:
 
 private:
     Ui::PosDialog *ui;
-    QDoubleValidator *X, *Y, *Positive,*Angle;
+    QDoubleValidator *X, *Y, *Positive, *Angle;
     QPointF pt1,pt2;
     int angle,length;
 };

@@ -16,7 +16,8 @@ class MyView : public QGraphicsView
 public:
     explicit MyView(QWidget *parent = 0);
     ~MyView();
-    MyScene* getScene() const;
+
+    MyScene* getScene();
     void updateCenterRect();
     void setSaved(bool flag);
     bool IsSaved();
@@ -57,19 +58,19 @@ private:
     QPointF dragBegin;
     QGraphicsItem *viewCenter;
     QPointF pastePos;
-    bool copied;
+    bool m_copied;
     bool m_movable;
     bool m_saved, m_new;
     QTransform m_translate;
     QList<QGraphicsItem*> chosenItems;
 private:
-    void test();
-
-    void changeCursor(const QString& shape);
-    void changeCursor(Qt::CursorShape shape);
+    inline void test();
+    void Init();
+    inline void changeCursor(const QString& shape);
+    inline void changeCursor(Qt::CursorShape shape);
     QPointF getScenePos();
     void selectAll(bool state);
-    void showStatus(QString msg);
+    inline void showStatus(QString msg);
     QString getItemInfo(QString type, QPointF pos, QSizeF size);
 
 public slots:
@@ -80,8 +81,8 @@ public slots:
 
     void ShowContextMenu();  //加右键菜单
     void setNormal();
-    void Locate();   //重置原点
-    void Reset();   //重置放缩倍数
+    void Locate();      //重置原点
+    void Reset();       //重置放缩倍数
     void SetMovable(bool state);
 
     void Cut();
@@ -91,7 +92,7 @@ public slots:
     void Redraw();
     void Translate(int direction);
     void catchPt(QPointF pt);
-    void showItemsInfo();
+    void showItemInfo();
 
 protected:
     void mousePressEvent(QMouseEvent* event);

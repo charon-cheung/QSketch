@@ -260,19 +260,6 @@ QPushButton::menu-indicator{image:None;}</string>
            <string>打开文件</string>
           </property>
          </widget>
-         <widget class="QLabel" name="label">
-          <property name="geometry">
-           <rect>
-            <x>350</x>
-            <y>20</y>
-            <width>181</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;最近使用的文件&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
          <widget class="QLabel" name="label_3">
           <property name="geometry">
            <rect>
@@ -284,58 +271,6 @@ QPushButton::menu-indicator{image:None;}</string>
           </property>
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;当前时间&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_4">
-          <property name="geometry">
-           <rect>
-            <x>350</x>
-            <y>72</y>
-            <width>171</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>  文件名</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_5">
-          <property name="geometry">
-           <rect>
-            <x>350</x>
-            <y>150</y>
-            <width>171</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>  文件名</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_6">
-          <property name="geometry">
-           <rect>
-            <x>350</x>
-            <y>230</y>
-            <width>171</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>  文件名</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_7">
-          <property name="geometry">
-           <rect>
-            <x>350</x>
-            <y>310</y>
-            <width>171</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>  文件名</string>
           </property>
          </widget>
         </widget>

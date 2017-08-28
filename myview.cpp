@@ -11,19 +11,7 @@
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
-    mode = NORMAL;
-    drawPt = false;
-    drawLine = false;
-    drawRect = false;
-    drawElli = false;
-    copied = false;
-    m_movable = false;
-    m_saved = false;
-    m_new = false;
-    this->setDragMode(QGraphicsView::RubberBandDrag);
-    this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    this->setContextMenuPolicy(Qt::CustomContextMenu);
+    Init();
     //随着鼠标点击，场景总出现几个矩形，暂时去掉
     QRect viewport_rect(0, 0, this->viewport()->width(),
                         this->viewport()->height() );  //98X28
@@ -59,7 +47,7 @@ MyView::~MyView()
 
 }
 
-MyScene *MyView::getScene() const
+MyScene* MyView::getScene()
 {
     return m_scene;
 }
@@ -250,7 +238,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
             this->SetMovable(true);
         break;
     case Qt::Key_R :
-        this->showItemsInfo();
+        this->showItemInfo();
         break;
     case Qt::Key_Delete:
         this->Delete();
@@ -293,7 +281,7 @@ void MyView::catchPt(QPointF pt)
     QCursor::setPos(f.toPoint());
 }
 
-void MyView::showItemsInfo()
+void MyView::showItemInfo()
 {
     chosenItems = m_scene->selectedItems();
     QString type;
@@ -301,39 +289,39 @@ void MyView::showItemsInfo()
     QSizeF size;
     QString info;
 
-    if(chosenItems.size()==0)   return;
+    if(chosenItems.size()!=1)   return;
     foreach (QGraphicsItem* item, chosenItems)
     {
         switch(item->type())
         {
-        case 3:
-            {
-                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-                type = "矩形";
-                pos = R->rect().center();
-                size = R->rect().size();
-                info = getItemInfo(type, pos, size);
-                break;
-            }
-            case 4:
-            {
-                QGraphicsEllipseItem* Ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-//                qDebug()<<Ell->pos();   // 图元坐标，一直为(0,0)
-                type = "椭圆";
-                pos = Ell->rect().center(); // 场景坐标
-                qDebug()<<"椭圆"<<pos;
-                size = Ell->rect().size();
-                info = getItemInfo(type, pos, size);
-                break;
-            }
-            case CrossPt::Type :
-            {
-                type = "X形点";
-                pos = item->pos();
-                size = QSize(2,2);
-                info = getItemInfo(type, pos, size);
-                break;
-            }
+        case QGraphicsRectItem::Type:
+        {
+            QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+            type = "矩形";
+            pos = R->rect().center();
+            size = R->rect().size();
+            info = getItemInfo(type, pos, size);
+            break;
+        }
+        case QGraphicsEllipseItem::Type:
+        {
+            QGraphicsEllipseItem* Ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+//            qDebug()<<Ell->pos();   // 图元坐标，一直为(0,0)
+            type = "椭圆";
+            pos = Ell->rect().center(); // 场景坐标
+            qDebug()<<"椭圆"<<pos;
+            size = Ell->rect().size();
+            info = getItemInfo(type, pos, size);
+            break;
+        }
+        case CrossPt::Type :
+        {
+            type = "X形点";
+            pos = item->pos();
+            size = QSize(2,2);
+            info = getItemInfo(type, pos, size);
+            break;
+        }
         case CirclePt::Type :
         {
             type = "圆形点";
@@ -364,7 +352,6 @@ void MyView::showItemsInfo()
         }
     }
     QMessageBox::information(0, "图元信息",info);
-//    QMessageBox::information(0, "第二",info);
 }
 
 void MyView::setLine()
@@ -640,7 +627,7 @@ void MyView::Copy()
 //  只有本机的Qt5.9 MinGW编译器不识别此静态函数和qApp->clipboard(),why?
     QClipboard *cb = QApplication::clipboard();
     cb->setMimeData(md);
-    copied = true;
+    m_copied = true;
 }
 
 void MyView::Paste()
@@ -827,6 +814,23 @@ void MyView::test()
     qDebug()<<"test:"<<qrand()%80;
 }
 
+void MyView::Init()
+{
+    mode = NORMAL;
+    drawPt = false;
+    drawLine = false;
+    drawRect = false;
+    drawElli = false;
+    m_copied = false;
+    m_movable = false;
+    m_saved = false;
+    m_new = false;
+    this->setDragMode(QGraphicsView::RubberBandDrag);
+    this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
+}
+
 void MyView::setSaved(bool flag)
 {
     m_saved = flag;
@@ -834,10 +838,7 @@ void MyView::setSaved(bool flag)
 
 bool MyView::IsSaved()
 {
-    if(m_saved)
-        return true;
-    else
-        return false;
+    return m_saved;
 }
 
 void MyView::setNew(bool flag)
@@ -847,8 +848,5 @@ void MyView::setNew(bool flag)
 
 bool MyView::IsNew()
 {
-    if(m_new)
-        return true;
-    else
-        return false;
+    return m_new;
 }

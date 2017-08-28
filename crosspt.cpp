@@ -67,6 +67,11 @@ int CrossPt::type() const
     return Type;
 }
 
+MyScene *CrossPt::getScene() const
+{
+    return qobject_cast<MyScene*>(this->scene());
+}
+
 void CrossPt::setBoundingRect(const QRectF &rect)
 {
     if (m_rect == rect)

@@ -1,10 +1,13 @@
 #ifndef CROSSPT_H
 #define CROSSPT_H
+
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
+#include "myscene.h"
 
+class MyScene;
 class CrossPt : public QGraphicsItem
 {
 public:
@@ -15,7 +18,7 @@ public:
 
     enum {Type = UserType + 1};
     int type() const;
-
+    MyScene* getScene() const;
     QRectF rect() const;
     void setBoundingRect(const QRectF &rect);
     inline void setBoundingRect(qreal x, qreal y, qreal w, qreal h);

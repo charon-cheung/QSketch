@@ -4,7 +4,9 @@
 #include <crosspt.h>
 #include <circlept.h>
 #include <QDataStream>
+//#include <myview.h>
 
+//class MyView;
 class MyScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -18,7 +20,8 @@ public:
     virtual ~MyScene();
 
     void InitScene();
-    QPen getPen();
+//    QList<MyView*> getViews() const;
+    inline QPen getPen();
 //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
@@ -39,11 +42,11 @@ private:
     int space;
     int min_space;
 
-    QGraphicsLineItem  *X, *Y;
+    QGraphicsLineItem  *AxisX, *AxisY;
     QGraphicsPolygonItem *ArrowX, *ArrowY;
     QGraphicsEllipseItem *Origin;
 private:
-    void setPen();
+    inline void setPen();
 
 protected:
 //    virtual void drawBackground(QPainter * painter, const QRectF & rect);

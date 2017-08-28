@@ -52,7 +52,7 @@ void MainWindow::InitUi()
     recentFilesMenu->restoreState(settings.value("recentFiles").toByteArray());
     ui->openMenu->insertMenu(ui->action_Save, recentFilesMenu);
     connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(loadFile(const QString &)));
-
+//    几种绘图
     QMenu* ptMenu = new QMenu(this);
     ptActions<< ui->act1 << ui->act2 << ui->act3;
     ptMenu->addActions(ptActions);
@@ -348,9 +348,10 @@ void MainWindow::loadFile(const QString &fileName)
     recentFilesMenu->addRecentFile(fileName);
 }
 
-void MainWindow::Modified()
+QString MainWindow::getModifyTime()
 {
     m_modified = true;
     QDateTime time = QDateTime::currentDateTime();
     modify_time = time.toString("上次修改时间: MM-dd hh:mm:ss"); //设置显示格式
+    return modify_time;
 }

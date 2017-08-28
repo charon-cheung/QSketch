@@ -26,8 +26,8 @@ void MyScene::InitScene()
                                QBrush(QColor(122,103,238), Qt::SolidPattern) );
     Origin->setToolTip("原点");
 //    画两个坐标轴
-    X = this->addLine(QLineF(QPointF(-width/2+1,0), QPointF(width/2-1,0)), QPen(QColor(139,54,38)));
-    Y = this->addLine(QLineF(QPointF(0,-height/2+1),QPointF(0,height/2-1)), QPen(QColor(139,54,38)));
+    AxisX = this->addLine(QLineF(QPointF(-width/2+1,0), QPointF(width/2-1,0)), QPen(QColor(139,54,38)));
+    AxisY = this->addLine(QLineF(QPointF(0,-height/2+1),QPointF(0,height/2-1)), QPen(QColor(139,54,38)));
 //    画两个箭头
     QPolygonF poly_X,poly_Y;
     poly_X<<QPointF(80, 0)<<QPointF(72, 3)<<QPointF(72,-3);
@@ -37,11 +37,21 @@ void MyScene::InitScene()
 
     // 给数据, 用于跟添加的图元区分
     Origin->setData(0,"origin");
-    X->setData(0,"x");
-    Y->setData(0,"y");
+    AxisX->setData(0,"x");
+    AxisY->setData(0,"y");
     ArrowX->setData(0,"arrowX");
     ArrowY->setData(0,"arrowY");
 }
+
+//QList<MyView*> MyScene::getViews() const
+//{
+//    QList<MyView*> views;
+//    foreach (QGraphicsView* v, this->views()) {
+//        MyView* view = qobject_cast<MyView*>(v);
+//        views.push_back(view);
+//    }
+//    return views;
+//}
 
 QPen MyScene::getPen()
 {

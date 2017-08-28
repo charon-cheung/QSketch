@@ -85,10 +85,13 @@ float PosDialog::getAngle()
 
 float PosDialog::getLength()    //很大的非零非整数
 {
-    QString length = ui->length->text();
-    if(length.isEmpty() || length=="0")
-        return 0;
-    else return ui->length->text().toFloat();
+    QString len = ui->length->text();
+    float length;
+    if(len.isEmpty() || len=="0")
+        length =0;
+    else
+        length = ui->length->text().toFloat();
+    return length;
 }
 
 float* PosDialog::getWH()
@@ -96,7 +99,7 @@ float* PosDialog::getWH()
     float *value = new float[2];
     value[0]=ui->width->text().toFloat();
     value[1]=ui->height->text().toFloat();
-    if(value[0]!=0 && value!=0)
+    if(value[0]!=0 && value[1]!=0)
         return value;
 }
 

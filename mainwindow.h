@@ -50,7 +50,7 @@ private slots:
 
     void loadFile(const QString &name);
 
-    void Modified();
+    QString getModifyTime();
 
 signals:
     void getPt(QPointF pt1);
