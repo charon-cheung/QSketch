@@ -51,8 +51,6 @@ private slots:
 
     void LoadFile(const QString &name);
 
-    QString getModifyTime();
-
     void on_action_Reset_triggered();
 
     void on_action_Normal_triggered();
@@ -69,7 +67,9 @@ signals:
     void toBrush(QBrush b);
 private:
     Ui::MainWindow *ui;
-    QString dirPath;
+    QString dirPath,filePath;
+    QString fullName;
+    QString ModifiedTime;
     QStringList TabNameList;
 //    MyScene* m_scene;
 //    MyView* m_view;
@@ -81,7 +81,6 @@ private:
     QList<QAction*> rectActions;
     QList<QAction*> ellipseActions;
     bool m_modified;
-    QString modify_time;
     MyView *newView;
 
     QColor PenColor;

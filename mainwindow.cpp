@@ -24,8 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     InitActions();
     InitMenus();
     InitDir();
-//    TabNameList.clear();
-    m_modified = false;
+
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
 }
@@ -132,6 +131,7 @@ void MainWindow::InitConnect(MyView* view)
 void MainWindow::InitDir()
 {
     dirPath = QApplication::applicationDirPath();
+    filePath = dirPath + "/Files";
     QDir dir(dirPath);
     if(!dir.entryList().contains("Files"))
     {
@@ -213,20 +213,23 @@ void MainWindow::on_NewView_triggered()
 
 void MainWindow::on_Open_triggered()
 {
-    QString fullName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
+    fullName=QFileDialog::getOpenFileName(this,"打开画面文件",dirPath+"/Files",tr("画面文件(*.gph)") );
     if(fullName.isEmpty())      return;
     QFile f(fullName);
-    QString name = fullName.remove(dirPath+"/Files/");
-    if(TabNameList.contains(name))
-        return;
-    else
-        TabNameList<<name;
-
     if(!f.open(QIODevice::ReadWrite)){
         qDebug()<<"画面文件读取失败："<<fullName;
         return ;
     }
-    LoadFile(fullName);
+
+    QString tabName = fullName.remove(dirPath+"/Files/");
+    // 在关闭时应remove name,否则关闭后无法再打开
+    if(TabNameList.contains(tabName))
+        return;
+    else
+        TabNameList<<tabName;
+
+    fullName = dirPath+"/Files/"+tabName;
+    LoadFile(tabName);
 
     QDataStream ds(&f);
     MyView *openView = new MyView(this);
@@ -234,9 +237,10 @@ void MainWindow::on_Open_triggered()
     openView->getScene()->Load(ds);
 
     openView->scale(1,-1);
-    ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),name);
+    ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),tabName);
     ui->tabView->setCurrentWidget(openView);
-    ui->tabView->setTabToolTip(ui->tabView->currentIndex(),modify_time);
+    ui->tabView->currentWidget()->setObjectName(tabName);
+    ui->tabView->setTabToolTip(ui->tabView->currentIndex(),ModifiedTime);
 
     InitConnect(openView);
 
@@ -291,8 +295,11 @@ void MainWindow::on_Print_triggered()
 
 void MainWindow::on_tabView_tabCloseRequested(int index)
 {
+    QString name = ui->tabView->currentWidget()->objectName();
     QWidget* w = ui->tabView->widget(index);
     if(!getCurrentView())   return;
+    TabNameList.removeOne(name);
+
     if(getCurrentView()->IsSaved())
     {
         foreach(QObject *obj, w->children() )
@@ -325,15 +332,24 @@ void MainWindow::on_action_Exit_triggered()
 
 void MainWindow::on_startBtn_clicked()
 {
-    newView = new MyView(this);
-    newView->setNew(true);
-    newView->setFocus();    //获得焦点
-    newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
-    newView->updateCenterRect();
-    ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
-    ui->tabView->setCurrentWidget(newView);
+    QDir dir(filePath);
+    if(dir.entryList().contains("画面1.gph"))
+    {
+        QMessageBox::warning(0,"文件已经存在","请直接打开 画面1.gph");
+        return;
+    }
+    else
+    {
+        newView = new MyView(this);
+        newView->setNew(true);
+        newView->setFocus();    //获得焦点
+        newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
+        newView->updateCenterRect();
+        ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
+        ui->tabView->setCurrentWidget(newView);
 
-    InitConnect(newView);
+        InitConnect(newView);
+    }
 }
 
 void MainWindow::on_action_Pic_triggered()
@@ -378,14 +394,10 @@ void MainWindow::LoadFile(const QString &fileName)
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::restoreOverrideCursor();
     recentFilesMenu->addRecentFile(fileName);
-}
 
-QString MainWindow::getModifyTime()
-{
-    m_modified = true;
-    QDateTime time = QDateTime::currentDateTime();
-    modify_time = time.toString("上次修改时间: MM-dd hh:mm:ss"); //设置显示格式
-    return modify_time;
+    QFileInfo info;
+    info.setFile(fullName);
+    ModifiedTime = info.lastModified().toString("上次修改时间: MM-dd hh:mm:ss");
 }
 
 void MainWindow::on_action_Reset_triggered()

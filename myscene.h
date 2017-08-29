@@ -23,7 +23,7 @@ public:
 //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
-//    void SaveItemInfo(QDataStream& s, QGraphicsItem* item);
+//    void ExportPen(QDataStream& s, QGraphicsItem* item);
     void Load(QDataStream& s);
     void Import(QDataStream& s,int count);
 

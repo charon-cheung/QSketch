@@ -616,7 +616,7 @@ void MyView::Copy()
 
     QMimeData * md = new QMimeData();
     md->setData("GraphicsItem",ba);
-//  只有本机的Qt5.9 MinGW编译器不识别此静态函数和qApp->clipboard(),why?
+
     QClipboard *cb = QApplication::clipboard();
     cb->setMimeData(md);
     m_copied = true;
@@ -652,12 +652,10 @@ void MyView::Paste()
             s >> h;
             if(className=="QGraphicsEllipseItem")
             {
-                this->getScene()->addEllipse(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)))->
-                        setFlag(QGraphicsItem::ItemIsSelectable);
+                this->getScene()->addEllipse(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)) );
             }
             else if(className=="QGraphicsRectItem")
-                this->getScene()->addRect(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)))->
-                    setFlag(QGraphicsItem::ItemIsSelectable);
+                this->getScene()->addRect(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)));
             else if(className=="CrossPt")
             {
                 CrossPt *pt = new CrossPt();
@@ -685,7 +683,7 @@ void MyView::Paste()
 //            复制的是直线的两个端点，只能平移
             t.translate(pos.x(),pos.y());
             Line->setTransform(t);
-            Line->setFlag(QGraphicsItem::ItemIsSelectable);
+//            Line->setFlag(QGraphicsItem::ItemIsSelectable);
         }
     }
 }

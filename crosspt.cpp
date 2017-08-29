@@ -8,8 +8,6 @@ CrossPt::CrossPt(QGraphicsItem *parent)
 {
 //    可选择
     setFlags(QGraphicsItem::ItemIsSelectable );
-    qDebug()<<this->flags();
-    qDebug()<< int(flags());
 }
 
 CrossPt::CrossPt(const QRectF &rect, QGraphicsItem *parent)
