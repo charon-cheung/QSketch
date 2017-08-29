@@ -17,7 +17,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+    QColor getPenColor();
+    QBrush getPenBrush();
 private slots:
 
     void on_Open_triggered();
@@ -60,8 +61,12 @@ private slots:
 
     void on_ColorPicker_clicked();
 
+    void on_BrushPicker_clicked();
+
 signals:
     void getPt(QPointF pt1);
+    void toColor(QColor c);
+    void toBrush(QBrush b);
 private:
     Ui::MainWindow *ui;
     QString dirPath;
@@ -78,6 +83,9 @@ private:
     bool m_modified;
     QString modify_time;
     MyView *newView;
+
+    QColor PenColor;
+    QBrush PenBrush;
 private:
     void InitUi();
     void InitActions();
@@ -86,6 +94,7 @@ private:
     void InitDir();
     void ShowSaveBox();
     MyView* getCurrentView();
+
 protected:
 
 };

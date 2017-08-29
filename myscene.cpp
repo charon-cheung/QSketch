@@ -48,7 +48,7 @@ void MyScene::InitScene()
     //两个文字
     X = this->addSimpleText("X轴",font);
     X->setPos(120,-5);
-    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());
+//    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());   //总是Pos的2倍
     X->setTransform(QTransform::fromScale(1,-1));
     X->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
 
@@ -56,11 +56,6 @@ void MyScene::InitScene()
     Y->setPos(-30,120);
     Y->setTransform(QTransform::fromScale(1,-1));
     Y->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
-}
-
-QPen MyScene::getPen()
-{
-    return p;
 }
 
 void MyScene::Save(QDataStream &s)
@@ -83,6 +78,7 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             continue;
         }
         QString className;
+
         if(item->type()==3 || item->type()==4 || item->type()==CrossPt::Type ||
                 item->type()==CirclePt::Type )
         {
@@ -91,30 +87,39 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
                 className = "QGraphicsRectItem";
                 QGraphicsRectItem* rectangle = qgraphicsitem_cast<QGraphicsRectItem*>(item);
                 s<< className;
+                s<< int(rectangle->flags());
                 s<< rectangle->rect().x();
                 s<< rectangle->rect().y();
                 s<< rectangle->rect().width();
                 s<< rectangle->rect().height();
                 s<< rectangle->pos().x();
                 s<< rectangle->pos().y();
+                s<< rectangle->pen().color();
+                s<< int(rectangle->pen().style());  //强制转换Qt::PenStyle
+                s<< rectangle->pen().width();
             }
             else if(item->type()==4)
             {
                 className = "QGraphicsEllipseItem";
                 QGraphicsEllipseItem* rectangle = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
                 s<< className;
+                s<< int(rectangle->flags());
                 s<< rectangle->rect().x();
                 s<< rectangle->rect().y();
                 s<< rectangle->rect().width();
                 s<< rectangle->rect().height();
                 s<< rectangle->pos().x();
                 s<< rectangle->pos().y();
+                s<< rectangle->pen().color();
+                s<< int(rectangle->pen().style());  //强制转换Qt::PenStyle
+                s<< rectangle->pen().width();
             }
             else if(item->type()== CrossPt::Type)
             {
                 className = "CrossPt";
                 CrossPt* rectangle = qgraphicsitem_cast<CrossPt*>(item);
                 s<< className;
+                s<< int(rectangle->flags());
                 s<< rectangle->rect().x();
                 s<< rectangle->rect().y();
                 s<< rectangle->rect().width();
@@ -127,6 +132,7 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
                 className = "CirclePt";
                 CirclePt* rectangle = qgraphicsitem_cast<CirclePt*>(item);
                 s<< className;
+                s<< int(rectangle->flags());
                 s<< rectangle->rect().x();
                 s<< rectangle->rect().y();
                 s<< rectangle->rect().width();
@@ -140,10 +146,14 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             className = "QGraphicsLineItem";
             QGraphicsLineItem* Line = qgraphicsitem_cast<QGraphicsLineItem*>(item);
             s<< className;
+            s<< Line->flags();
             s<< Line->line().x1();
             s<< Line->line().y1();
             s<< Line->line().x2();
             s<< Line->line().y2();
+            s<< Line->pen().color();
+            s<< int(Line->pen().style());  //强制转换Qt::PenStyle
+            s<< Line->pen().width();
         }
     }
 }
@@ -170,30 +180,45 @@ void MyScene::Import(QDataStream &s, int count)
     for(int i=0;i<=count;i++)
     {
         QString className;
+        int flags;
+        QColor c;
+        int style;
+        int width;
+        QPen pen;
         s>>className;   //不能直接用字符串
+        s >> flags;
         if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem"
                 || className=="CrossPt"|| className=="CirclePt" )
         {
             qreal x,y,w,h;
             qreal px,py;
-            s >> x;
-            s >> y;
-            s >> w;
-            s >> h;
-//            qDebug()<<x<<"  "<<y<<"  "<<w<<"  "<<h;
-            s >> px;
-            s >> py;
-//            qDebug()<<px<<"  "<<py;
-//            暂时没有设置Flags
+
+            s >> x;     s >> y;
+            s >> w;     s >> h;
+            s >> px;    s >> py;
+            s >> c; s >> style; s >> width;
+            pen.setColor(c);
+            pen.setStyle(Qt::PenStyle(style) );
+            pen.setWidth(width);
+
             if(className=="QGraphicsEllipseItem")
-                this->addEllipse(x,y,w,h,QPen(QColor(Qt::white)))->setPos(px,py);
+            {
+                QGraphicsEllipseItem* ell = this->addEllipse(x,y,w,h, pen);
+                ell->setPos(px,py);
+                ell->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
+            }
             else if(className=="QGraphicsRectItem")
-                this->addRect(x,y,w,h,QPen(QColor(Qt::white)))->setPos(px,py);
+            {
+                QGraphicsRectItem* rect = this->addRect(x,y,w,h, pen);
+                rect->setPos(px,py);
+                rect->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
+            }
             else if(className=="CrossPt")
             {
                 CrossPt *pt = new CrossPt();
                 pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(px,py);
+                pt->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
                 this->addItem(pt);
             }
             else if(className=="CirclePt")
@@ -201,27 +226,28 @@ void MyScene::Import(QDataStream &s, int count)
                 CirclePt *pt = new CirclePt();
                 pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(px,py);
+                pt->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
                 this->addItem(pt);
             }
         }
         else if(className=="QGraphicsLineItem")
         {
             qreal x1,y1,x2,y2;
+
             s>>x1;
             s>>y1;
             s>>x2;
             s>>y2;
-            this->addLine(x1,y1,x2,y2,QPen(QColor(Qt::white)) );
+            s >> c;
+            s >> style;
+            s >> width;
+
+            pen.setColor(c);
+            pen.setStyle(Qt::PenStyle(style) );
+            pen.setWidth(width);
+            this->addLine(x1,y1,x2,y2, pen)->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
         }
     }
-}
-
-void MyScene::setPen()
-{
-    p.setColor(QColor(Qt::white));
-    p.setStyle(Qt::DashDotLine);
-    p.setDashOffset(10);
-    p.setBrush(Qt::darkMagenta);
 }
 
 #if 0

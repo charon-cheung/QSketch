@@ -4,9 +4,12 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QGraphicsSimpleTextItem>
+#include <QComboBox>
 #include "myscene.h"
 #include "posdialog.h"
+#include "mainwindow.h"
 
+class MainWindow;
 #define PI 3.1415926
 class MyView : public QGraphicsView
 {
@@ -61,12 +64,21 @@ private:
     bool m_saved, m_new;
     QTransform m_translate;
     QList<QGraphicsItem*> chosenItems;
+
+    Qt::PenStyle PenStyle;
+    int PenWidth;
+    QColor PenColor;
+    QBrush PenBrush;
+    QPen pen;
 private:
     inline void test();
     void Init();
 
     inline void changeCursor(const QString& shape);
     inline void changeCursor(Qt::CursorShape shape);
+    Qt::PenStyle getPenStyle(QComboBox* Stylebox);
+    int getPenWidth(QComboBox* Stylebox);
+
     QPointF getScenePos();
     void selectAll(bool state);
     inline void showStatus(QString msg);
@@ -77,7 +89,7 @@ public slots:
     void setPt();
     void setRect();
     void setEllipse();
-
+    QPen getPen();
     void ShowContextMenu();  //加右键菜单
     void setNormal();
     void Locate();      //重置原点
@@ -101,6 +113,7 @@ protected:
 
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent *event);
+
 };
 
 #endif // MYVIEW_H

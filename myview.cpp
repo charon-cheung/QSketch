@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QStatusBar>
+
 #include <QDebug>
 
 MyView::MyView(QWidget *parent):
@@ -104,6 +105,7 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     switch (mode) {
     case NORMAL:
     {
+
         break;  // 需要处理QGraphicsView::mouseMoveEvent
     }
     case DRAG:
@@ -293,7 +295,6 @@ void MyView::showItemInfo()
 //            qDebug()<<Ell->pos();   // 图元坐标，一直为(0,0)
             type = "椭圆";
             pos = Ell->rect().center(); // 场景坐标
-            qDebug()<<"椭圆"<<pos;
             size = Ell->rect().size();
             info = getItemInfo(type, pos, size);
             break;
@@ -368,7 +369,7 @@ void MyView::setLine()
             return;
         }
         m_scene->addLine(QLineF(list.at(0), list.at(1)),
-                         QPen(QColor(Qt::white)))->
+                       getPen())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
     }
     else if(sender()->objectName() == "actLine_3")
@@ -396,7 +397,7 @@ void MyView::setLine()
             QMessageBox::warning(0,"出错了","直线无效!");
             return;
         }
-        m_scene->addLine(line, QPen(QColor(Qt::white)))->
+        m_scene->addLine(line, getPen())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
     }
 }
@@ -467,7 +468,7 @@ void MyView::setRect()
         float *value= dlg->getWH();
 //        因为视图对y轴镜像，直接绘图pt是矩形的左下顶点，需要变换
         m_scene->addRect(pt.x(),pt.y()-value[1],
-                value[0],value[1],QPen(QColor(Qt::white)) )->
+                value[0],value[1], getPen() )->
                 setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
     }
@@ -502,7 +503,7 @@ void MyView::setEllipse()
         float *value= dlg->getWH();
 //        因为视图对y轴镜像，所以pt是矩形的左下顶点,需要变换
         m_scene->addEllipse(pt.x()-value[0]/2, pt.y()-value[1]/2,
-                value[0], value[1], QPen(QColor(Qt::white)))->
+                value[0], value[1], getPen() )->
                 setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
     }
@@ -807,6 +808,56 @@ void MyView::showStatus(QString msg)
     }
 }
 
+Qt::PenStyle MyView::getPenStyle(QComboBox* Stylebox)
+{
+    switch(Stylebox->currentIndex())
+    {
+    case 0:
+        PenStyle = Qt::SolidLine;
+        break;
+    case 1:
+        PenStyle = Qt::DashLine;
+        break;
+    case 2:
+        PenStyle = Qt::DotLine;
+        break;
+    case 3:
+        PenStyle = Qt::DashDotLine;
+        break;
+    case 4:
+        PenStyle = Qt::DashDotDotLine;
+        break;
+    default:
+        break;
+    }
+    return PenStyle;
+}
+
+int MyView::getPenWidth(QComboBox *WidthBox)
+{
+    switch(WidthBox->currentIndex())
+    {
+    case 0:
+        PenWidth = 1;
+        break;
+    case 1:
+        PenWidth = 2;
+        break;
+    case 2:
+        PenWidth = 3;
+        break;
+    case 3:
+        PenWidth = 4;
+        break;
+    case 4:
+        PenWidth = 5;
+        break;
+    default:
+        break;
+    }
+    return PenWidth;
+}
+
 QString MyView::getItemInfo(QString type, QPointF pos, QSizeF size)
 {
     QString info;
@@ -841,7 +892,32 @@ void MyView::Init()
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 //    qDebug()<<this->matrix();   //默认是单位矩阵
 //    QMatrix m(10,0,0,10,0,0);
-//    this->setMatrix(m);
+    //    this->setMatrix(m);
+}
+
+QPen MyView::getPen()
+{
+    if(sender()->objectName() == "PenStyle")
+    {
+        QComboBox* StyleBox = qobject_cast<QComboBox*>(sender());
+        PenStyle = getPenStyle(StyleBox);
+    }
+    if(sender()->objectName() == "PenWidth")
+    {
+        QComboBox* WidthBox = qobject_cast<QComboBox*>(sender());
+        PenWidth = getPenWidth(WidthBox);
+    }
+    if(sender()->objectName() == "MainWindow")
+    {
+        MainWindow* m = qobject_cast<MainWindow*>(sender());
+        PenColor = m->getPenColor();
+        PenBrush = m->getPenBrush();
+    }
+    pen.setStyle(PenStyle);
+    pen.setWidth(PenWidth);
+    pen.setColor(PenColor);
+//    pen.setBrush(PenBrush);
+    return pen;
 }
 
 void MyView::setSaved(bool flag)

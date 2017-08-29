@@ -6,7 +6,7 @@
 #include <QDataStream>
 //#include <myview.h>
 
-//class MyView;     //需要前置声明
+class MyView;     //需要前置声明
 class MyScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -20,17 +20,16 @@ public:
     virtual ~MyScene();
 
     void InitScene();
-    inline QPen getPen();
 //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
-
+//    void SaveItemInfo(QDataStream& s, QGraphicsItem* item);
     void Load(QDataStream& s);
     void Import(QDataStream& s,int count);
 
 private:
-    QGraphicsLineItem* Line;
-    QPen p;
+//    QGraphicsLineItem* Line;
+
     enum GridMode
     {
         ALL,
@@ -47,7 +46,7 @@ private:
     QGraphicsSimpleTextItem* X, *Y;
 
 private:
-    inline void setPen();
+
 protected:
 //    virtual void drawBackground(QPainter * painter, const QRectF & rect);
 

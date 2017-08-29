@@ -37,6 +37,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+QColor MainWindow::getPenColor()
+{
+    return PenColor;
+}
+
+QBrush MainWindow::getPenBrush()
+{
+    return PenBrush;
+}
+
 void MainWindow::InitUi()
 {
     this->setWindowTitle("QSketch");
@@ -46,6 +56,13 @@ void MainWindow::InitUi()
     ui->tabView->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
 
+    QStringList PenStyles;
+    PenStyles<< "实线" <<"虚线"<< "点线" << "点划线" << "点点划线";
+    ui->PenStyle->insertItems(0,PenStyles);
+
+    QStringList PenWidths;
+    PenWidths<< QString::number(1) << QString::number(2) << QString::number(3) << QString::number(4) << QString::number(5);
+    ui->PenWidth->insertItems(0,PenWidths);
     ui->statusBar->showMessage("初始化完成");
 }
 
@@ -61,9 +78,7 @@ void MainWindow::InitActions()
     ui->mainToolBar->addAction(ui->action_Reset);
     ui->mainToolBar->addAction(ui->action_Redraw);
     ui->mainToolBar->addSeparator();
-    ui->mainToolBar->addWidget(ui->PenWidth);
-    ui->mainToolBar->addWidget(ui->PenStyle);
-    ui->mainToolBar->addWidget(ui->ColorPicker);
+//    ui->mainToolBar->addWidget(ui->PenStyle);
 }
 
 void MainWindow::InitMenus()
@@ -106,6 +121,12 @@ void MainWindow::InitConnect(MyView* view)
         connect(act, &QAction::triggered, view, &MyView::setRect );
     foreach(QAction* act, ellipseActions)
         connect(act, &QAction::triggered, view, &MyView::setEllipse );
+
+    connect(ui->PenStyle, SIGNAL(activated(QString)), view, SLOT(getPen()) );
+    connect(ui->PenWidth, SIGNAL(activated(QString)), view, SLOT(getPen()) );
+    connect(this, SIGNAL(toColor(QColor)), view, SLOT(getPen()) );
+    connect(this, SIGNAL(toBrush(QBrush)), view, SLOT(getPen()) );
+
 }
 
 void MainWindow::InitDir()
@@ -223,6 +244,7 @@ void MainWindow::on_Open_triggered()
     watcher->addPath(dirPath+"/Files/"+fullName);
 //    先修改再保存，才能知道有没有修改
 //    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
+    ui->statusBar->showMessage("加载文件完成");
 }
 
 void MainWindow::on_Save_triggered()
@@ -308,7 +330,6 @@ void MainWindow::on_startBtn_clicked()
     newView->setFocus();    //获得焦点
     newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
     newView->updateCenterRect();
-
     ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
     ui->tabView->setCurrentWidget(newView);
 
@@ -387,8 +408,13 @@ void MainWindow::on_action_Redraw_triggered()
 
 void MainWindow::on_ColorPicker_clicked()
 {
-    QColor color = QColorDialog::getColor(Qt::white,0);
-    qDebug()<<color;
-
-
+    PenColor = QColorDialog::getColor(Qt::white);
+    emit toColor(PenColor);
 }
+
+void MainWindow::on_BrushPicker_clicked()
+{
+    PenBrush.setColor(QColorDialog::getColor(Qt::white));
+    emit toBrush(PenBrush);
+}
+
