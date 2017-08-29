@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>763</width>
-    <height>609</height>
+    <width>660</width>
+    <height>582</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,15 +21,15 @@
 QPushButton::menu-indicator{image:None;}</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout_4">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="minimumSize">
          <size>
-          <width>540</width>
-          <height>80</height>
+          <width>570</width>
+          <height>95</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -45,188 +45,231 @@ QPushButton::menu-indicator{image:None;}</string>
          <attribute name="title">
           <string> 主页</string>
          </attribute>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QPushButton" name="DrawPt">
-            <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="res.qrc">
-              <normaloff>:/Shape/Shape/point.png</normaloff>:/Shape/Shape/point.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="DrawLine">
-            <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="res.qrc">
-              <normaloff>:/Shape/Shape/line.png</normaloff>:/Shape/Shape/line.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="DrawEllipse">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="res.qrc">
-              <normaloff>:/Shape/Shape/ellipse.png</normaloff>:/Shape/Shape/ellipse.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>42</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QPushButton" name="DrawRect">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="res.qrc">
-              <normaloff>:/Shape/Shape/rectangle.png</normaloff>:/Shape/Shape/rectangle.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>38</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QPushButton" name="DrawText">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="res.qrc">
-              <normaloff>:/Shape/Shape/text.png</normaloff>:/Shape/Shape/text.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="5">
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout">
-              <item>
-               <widget class="QComboBox" name="PenStyle"/>
-              </item>
-              <item>
-               <widget class="QLabel" name="style_label">
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;线的样式&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <widget class="QComboBox" name="PenWidth"/>
-              </item>
-              <item>
-               <widget class="QLabel" name="width_label">
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;线的宽度&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <widget class="QToolButton" name="ColorPicker">
-                <property name="minimumSize">
-                 <size>
-                  <width>80</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string> 颜色</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QToolButton" name="BrushPicker">
-                <property name="minimumSize">
-                 <size>
-                  <width>80</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string> 刷子</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
+         <widget class="QPushButton" name="DrawPt">
+          <property name="geometry">
+           <rect>
+            <x>9</x>
+            <y>21</y>
+            <width>36</width>
+            <height>32</height>
+           </rect>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="res.qrc">
+            <normaloff>:/Shape/Shape/point.png</normaloff>:/Shape/Shape/point.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="DrawLine">
+          <property name="geometry">
+           <rect>
+            <x>61</x>
+            <y>21</y>
+            <width>36</width>
+            <height>32</height>
+           </rect>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="res.qrc">
+            <normaloff>:/Shape/Shape/line.png</normaloff>:/Shape/Shape/line.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="DrawEllipse">
+          <property name="geometry">
+           <rect>
+            <x>113</x>
+            <y>21</y>
+            <width>46</width>
+            <height>32</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="res.qrc">
+            <normaloff>:/Shape/Shape/ellipse.png</normaloff>:/Shape/Shape/ellipse.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>42</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="DrawRect">
+          <property name="geometry">
+           <rect>
+            <x>165</x>
+            <y>21</y>
+            <width>42</width>
+            <height>32</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="res.qrc">
+            <normaloff>:/Shape/Shape/rectangle.png</normaloff>:/Shape/Shape/rectangle.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>38</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="DrawText">
+          <property name="geometry">
+           <rect>
+            <x>217</x>
+            <y>13</y>
+            <width>41</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="res.qrc">
+            <normaloff>:/Shape/Shape/text.png</normaloff>:/Shape/Shape/text.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>48</width>
+            <height>48</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="PenStyle">
+          <property name="geometry">
+           <rect>
+            <x>277</x>
+            <y>12</y>
+            <width>91</width>
+            <height>22</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="style_label">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>40</y>
+            <width>76</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;线的样式&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="PenWidth">
+          <property name="geometry">
+           <rect>
+            <x>380</x>
+            <y>12</y>
+            <width>91</width>
+            <height>22</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="width_label">
+          <property name="geometry">
+           <rect>
+            <x>389</x>
+            <y>40</y>
+            <width>76</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;线的宽度&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+         <widget class="QToolButton" name="ColorPicker">
+          <property name="geometry">
+           <rect>
+            <x>480</x>
+            <y>12</y>
+            <width>81</width>
+            <height>19</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string> 颜色</string>
+          </property>
+         </widget>
+         <widget class="QToolButton" name="BrushPicker">
+          <property name="geometry">
+           <rect>
+            <x>480</x>
+            <y>37</y>
+            <width>81</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string> 刷子</string>
+          </property>
+         </widget>
          <zorder>DrawText</zorder>
          <zorder>DrawPt</zorder>
          <zorder>DrawLine</zorder>
          <zorder>DrawRect</zorder>
          <zorder>DrawEllipse</zorder>
-         <zorder>tabView</zorder>
-         <zorder>ColorPicker</zorder>
-         <zorder>BrushPicker</zorder>
-         <zorder>PenWidth</zorder>
-         <zorder>PenStyle</zorder>
-         <zorder>style_label</zorder>
-         <zorder>width_label</zorder>
         </widget>
         <widget class="QWidget" name="Insert">
          <attribute name="title">
@@ -331,7 +374,7 @@ QPushButton::menu-indicator{image:None;}</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>763</width>
+     <width>660</width>
      <height>22</height>
     </rect>
    </property>

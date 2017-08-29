@@ -826,8 +826,10 @@ Qt::PenStyle MyView::getPenStyle(QComboBox* Stylebox)
         PenStyle = Qt::DashDotDotLine;
         break;
     default:
+        PenStyle = Qt::SolidLine;
         break;
     }
+    qDebug()<<"in switch"<<PenStyle;
     return PenStyle;
 }
 
@@ -851,6 +853,7 @@ int MyView::getPenWidth(QComboBox *WidthBox)
         PenWidth = 5;
         break;
     default:
+        PenWidth = 1;
         break;
     }
     return PenWidth;
@@ -909,8 +912,15 @@ QPen MyView::getPen()
     {
         MainWindow* m = qobject_cast<MainWindow*>(sender());
         PenColor = m->getPenColor();
-        PenBrush = m->getPenBrush();
+//        PenBrush = m->getPenBrush();
     }
+    if(PenStyle == Qt::PenStyle::NoPen)
+        PenStyle = Qt::PenStyle::SolidLine;
+    if(PenWidth==0)
+        PenWidth = 1;
+    if(!PenColor.isValid())
+        PenColor = Qt::white;
+
     pen.setStyle(PenStyle);
     pen.setWidth(PenWidth);
     pen.setColor(PenColor);

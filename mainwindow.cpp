@@ -121,8 +121,8 @@ void MainWindow::InitConnect(MyView* view)
     foreach(QAction* act, ellipseActions)
         connect(act, &QAction::triggered, view, &MyView::setEllipse );
 
-    connect(ui->PenStyle, SIGNAL(activated(QString)), view, SLOT(getPen()) );
-    connect(ui->PenWidth, SIGNAL(activated(QString)), view, SLOT(getPen()) );
+    connect(ui->PenStyle, SIGNAL(currentIndexChanged(int)), view, SLOT(getPen()) );
+    connect(ui->PenWidth, SIGNAL(currentIndexChanged(int)), view, SLOT(getPen()) );
     connect(this, SIGNAL(toColor(QColor)), view, SLOT(getPen()) );
     connect(this, SIGNAL(toBrush(QBrush)), view, SLOT(getPen()) );
 
