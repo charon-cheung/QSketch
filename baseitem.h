@@ -5,6 +5,8 @@
 #include <QGraphicsEllipseItem>
 #include <QGraphicsScene>
 #include <QPainter>
+#include <QPen>
+#include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
 
@@ -19,18 +21,18 @@ public:
     void setBoundingRect(const QRectF &rect);
     void setBoundingRect(qreal x, qreal y, qreal w, qreal h);
     QRectF boundingRect() const;
+    QRectF rect() const;
 
     QPen getSelectedPen();
     QPen getUnselectedPen();
     QPen getItemPen();
     void setBoudingPainter(QPainter *painter);
     void setItemPainter(QPainter *painter);
+
     void DrawBounding(QPainter* painter);
+    virtual void DrawShape(QPainter* painter);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 private:
     void updateRect();
 
@@ -40,13 +42,14 @@ protected:
     mutable QRectF m_boundingRect;
     double m_dScale;  // 缩放比例
     bool m_hovered;
-
-    virtual void DrawShape(QPainter* painter);
+    QPen m_pen;
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) ;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) ;
-
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 };
 

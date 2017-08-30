@@ -36,6 +36,13 @@ void BaseItem::setBoundingRect(qreal x, qreal y, qreal w, qreal h)
 
 QRectF BaseItem::boundingRect() const
 {
+    if (m_boundingRect.isNull())
+        m_boundingRect = m_rect;
+    return m_boundingRect;
+}
+
+QRectF BaseItem::rect() const
+{
     return m_rect;
 }
 

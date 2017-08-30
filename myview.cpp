@@ -6,8 +6,6 @@
 #include <QClipboard>
 #include <QStatusBar>
 
-#include <QDebug>
-
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
@@ -68,24 +66,21 @@ void MyView::mousePressEvent(QMouseEvent *event)
             }
             else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
             {
-#if 0
                 CirclePt *pt = new CirclePt();
-//                场景对y轴对称,所以不是(-5,5,10,10),取下左点
-                pt->setBoundingRect(QRect(-5, -5, 10, 10));
                 pt->setPos(start);  //这里不是图元坐标，是场景坐标
                 press_scene->addItem(pt);
-#endif
-                Ring *r = new Ring();
-//                r->setBoundingRect(-20,-20, 40,40);
-                r->setPos(start);
-                press_scene->addItem(r);
             }
             else if(drawPt && drawCross)    // 画X样式的点
             {
                 CrossPt *pt = new CrossPt();
-                pt->setBoundingRect(QRect(-5, -5, 10, 10));
                 pt->setPos(start);
                 press_scene->addItem(pt);
+            }
+            else if(drawPt && drawRing)    // 画圆环
+            {
+                Ring *r = new Ring();
+                r->setPos(start);
+                press_scene->addItem(r);
             }
             else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY)
             {
@@ -413,6 +408,7 @@ void MyView::setPt()
         drawCirPt=true;
         drawCross=false;
         drawPtXY=false;
+        drawRing=false;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
@@ -421,6 +417,7 @@ void MyView::setPt()
         drawCirPt=false;
         drawCross=true;
         drawPtXY=false;
+        drawRing=false;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
@@ -430,15 +427,24 @@ void MyView::setPt()
         drawCirPt=false;
         drawCross=false;
         drawPtXY=true;
+        drawRing=false;
         dlg = new PosDialog(this);
         dlg->showPt();
         if(dlg->exec() != QDialog::Accepted)    return;
         QPointF pt1 = dlg->getPt();
 
         CirclePt *pt = new CirclePt();
-        pt->setBoundingRect(QRect(-5, -5, 10, 10));
         pt->setPos(pt1);
         m_scene->addItem(pt);
+    }
+    else if(sender()->objectName() == "act4")
+    {
+        drawCirPt=false;
+        drawCross=false;
+        drawPtXY=false;
+        drawRing=true;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
     }
 }
 
@@ -668,15 +674,15 @@ void MyView::Paste()
                 this->getScene()->addRect(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)));
             else if(className=="CrossPt")
             {
-                CrossPt *pt = new CrossPt(NULL);
-                pt->setBoundingRect(QRect(x,y,w,h));
+                CrossPt *pt = new CrossPt();
+//                pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(pos);
                 this->getScene()->addItem(pt);
             }
             else if(className=="CirclePt")
             {
                 CirclePt *pt = new CirclePt();
-                pt->setBoundingRect(QRect(x,y,w,h));
+//                pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(pos);
                 this->getScene()->addItem(pt);
             }

@@ -90,7 +90,7 @@ void MainWindow::InitMenus()
     connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(LoadFile(const QString &)));
 //    几种绘图
     QMenu* ptMenu = new QMenu(this);
-    ptActions<< ui->act1 << ui->act2 << ui->act3;
+    ptActions<< ui->act1 << ui->act2 << ui->act3 <<ui->act4;
     ptMenu->addActions(ptActions);
     ui->DrawPt->setMenu(ptMenu);
 

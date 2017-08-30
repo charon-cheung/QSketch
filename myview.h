@@ -28,7 +28,7 @@ private:
     MyScene* m_scene;
     QGraphicsLineItem* Line;
     PosDialog* dlg;
-    bool drawPt, drawCirPt, drawCross, drawPtXY;
+    bool drawPt, drawCirPt, drawCross, drawPtXY,drawRing;
     bool drawLine, drawLineXY,drawLineAH;
     bool drawRect, drawRectXY,drawRounded;
     bool drawElli, drawElliXY;
