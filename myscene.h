@@ -1,10 +1,10 @@
 #ifndef MYSCENE_H
 #define MYSCENE_H
 
-#include <baseitem.h>
-#include <circlept.h>
-#include <crosspt.h>
-#include <ring.h>
+#include "Items/baseitem.h"
+#include "Items/circlept.h"
+#include "Items/crosspt.h"
+#include "Items/ring.h"
 #include <QDataStream>
 //#include <myview.h>
 

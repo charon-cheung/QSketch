@@ -10,7 +10,11 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QSketch
 TEMPLATE = app
+
 RC_ICONS = cube.ico
+
+include (Items.pri)
+
 
 DESTDIR = bin
 
@@ -43,22 +47,16 @@ SOURCES += \
     myview.cpp \
     myscene.cpp \
     posdialog.cpp \
-    crosspt.cpp \
-    circlept.cpp \
     QRecentFilesMenu.cpp \
-    baseitem.cpp \
-    ring.cpp
+
 
 HEADERS += \
         mainwindow.h \
     myview.h \
     myscene.h \
     posdialog.h \
-    crosspt.h \
-    circlept.h \
     QRecentFilesMenu.h \
-    baseitem.h \
-    ring.h
+
 
 FORMS += \
         mainwindow.ui \
