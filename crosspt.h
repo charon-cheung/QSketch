@@ -9,7 +9,8 @@ public:
     explicit CrossPt(QGraphicsItem *parent = Q_NULLPTR);
     ~CrossPt();
 
-    enum {Type = UserType + 3};
+    enum {Type = UserType + 2};
+    int type() const Q_DECL_OVERRIDE;
     enum {
         size = 2,
     };

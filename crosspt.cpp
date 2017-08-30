@@ -11,6 +11,11 @@ CrossPt::~CrossPt()
 
 }
 
+int CrossPt::type() const
+{
+    return Type;
+}
+
 void CrossPt::DrawShape(QPainter *painter)
 {
     QPointF p1 = pt+QPoint(size,size);

@@ -20,18 +20,16 @@ public:
 public:
     explicit MyScene(QObject *parent = Q_NULLPTR);
     virtual ~MyScene();
-
+    void InitText();
+    void InitData();
     void InitScene();
 //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
-//    void ExportPen(QDataStream& s, QGraphicsItem* item);
     void Load(QDataStream& s);
     void Import(QDataStream& s,int count);
 
 private:
-//    QGraphicsLineItem* Line;
-
     enum GridMode
     {
         ALL,

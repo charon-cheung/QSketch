@@ -14,6 +14,12 @@ CirclePt::~CirclePt()
 
 }
 
+int CirclePt::type() const
+{
+    return Type;
+}
+
+
 void CirclePt::DrawShape(QPainter *painter)
 {
 //    场景对y轴对称,取矩形的下左点,边界矩形也同样处理

@@ -72,8 +72,8 @@ private:
     QPen pen;
 private:
     inline void test();
-    void Init();
-
+    void InitView();
+    void InitViewRect();
     inline void changeCursor(const QString& shape);
     inline void changeCursor(Qt::CursorShape shape);
     Qt::PenStyle getPenStyle(QComboBox* Stylebox);
@@ -94,7 +94,7 @@ public slots:
 
     void setNormal();
     void Locate();      //重置原点
-    void Cmd();
+
     void Reset();       //重置放缩倍数
     void SetMovable(bool state);
     void Cut();
@@ -106,6 +106,7 @@ public slots:
     void Translate(int direction);
     void Translate(QPointF pt);
     void catchPt(QPointF pt);
+
     void showItemInfo();
 
 protected:

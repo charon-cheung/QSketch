@@ -17,35 +17,12 @@ MyScene::~MyScene()
 
 }
 
-void MyScene::InitScene()
+void MyScene::InitText()
 {
-    this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
-    this->setBackgroundBrush(QBrush(QColor(0,43,54)));
-//    画圆心, QPen 是圆的边缘, QBrush是圆的填充
-    Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
-                               QBrush(QColor(122,103,238), Qt::SolidPattern) );
-    Origin->setToolTip("原点");
-//    画两个坐标轴
-    AxisX = this->addLine(QLineF(QPointF(-width/2+1,0), QPointF(width/2-1,0)), QPen(QColor(139,54,38)));
-    AxisY = this->addLine(QLineF(QPointF(0,-height/2+1),QPointF(0,height/2-1)), QPen(QColor(139,54,38)));
-//    画两个箭头
-    QPolygonF poly_X,poly_Y;
-    poly_X<<QPointF(80, 0)<<QPointF(72, 3)<<QPointF(72,-3);
-    poly_Y<<QPointF(0, 80)<<QPointF(3, 72)<<QPointF(-3, 72);
-    ArrowX = this->addPolygon(poly_X,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
-    ArrowY = this->addPolygon(poly_Y,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
-
-    // 给数据, 用于跟添加的图元区分
-    Origin->setData(0,"origin");
-    AxisX->setData(0,"x");
-    AxisY->setData(0,"y");
-    ArrowX->setData(0,"arrowX");
-    ArrowY->setData(0,"arrowY");
-
     QFont font;
     font.setPointSizeF(10);
     font.setFamily("Inconsolata");
-    //两个文字
+
     X = this->addSimpleText("X轴",font);
     X->setPos(120,-5);
 //    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());   //总是Pos的2倍
@@ -56,6 +33,37 @@ void MyScene::InitScene()
     Y->setPos(-30,120);
     Y->setTransform(QTransform::fromScale(1,-1));
     Y->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
+}
+
+void MyScene::InitData()
+{
+    // 给数据,用于跟添加的图元区分
+    Origin->setData(0,"origin");
+    AxisX->setData(0,"x");
+    AxisY->setData(0,"y");
+    ArrowX->setData(0,"arrowX");
+    ArrowY->setData(0,"arrowY");
+}
+
+void MyScene::InitScene()
+{
+    this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
+    this->setBackgroundBrush(QBrush(QColor(0,43,54)));
+
+    Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
+                               QBrush(QColor(122,103,238), Qt::SolidPattern) );
+    Origin->setToolTip("原点");
+
+    AxisX = this->addLine(QLineF(QPointF(-width/2+1,0), QPointF(width/2-1,0)), QPen(QColor(139,54,38)));
+    AxisY = this->addLine(QLineF(QPointF(0,-height/2+1),QPointF(0,height/2-1)), QPen(QColor(139,54,38)));
+
+    QPolygonF poly_X,poly_Y;
+    poly_X<<QPointF(80, 0)<<QPointF(72, 3)<<QPointF(72,-3);
+    poly_Y<<QPointF(0, 80)<<QPointF(3, 72)<<QPointF(-3, 72);
+    ArrowX = this->addPolygon(poly_X,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
+    ArrowY = this->addPolygon(poly_Y,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
+    InitData();
+    InitText();
 }
 
 void MyScene::Save(QDataStream &s)
@@ -166,7 +174,6 @@ void MyScene::Load(QDataStream &s)
                              QStringLiteral("打开的不是gph文件!"));
         return;
     }
-
     InitScene();
     int count;
     s>>count;

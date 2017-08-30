@@ -79,8 +79,7 @@ private:
     QString fullName;
     QString ModifiedTime;
     QStringList TabNameList;
-//    MyScene* m_scene;
-//    MyView* m_view;
+
     PosDialog* dlg;
     QRecentFilesMenu *recentFilesMenu;
     QMenu *ptMenu, *lineMenu, *rectMenu, *ellipseMenu;

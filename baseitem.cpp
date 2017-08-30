@@ -13,11 +13,6 @@ BaseItem::~BaseItem()
 
 }
 
-int BaseItem::type() const
-{
-    return Type;
-}
-
 void BaseItem::setBoundingRect(const QRectF &rect)
 {
     if (m_rect == rect)

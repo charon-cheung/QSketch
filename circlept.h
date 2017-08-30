@@ -8,7 +8,8 @@ public:
     explicit CirclePt(QGraphicsItem *parent = Q_NULLPTR);
     ~CirclePt();
 
-    enum {Type = UserType + 2};
+    enum {Type = UserType + 1};
+    int type() const Q_DECL_OVERRIDE;
     enum {
         size = 2,
     };

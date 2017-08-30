@@ -9,19 +9,10 @@
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
-    Init();
-
-    //随着鼠标点击，场景总出现几个矩形，暂时去掉
-    QRect viewport_rect(0, 0, this->viewport()->width(),
-                        this->viewport()->height() );  //98X28
-    QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
-    viewCenter = new QGraphicsRectItem(visible_scene_rect);
-
-    m_scene = new MyScene(0);
+    InitView();
+    InitViewRect();
+    m_scene = new MyScene(0);   //注意this->scene()是 QGraphicsScene*
     this->setScene(m_scene);
-//    m_scene->addItem(viewCenter); //this->scene()是 QGraphicsScene*
-    this->viewport()->update();
-
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
 }
@@ -82,7 +73,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 r->setPos(start);
                 press_scene->addItem(r);
             }
-            else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY)
+            else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY ||drawRing)
             {
                 mode = NORMAL;
             }
@@ -272,6 +263,7 @@ void MyView::showItemInfo()
     foreach (QGraphicsItem* item, chosenItems)
     {
         pos = item->scenePos();  //场景坐标,图元坐标是item->pos()
+        qDebug()<<pos<<item->type();
         switch(item->type())
         {
         case QGraphicsRectItem::Type:
@@ -297,6 +289,7 @@ void MyView::showItemInfo()
         {
             type = "X形点";
             size = QSize(2,2);
+            qDebug()<<type;
             info = getItemInfo(type, pos, size);
             break;
         }
@@ -580,11 +573,6 @@ void MyView::Locate()
     this->updateCenterRect();
     catchPt(QPointF(0,0));
     showStatus("鼠标切换至原点");
-}
-
-void MyView::Cmd()
-{
-
 }
 
 void MyView::Reset()
@@ -899,7 +887,7 @@ void MyView::test()
     qDebug()<<"test:"<<qrand()%80;
 }
 
-void MyView::Init()
+void MyView::InitView()
 {
     mode = NORMAL;
     drawPt = false;
@@ -919,7 +907,18 @@ void MyView::Init()
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 //    qDebug()<<this->matrix();   //默认是单位矩阵
 //    QMatrix m(10,0,0,10,0,0);
-    //    this->setMatrix(m);
+//    this->setMatrix(m);
+}
+
+void MyView::InitViewRect()
+{
+    //随着鼠标点击，场景总出现几个矩形，暂时去掉
+    QRect viewport_rect(0, 0, this->viewport()->width(),
+                        this->viewport()->height() );       //98 X 28
+    QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
+    viewCenter = new QGraphicsRectItem(visible_scene_rect);
+//    m_scene->addItem(viewCenter);
+    this->viewport()->update();
 }
 
 QPen MyView::getPen()
