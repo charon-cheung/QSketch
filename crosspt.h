@@ -16,7 +16,7 @@ public:
     explicit CrossPt(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = Q_NULLPTR);
     ~CrossPt();
 
-    enum {Type = UserType + 1};
+    enum {Type = UserType + 3};
     int type() const;
     MyScene* getScene() const;
     QRectF rect() const;

@@ -68,11 +68,17 @@ void MyView::mousePressEvent(QMouseEvent *event)
             }
             else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
             {
+#if 0
                 CirclePt *pt = new CirclePt();
 //                场景对y轴对称,所以不是(-5,5,10,10),取下左点
                 pt->setBoundingRect(QRect(-5, -5, 10, 10));
                 pt->setPos(start);  //这里不是图元坐标，是场景坐标
                 press_scene->addItem(pt);
+#endif
+                Ring *r = new Ring();
+//                r->setBoundingRect(-20,-20, 40,40);
+                r->setPos(start);
+                press_scene->addItem(r);
             }
             else if(drawPt && drawCross)    // 画X样式的点
             {
@@ -514,7 +520,7 @@ void MyView::ShowContextMenu()
     QAction *Reset = m.addAction("重置视图");
     QAction *Movable = m.addAction("设置为可动");
     QAction *Delete = m.addAction("删除");
-    QAction *Rotate = m.addAction("旋转");
+
     QAction *Redraw = m.addAction("清空重画");
     QAction *Cut = m.addAction("剪切");
     QAction *Copy = m.addAction("复制");
@@ -527,7 +533,7 @@ void MyView::ShowContextMenu()
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Movable->setIcon(QIcon(":/Shape/Shape/movable.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
-    Rotate->setIcon(QIcon(":/Icon/Icon/rotate.png"));
+
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
     Cut->setIcon(QIcon(":/Icon/Icon/cut.png"));
     Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
@@ -540,7 +546,7 @@ void MyView::ShowContextMenu()
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Movable,SIGNAL(triggered(bool)), this,  SLOT(SetMovable(bool)) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
-    connect(Rotate,SIGNAL(triggered(bool)), this, SLOT(Rotate(QPointF,float)) );
+
     connect(Cut,SIGNAL(triggered(bool)), this,  SLOT(Cut()) );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
     connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );

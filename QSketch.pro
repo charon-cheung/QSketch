@@ -46,7 +46,8 @@ SOURCES += \
     crosspt.cpp \
     circlept.cpp \
     QRecentFilesMenu.cpp \
-    baseitem.cpp
+    baseitem.cpp \
+    ring.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -56,7 +57,8 @@ HEADERS += \
     crosspt.h \
     circlept.h \
     QRecentFilesMenu.h \
-    baseitem.h
+    baseitem.h \
+    ring.h
 
 FORMS += \
         mainwindow.ui \
@@ -64,3 +66,5 @@ FORMS += \
 
 RESOURCES += \
     res.qrc
+
+DISTFILES +=

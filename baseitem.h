@@ -2,25 +2,35 @@
 #define BASEITEM_H
 
 #include <QGraphicsItem>
+#include <QGraphicsEllipseItem>
+#include <QGraphicsScene>
+#include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
 
 class BaseItem : public QGraphicsItem
 {
 public:
     explicit BaseItem(QGraphicsItem *parent = Q_NULLPTR);
-//    explicit BaseItem(const QRectF &rect, QGraphicsItem *parent = Q_NULLPTR);
-//    explicit BaseItem(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = Q_NULLPTR);
     virtual ~BaseItem();
 
     enum {Type = UserType + 1};
     int type() const;
-
-//    QRectF rect() const;
     void setBoundingRect(const QRectF &rect);
-//    inline void setBoundingRect(qreal x, qreal y, qreal w, qreal h);
-//    QRectF boundingRect() const;
-private:
+    void setBoundingRect(qreal x, qreal y, qreal w, qreal h);
+    QRectF boundingRect() const;
 
+    QPen getSelectedPen();
+    QPen getUnselectedPen();
+    QPen getItemPen();
+    void setBoudingPainter(QPainter *painter);
+    void setItemPainter(QPainter *painter);
+    void DrawBounding(QPainter* painter);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 private:
     void updateRect();
 
@@ -32,15 +42,11 @@ protected:
     bool m_hovered;
 
     virtual void DrawShape(QPainter* painter);
-    virtual void DrawBounding(QPainter* painter);
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) Q_DECL_OVERRIDE;
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) ;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) ;
+
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 };
 
