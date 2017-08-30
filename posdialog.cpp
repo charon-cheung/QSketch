@@ -53,6 +53,15 @@ void PosDialog::showPt()
     return;
 }
 
+void PosDialog::showPtAngle()
+{
+    ui->frame->setVisible(false);
+    ui->frame_2->setVisible(false);
+    ui->length->setVisible(false);
+    ui->label_6->setVisible(false);
+    return;
+}
+
 void PosDialog::showLineXY()
 {
     ui->frame->setVisible(false);

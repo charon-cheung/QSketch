@@ -91,18 +91,20 @@ public slots:
     void setEllipse();
     QPen getPen();
     void ShowContextMenu();  //加右键菜单
+
     void setNormal();
     void Locate();      //重置原点
+    void Cmd();
     void Reset();       //重置放缩倍数
     void SetMovable(bool state);
-
     void Cut();
     void Copy();
     void Paste();
     void Delete();
-    void Rotate();
+    void Rotate(QPointF pt, float angle);
     void Redraw();
     void Translate(int direction);
+    void Translate(QPointF pt);
     void catchPt(QPointF pt);
     void showItemInfo();
 

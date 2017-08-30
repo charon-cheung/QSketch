@@ -79,7 +79,6 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 CrossPt *pt = new CrossPt();
                 pt->setBoundingRect(QRect(-5, -5, 10, 10));
                 pt->setPos(start);
-//                pt->setSelected(false);
                 press_scene->addItem(pt);
             }
             else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY)
@@ -87,11 +86,6 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 mode = NORMAL;
             }
         }
-//    case Qt::RightButton:
-//    {
-
-//        break;
-//    }
     default:
         event->ignore();
         break;
@@ -105,7 +99,6 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     switch (mode) {
     case NORMAL:
     {
-
         break;  // 需要处理QGraphicsView::mouseMoveEvent
     }
     case DRAG:
@@ -121,15 +114,15 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     case EDIT:
     {
         if(mode!=EDIT)  return;
-        //        qDebug()<<"mode:"<<mode;
-        //        end = this->mapToScene(event->pos());
-        //        qDebug()<<"end:"<<end;
-        //        m_scene->addLine(QLineF(start,end) );
-        //        start = this->mapToScene(event->pos());
+//        qDebug()<<"mode:"<<mode;
+//        end = this->mapToScene(event->pos());
+//        qDebug()<<"end:"<<end;
+//        m_scene->addLine(QLineF(start,end) );
+//        start = this->mapToScene(event->pos());
 
-        //        qreal angle1= qAtan2( start.y(),start.x());
-        //        qreal angle2= qAtan2( end.y(), end.x());
-        //        Line->setRotation((angle2 - angle1)*180 / PI);
+//        qreal angle1= qAtan2( start.y(),start.x());
+//        qreal angle2= qAtan2( end.y(), end.x());
+//        Line->setRotation((angle2 - angle1)*180 / PI);
         break;
     }
     default:
@@ -167,7 +160,6 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     updateCenterRect();
     QGraphicsView::mouseReleaseEvent(event);
 }
-
 //视图放大和缩小,可跟随鼠标
 void MyView::wheelEvent(QWheelEvent *event)
 {
@@ -270,14 +262,15 @@ void MyView::catchPt(QPointF pt)
 void MyView::showItemInfo()
 {
     chosenItems = m_scene->selectedItems();
+    if(chosenItems.size()!=1)   return;
+
     QString type;
     QPointF pos;
     QSizeF size;
     QString info;
-
-    if(chosenItems.size()!=1)   return;
     foreach (QGraphicsItem* item, chosenItems)
     {
+        pos = item->scenePos();  //场景坐标,图元坐标是item->pos()
         switch(item->type())
         {
         case QGraphicsRectItem::Type:
@@ -292,9 +285,9 @@ void MyView::showItemInfo()
         case QGraphicsEllipseItem::Type:
         {
             QGraphicsEllipseItem* Ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-//            qDebug()<<Ell->pos();   // 图元坐标，一直为(0,0)
             type = "椭圆";
-            pos = Ell->rect().center(); // 场景坐标
+            pos = Ell->rect().center();
+            qDebug()<<"坐标:"<<Ell->scenePos();
             size = Ell->rect().size();
             info = getItemInfo(type, pos, size);
             break;
@@ -302,7 +295,6 @@ void MyView::showItemInfo()
         case CrossPt::Type :
         {
             type = "X形点";
-            pos = item->pos();
             size = QSize(2,2);
             info = getItemInfo(type, pos, size);
             break;
@@ -310,7 +302,6 @@ void MyView::showItemInfo()
         case CirclePt::Type :
         {
             type = "圆形点";
-            pos = item->pos();
             size = QSize(2,2);
             info = getItemInfo(type, pos, size);
             break;
@@ -355,6 +346,7 @@ void MyView::setLine()
     }
     else if(sender()->objectName() == "actLine_2")
     {
+        changeCursor(Qt::ArrowCursor);
         drawLineXY = true;
         drawLineAH = false;
         dlg = new PosDialog(this);
@@ -374,6 +366,7 @@ void MyView::setLine()
     }
     else if(sender()->objectName() == "actLine_3")
     {
+        changeCursor(Qt::ArrowCursor);
         drawLineXY = false;
         drawLineAH = true;
         dlg = new PosDialog(this);
@@ -427,6 +420,7 @@ void MyView::setPt()
     }
     else if(sender()->objectName() == "act3")
     {
+        changeCursor(Qt::ArrowCursor);
         drawCirPt=false;
         drawCross=false;
         drawPtXY=true;
@@ -458,6 +452,7 @@ void MyView::setRect()
     }
     else if(sender()->objectName()=="actRect_2")
     {
+        changeCursor(Qt::ArrowCursor);
         drawRectXY=true;
         drawRounded=false;
         dlg = new PosDialog(this);
@@ -495,6 +490,7 @@ void MyView::setEllipse()
     }
     else if(sender()->objectName()=="actEllipse_2")
     {
+        changeCursor(Qt::ArrowCursor);
         drawElliXY=true;
         dlg = new PosDialog(this);
         dlg->showEllipse();
@@ -514,6 +510,7 @@ void MyView::ShowContextMenu()
     QMenu m;
     QAction *Normal = m.addAction("重置为普通模式");
     QAction *Locate = m.addAction("定位到原点");
+    QAction *Cmd = m.addAction("发命令");
     QAction *Reset = m.addAction("重置视图");
     QAction *Movable = m.addAction("设置为可动");
     QAction *Delete = m.addAction("删除");
@@ -526,6 +523,7 @@ void MyView::ShowContextMenu()
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
+    Cmd->setIcon(QIcon(":/Icon/Icon/measure.png"));
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Movable->setIcon(QIcon(":/Shape/Shape/movable.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
@@ -538,10 +536,11 @@ void MyView::ShowContextMenu()
 
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
+    connect(Cmd,SIGNAL(triggered(bool)), this, SLOT(Cmd()) );
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Movable,SIGNAL(triggered(bool)), this,  SLOT(SetMovable(bool)) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
-    connect(Rotate,SIGNAL(triggered(bool)), this, SLOT(Rotate()) );
+    connect(Rotate,SIGNAL(triggered(bool)), this, SLOT(Rotate(QPointF,float)) );
     connect(Cut,SIGNAL(triggered(bool)), this,  SLOT(Cut()) );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
     connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
@@ -569,6 +568,11 @@ void MyView::Locate()
     this->updateCenterRect();
     catchPt(QPointF(0,0));
     showStatus("鼠标切换至原点");
+}
+
+void MyView::Cmd()
+{
+
 }
 
 void MyView::Reset()
@@ -658,7 +662,7 @@ void MyView::Paste()
                 this->getScene()->addRect(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)));
             else if(className=="CrossPt")
             {
-                CrossPt *pt = new CrossPt();
+                CrossPt *pt = new CrossPt(NULL);
                 pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(pos);
                 this->getScene()->addItem(pt);
@@ -703,19 +707,18 @@ void MyView::Delete()
     }
 }
 
-void MyView::Rotate()
+void MyView::Rotate(QPointF pt, float angle)
 {
     chosenItems = m_scene->selectedItems();
     if(!chosenItems.size())   return;
     foreach(QGraphicsItem* item, chosenItems)
     {
-        qDebug()<<"旋转前的坐标:"<<item->pos();
-//        qDebug()<<item->mapToScene(item->pos());
-        //绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
-        item->setTransformOriginPoint(item->mapFromScene(0,0));
-        item->setRotation(90);
-        item->update();
-        qDebug()<<"旋转后的坐标:"<<item->pos();
+        qDebug()<<"旋转前的坐标:"<<item->scenePos();
+//        绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
+//        item->setTransformOriginPoint(item->mapFromScene(0,0));
+        item->setTransformOriginPoint(item->mapFromScene(pt));
+        item->setRotation(angle);
+        qDebug()<<"旋转后的坐标:"<<item->scenePos();
     }
 }
 
@@ -743,7 +746,19 @@ void MyView::Translate(int direction)
     {
         item->setTransform(m_translate);
     }
-//    qDebug()<<item->mapToScene(item->pos());  //不是场景坐标,是item->scenePos();初始为(0,0),每向右平移，坐标就增加(5,0)
+}
+// 场景坐标是item->scenePos();不是item->mapToScene(item->pos());
+//初始为(0,0),每向右平移，坐标就增加(5,0)
+void MyView::Translate(QPointF pt)
+{
+    chosenItems = m_scene->selectedItems();
+    if(!chosenItems.size())   return;
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        QPointF movePt = pt - item->scenePos();
+        m_translate.translate(movePt.x(), movePt.y());
+        item->setTransform(m_translate);
+    }
 }
 
 void MyView::updateCenterRect()
@@ -829,7 +844,6 @@ Qt::PenStyle MyView::getPenStyle(QComboBox* Stylebox)
         PenStyle = Qt::SolidLine;
         break;
     }
-    qDebug()<<"in switch"<<PenStyle;
     return PenStyle;
 }
 

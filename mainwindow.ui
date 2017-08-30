@@ -265,6 +265,12 @@ QPushButton::menu-indicator{image:None;}</string>
            <string> 刷子</string>
           </property>
          </widget>
+         <zorder>PenStyle</zorder>
+         <zorder>style_label</zorder>
+         <zorder>PenWidth</zorder>
+         <zorder>width_label</zorder>
+         <zorder>ColorPicker</zorder>
+         <zorder>BrushPicker</zorder>
          <zorder>DrawText</zorder>
          <zorder>DrawPt</zorder>
          <zorder>DrawLine</zorder>
@@ -381,7 +387,7 @@ QPushButton::menu-indicator{image:None;}</string>
    <widget class="QMenu" name="openMenu">
     <property name="geometry">
      <rect>
-      <x>1614</x>
+      <x>291</x>
       <y>103</y>
       <width>183</width>
       <height>254</height>
@@ -424,7 +430,15 @@ QPushButton::menu-indicator{image:None;}</string>
     <addaction name="menu_Close"/>
     <addaction name="action_Exit"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>命令</string>
+    </property>
+    <addaction name="translateAct"/>
+    <addaction name="rotateAct"/>
+   </widget>
    <addaction name="openMenu"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -689,6 +703,37 @@ QPushButton::menu-indicator{image:None;}</string>
    </property>
    <property name="text">
     <string>清空重画</string>
+   </property>
+  </action>
+  <action name="translateAct">
+   <property name="text">
+    <string>平移</string>
+   </property>
+   <property name="toolTip">
+    <string>平移到某点</string>
+   </property>
+  </action>
+  <action name="offsetAct">
+   <property name="text">
+    <string>偏移</string>
+   </property>
+  </action>
+  <action name="mirrorAct">
+   <property name="text">
+    <string>镜像</string>
+   </property>
+  </action>
+  <action name="rotateAct">
+   <property name="icon">
+    <iconset>
+     <disabledoff>:/Icon/Icon/rotate.png</disabledoff>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>旋转</string>
+   </property>
+   <property name="toolTip">
+    <string>旋转一定角度</string>
    </property>
   </action>
  </widget>

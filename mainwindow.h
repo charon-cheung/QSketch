@@ -61,6 +61,14 @@ private slots:
 
     void on_BrushPicker_clicked();
 
+    void on_translateAct_triggered();
+
+    void on_offsetAct_triggered();
+
+    void on_rotateAct_triggered();
+
+    void on_mirrorAct_triggered();
+
 signals:
     void getPt(QPointF pt1);
     void toColor(QColor c);

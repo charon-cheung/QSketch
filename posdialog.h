@@ -19,6 +19,7 @@ public:
     QPointF getPt();
     QList<QPointF> getLine();
     void showPt();
+    void showPtAngle();
     void showLineXY();
     void showLineAH();
     void showRectXY();

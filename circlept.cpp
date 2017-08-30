@@ -8,6 +8,8 @@ CirclePt::CirclePt(QGraphicsItem *parent)
 {
 //    可选择
     setFlags(QGraphicsItem::ItemIsSelectable );
+    setAcceptHoverEvents(true);
+    m_hovered = false;
 }
 
 CirclePt::CirclePt(const QRectF &rect, QGraphicsItem *parent)
@@ -77,18 +79,29 @@ void CirclePt::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void CirclePt::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    qDebug()<<"hover enter";
+    m_hovered = true;
+    update();
     QGraphicsItem::hoverEnterEvent(event);
 }
 
 void CirclePt::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-
+    m_hovered = false;
+    update();
+    QGraphicsItem::hoverLeaveEvent(event);
 }
 
 void CirclePt::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
 
+}
+
+void CirclePt::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+//    QMenu m;
+//    m.addAction("test");
+//    m.addAction("klaklg");
+//    m.exec();
 }
 
 int CirclePt::type() const
@@ -127,13 +140,15 @@ void CirclePt::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         painter->setPen(pen_1);
     else
         painter->setPen(pen_2);
-    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setRenderHint(QPainter::HighQualityAntialiasing, true);
     painter->drawRect(m_rect);
 
     QPen p;
     p.setWidth(2);
-    p.setColor(QColor(247, 160, 57));
-    p.setBrush(QColor(247, 160, 57));
+//    p.setColor(QColor(247, 160, 57));
+    p.setColor(QColor(m_hovered ? Qt::yellow :QColor(247, 160, 57) ));
+    p.setBrush(QBrush(m_hovered ? Qt::yellow :QColor(247, 160, 57) ));
+//    p.setBrush(QColor(247, 160, 57));
 
     painter->setPen(p);
 //    场景对y轴对称,取矩形的下左点,边界矩形也同样处理

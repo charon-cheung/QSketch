@@ -77,7 +77,7 @@ void MainWindow::InitActions()
     ui->mainToolBar->addAction(ui->action_Reset);
     ui->mainToolBar->addAction(ui->action_Redraw);
     ui->mainToolBar->addSeparator();
-//    ui->mainToolBar->addWidget(ui->PenStyle);
+
 }
 
 void MainWindow::InitMenus()
@@ -430,3 +430,29 @@ void MainWindow::on_BrushPicker_clicked()
     emit toBrush(PenBrush);
 }
 
+void MainWindow::on_translateAct_triggered()
+{
+    dlg = new PosDialog(this);
+    dlg->showPt();
+    if(dlg->exec() != QDialog::Accepted)    return;
+    QPointF pt = dlg->getPt();
+    getCurrentView()->Translate(pt);
+}
+
+void MainWindow::on_offsetAct_triggered()
+{
+
+}
+
+void MainWindow::on_rotateAct_triggered()
+{
+    dlg = new PosDialog(this);
+    dlg->showPtAngle();
+    if(dlg->exec() != QDialog::Accepted)    return;
+    getCurrentView()->Rotate(dlg->getPt(), dlg->getAngle());
+}
+
+void MainWindow::on_mirrorAct_triggered()
+{
+
+}

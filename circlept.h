@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
+#include <QMenu>
+#include <QAction>
 
 class CirclePt : public QGraphicsItem
 {
@@ -33,7 +35,7 @@ private:
     QRectF m_rect;
     mutable QRectF m_boundingRect;
     double m_dScale;  // 缩放比例
-
+    bool m_hovered;
 private:
     void updateRect();
 protected:
@@ -44,6 +46,7 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 };
 
 #endif // CIRCLEPT_H

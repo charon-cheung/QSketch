@@ -45,7 +45,8 @@ SOURCES += \
     posdialog.cpp \
     crosspt.cpp \
     circlept.cpp \
-    QRecentFilesMenu.cpp
+    QRecentFilesMenu.cpp \
+    baseitem.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -54,7 +55,8 @@ HEADERS += \
     posdialog.h \
     crosspt.h \
     circlept.h \
-    QRecentFilesMenu.h
+    QRecentFilesMenu.h \
+    baseitem.h
 
 FORMS += \
         mainwindow.ui \
