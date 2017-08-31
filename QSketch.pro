@@ -6,6 +6,7 @@
 
 QT       += core gui printsupport
 QMAKE_CXXFLAGS += -Wno-unused-variable -Wno-unused-parameter
+QMAKE_CFLAGS_WARN_OFF += -Wreturn-type
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QSketch
@@ -48,6 +49,7 @@ SOURCES += \
     myscene.cpp \
     posdialog.cpp \
     QRecentFilesMenu.cpp \
+    command.cpp
 
 
 HEADERS += \
@@ -56,6 +58,7 @@ HEADERS += \
     myscene.h \
     posdialog.h \
     QRecentFilesMenu.h \
+    command.h
 
 
 FORMS += \

@@ -17,6 +17,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+    int getPenWidth();
+    Qt::PenStyle getPenStyle();
     QColor getPenColor();
     QBrush getPenBrush();
     QFont  getFont();
@@ -71,13 +74,7 @@ private slots:
     void on_rotateAct_triggered();
 
     void on_mirrorAct_triggered();
-
-
-
 signals:
-//    void getPt(QPointF pt1);
-    void toColor(QColor c);
-    void toBrush(QBrush b);
     void toFont(QFont f);
 private:
     Ui::MainWindow *ui;
@@ -97,6 +94,8 @@ private:
     bool m_modified;
     MyView *newView;
 
+    int PenWidth;
+    Qt::PenStyle PenStyle;
     QColor PenColor;
     QBrush PenBrush;
     QFont TextFont;

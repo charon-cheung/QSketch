@@ -109,7 +109,8 @@ float* PosDialog::getWH()
     value[0]=ui->width->text().toFloat();
     value[1]=ui->height->text().toFloat();
     if(value[0]!=0 && value[1]!=0)
-        return value;
+    {;}
+    return value;
 }
 
 void PosDialog::on_accept_clicked()

@@ -4,11 +4,11 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QGraphicsSimpleTextItem>
-#include <QComboBox>
-#include "myscene.h"
 #include "posdialog.h"
 #include "mainwindow.h"
+#include "command.h"
 
+class Command;
 class MainWindow;
 #define PI 3.1415926
 class MyView : public QGraphicsView
@@ -24,10 +24,14 @@ public:
     bool IsSaved();
     void setNew(bool flag);
     bool IsNew();
+    void SetMoveFlag(bool flag);
+    void showStatus(QString msg);
+
 private:
     MyScene* m_scene;
     PosDialog* dlg;
-
+    Command* Cmd;
+    MainWindow* m_main;
     QList<bool> drawFlags;
     bool drawPt, drawCirPt, drawCross, drawPtXY;
     bool drawLine, drawLineXY, drawLineAH;
@@ -44,14 +48,6 @@ private:
         NORMAL,
         DRAG,
         EDIT
-    };
-    enum Direction
-    {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT,
-        PACE =5
     };
 
     AppMode mode;
@@ -73,17 +69,19 @@ private:
     void InitView();
     void InitBools();
     void InitViewRect();
-    void SetDrawFlag(bool drawShape);
+
     inline void changeCursor(const QString& shape);
     inline void changeCursor(Qt::CursorShape shape);
 
-    Qt::PenStyle getPenStyle(QComboBox* Stylebox);
-    int getPenWidth(QComboBox* Stylebox);
+    int getPenWidth();
+    Qt::PenStyle getPenStyle();
+    QColor getColor();
+    QBrush getBrush();
+    QPen getPen();
+
     QString inputText(bool multi);
     QPointF getScenePos();
     void selectAll(bool state);
-    inline void showStatus(QString msg);
-    QString getItemInfo(QString type, QPointF pos, QSizeF size);
 
 public slots:
     void DrawPt();
@@ -92,13 +90,11 @@ public slots:
     void DrawEllipse();
     void DrawText();
 
-    QPen getPen();
     QFont getFont();
     void ShowContextMenu();  //加右键菜单
 
     void setNormal();
     void Locate();      //重置原点
-
     void Reset();       //重置放缩倍数
     void SetMovable(bool state);
     void Cut();
@@ -120,7 +116,6 @@ protected:
 
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent *event);
-
 };
 
 #endif // MYVIEW_H

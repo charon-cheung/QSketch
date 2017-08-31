@@ -13,6 +13,9 @@ MyView::MyView(QWidget *parent):
     InitViewRect();
     m_scene = new MyScene(0);   //注意this->scene()是 QGraphicsScene*
     this->setScene(m_scene);
+
+//    Cmd = new Command(m_scene);
+    m_main = qobject_cast<MainWindow*>(this->topLevelWidget());
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
 }
@@ -222,25 +225,25 @@ void MyView::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Up:
     {
-        this->Translate(UP);
+        this->Translate(Command::UP);
         showStatus("向上平移5个单位");
     }
         break;
     case Qt::Key_Down:
     {
-        this->Translate(DOWN);
+        this->Translate(Command::DOWN);
         showStatus("向下平移5个单位");
     }
         break;
     case Qt::Key_Left:
     {
-        this->Translate(LEFT);
+        this->Translate(Command::LEFT);
         showStatus("向左平移5个单位");
     }
         break;
     case Qt::Key_Right:
     {
-        this->Translate(RIGHT);
+        this->Translate(Command::RIGHT);
         showStatus("向右平移5个单位");
     }
         break;
@@ -260,75 +263,8 @@ void MyView::catchPt(QPointF pt)
 
 void MyView::showItemInfo()
 {
-    chosenItems = m_scene->selectedItems();
-    if(chosenItems.size()!=1)   return;
-
-    QString type;
-    QPointF pos;
-    QSizeF size;
-    QString info;
-    foreach (QGraphicsItem* item, chosenItems)
-    {
-        pos = item->scenePos();  //场景坐标,图元坐标是item->pos()
-        qDebug()<<pos<<item->type();
-        switch(item->type())
-        {
-        case QGraphicsRectItem::Type:
-        {
-            QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-            type = "矩形";
-            pos = R->rect().center();
-            size = R->rect().size();
-            info = getItemInfo(type, pos, size);
-            break;
-        }
-        case QGraphicsEllipseItem::Type:
-        {
-            QGraphicsEllipseItem* Ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-            type = "椭圆";
-            pos = Ell->rect().center();
-            qDebug()<<"坐标:"<<Ell->scenePos();
-            size = Ell->rect().size();
-            info = getItemInfo(type, pos, size);
-            break;
-        }
-        case CrossPt::Type :
-        {
-            type = "X形点";
-            size = QSize(2,2);
-            qDebug()<<type;
-            info = getItemInfo(type, pos, size);
-            break;
-        }
-        case CirclePt::Type :
-        {
-            type = "圆形点";
-            size = QSize(2,2);
-            info = getItemInfo(type, pos, size);
-            break;
-        }
-        case QGraphicsLineItem::Type :
-        {
-            QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(item);
-            qreal x1=L->line().p1().x();
-            qreal y1=L->line().p1().y();
-            qreal x2=L->line().p2().x();
-            qreal y2=L->line().p2().y();
-            qreal length = L->line().length();
-            qreal angle = 360 - L->line().angle();
-            if(angle > 360)   angle -= 360;
-
-            type = "直线";
-            info =  QString("图元类型: %1 \n").arg(type);
-            info += QString("两个点的坐标: (%2 . %3) 和 (%4 . %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
-            info += QString("直线长度: %4   直线角度: %5").arg(length).arg(angle);
-            break;
-        }
-        default:
-            break;
-        }
-    }
-    QMessageBox::information(0, "图元信息",info);
+    Cmd = new Command(this);
+    Cmd->ShowItemInfo();
 }
 
 void MyView::DrawPt()
@@ -401,6 +337,8 @@ void MyView::DrawLine()
             QMessageBox::warning(0,"出错了","两个点的坐标不能相同!");
             return;
         }
+
+        qDebug()<<this->getPenWidth();
         m_scene->addLine(QLineF(list.at(0), list.at(1)),
                        getPen())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
@@ -463,7 +401,7 @@ void MyView::DrawRect()
         float *value= dlg->getWH();
 //        因为视图对y轴镜像，直接绘图pt是矩形的左下顶点，需要变换
         m_scene->addRect(pt.x(),pt.y()-value[1],
-                value[0],value[1], getPen() )->
+                value[0],value[1], getPen(),getBrush())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
     }
@@ -501,7 +439,7 @@ void MyView::DrawEllipse()
         float *value= dlg->getWH();
 //        因为视图对y轴镜像，所以pt是矩形的左下顶点,需要变换
         m_scene->addEllipse(pt.x()-value[0]/2, pt.y()-value[1]/2,
-                value[0], value[1], getPen() )->
+                value[0], value[1], getPen(), getBrush())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
     }
@@ -540,7 +478,6 @@ void MyView::ShowContextMenu()
     QMenu m;
     QAction *Normal = m.addAction("重置为普通模式");
     QAction *Locate = m.addAction("定位到原点");
-    QAction *Cmd = m.addAction("发命令");
     QAction *Reset = m.addAction("重置视图");
     QAction *Movable = m.addAction("设置为可动");
     QAction *Delete = m.addAction("删除");
@@ -553,7 +490,6 @@ void MyView::ShowContextMenu()
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
-    Cmd->setIcon(QIcon(":/Icon/Icon/measure.png"));
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Movable->setIcon(QIcon(":/Shape/Shape/movable.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
@@ -563,13 +499,13 @@ void MyView::ShowContextMenu()
     Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
     Paste->setIcon(QIcon(":/Icon/Icon/paste.png"));
     Info->setIcon(QIcon(":/Icon/Icon/info.png"));
-
+    Cmd = new Command(m_scene);
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
-    connect(Cmd,SIGNAL(triggered(bool)), this, SLOT(Cmd()) );
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Movable,SIGNAL(triggered(bool)), this,  SLOT(SetMovable(bool)) );
     connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
+//    connect(Delete,SIGNAL(triggered(bool)), Cmd, SLOT(Delete()) );
 
     connect(Cut,SIGNAL(triggered(bool)), this,  SLOT(Cut()) );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
@@ -610,22 +546,8 @@ void MyView::Reset()
 
 void MyView::SetMovable(bool state)
 {
-    chosenItems = m_scene->selectedItems();
-    if(!chosenItems.size())   return;
-    foreach(QGraphicsItem* item, chosenItems)
-    {
-        item->setFlag(QGraphicsItem::ItemIsMovable, state);
-        if(item->flags()==( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable ))
-        {
-            m_movable = true;
-            showStatus("当前所选图元已经可拖动");
-        }
-        else
-        {
-            m_movable = false;
-            showStatus("当前所选图元无法再拖动");
-        }
-    }
+    Cmd = new Command(this);
+    Cmd->SetMovable(state);
 }
 
 void MyView::Cut()
@@ -645,7 +567,6 @@ void MyView::Copy()
 
     QMimeData * md = new QMimeData();
     md->setData("GraphicsItem",ba);
-
     QClipboard *cb = QApplication::clipboard();
     cb->setMimeData(md);
     m_copied = true;
@@ -719,32 +640,14 @@ void MyView::Paste()
 
 void MyView::Delete()
 {
-    chosenItems = m_scene->selectedItems();
-    if(!chosenItems.size())   return;
-    foreach(QGraphicsItem* item, chosenItems)
-    {
-        if(!item)
-        {
-            QMessageBox::warning(0,"删除失败","图元不存在或不完整");
-            return;
-        }
-        m_scene->removeItem(item);  //删除item及其子item
-    }
+    Cmd = new Command(m_scene);
+    Cmd->Delete();
 }
 
 void MyView::Rotate(QPointF pt, float angle)
 {
-    chosenItems = m_scene->selectedItems();
-    if(!chosenItems.size())   return;
-    foreach(QGraphicsItem* item, chosenItems)
-    {
-        qDebug()<<"旋转前的坐标:"<<item->scenePos();
-//        绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
-//        item->setTransformOriginPoint(item->mapFromScene(0,0));
-        item->setTransformOriginPoint(item->mapFromScene(pt));
-        item->setRotation(angle);
-        qDebug()<<"旋转后的坐标:"<<item->scenePos();
-    }
+    Cmd = new Command(m_scene);
+    Cmd->Rotate(pt, angle);
 }
 
 void MyView::Redraw()
@@ -756,34 +659,14 @@ void MyView::Redraw()
 
 void MyView::Translate(int direction)
 {
-    chosenItems = m_scene->selectedItems();
-    if(!chosenItems.size())   return;
-
-    if(direction == UP)
-        m_translate.translate(0, PACE);
-    else if(direction == DOWN)
-        m_translate.translate(0, -PACE);
-    else if(direction == LEFT)
-        m_translate.translate(-PACE, 0);
-    else if(direction == RIGHT)
-        m_translate.translate(PACE, 0);
-    foreach(QGraphicsItem* item, chosenItems)
-    {
-        item->setTransform(m_translate);
-    }
+    Cmd = new Command(m_scene);
+    Cmd->Translate(direction);
 }
-// 场景坐标是item->scenePos();不是item->mapToScene(item->pos());
-//初始为(0,0),每向右平移，坐标就增加(5,0)
+
 void MyView::Translate(QPointF pt)
 {
-    chosenItems = m_scene->selectedItems();
-    if(!chosenItems.size())   return;
-    foreach(QGraphicsItem* item, chosenItems)
-    {
-        QPointF movePt = pt - item->scenePos();
-        m_translate.translate(movePt.x(), movePt.y());
-        item->setTransform(m_translate);
-    }
+    Cmd = new Command(m_scene);
+    Cmd->Translate(pt);
 }
 
 void MyView::updateCenterRect()
@@ -823,79 +706,13 @@ QPointF MyView::getScenePos()
 
 void MyView::selectAll(bool state)
 {
-    QList<QGraphicsItem*> all = m_scene->items(m_scene->sceneRect(),
-                       Qt::IntersectsItemShape,Qt::AscendingOrder);
-    foreach (QGraphicsItem* item, all) {
-        if(item->data(0).isNull())  //去掉场景初始化的5个图元
-        {
-            item->setSelected(state);
-        }
-    }
+    Cmd = new Command(m_scene);
+    Cmd->SelectAll(state);
 }
-
+// 可以与之前的方式做对比
 void MyView::showStatus(QString msg)
 {
-    QObjectList list = this->topLevelWidget()->children();
-    foreach(QObject* obj, list)
-    {
-        if(obj->objectName()=="statusBar")
-        {
-            QStatusBar *status = qobject_cast<QStatusBar*>(obj);
-            status->showMessage(msg);
-        }
-    }
-}
-
-Qt::PenStyle MyView::getPenStyle(QComboBox* Stylebox)
-{
-    switch(Stylebox->currentIndex())
-    {
-    case 0:
-        PenStyle = Qt::SolidLine;
-        break;
-    case 1:
-        PenStyle = Qt::DashLine;
-        break;
-    case 2:
-        PenStyle = Qt::DotLine;
-        break;
-    case 3:
-        PenStyle = Qt::DashDotLine;
-        break;
-    case 4:
-        PenStyle = Qt::DashDotDotLine;
-        break;
-    default:
-        PenStyle = Qt::SolidLine;
-        break;
-    }
-    return PenStyle;
-}
-
-int MyView::getPenWidth(QComboBox *WidthBox)
-{
-    switch(WidthBox->currentIndex())
-    {
-    case 0:
-        PenWidth = 1;
-        break;
-    case 1:
-        PenWidth = 2;
-        break;
-    case 2:
-        PenWidth = 3;
-        break;
-    case 3:
-        PenWidth = 4;
-        break;
-    case 4:
-        PenWidth = 5;
-        break;
-    default:
-        PenWidth = 1;
-        break;
-    }
-    return PenWidth;
+    m_main->statusBar()->showMessage(msg);
 }
 
 QString MyView::inputText(bool multi)
@@ -909,16 +726,8 @@ QString MyView::inputText(bool multi)
         text = QInputDialog::getText(0, tr("请输入文本"),"",
                                      QLineEdit::Normal,"text",&ok);
     if (ok && !text.isEmpty())
+        ok = true;
         return text;
-}
-
-QString MyView::getItemInfo(QString type, QPointF pos, QSizeF size)
-{
-    QString info;
-    info = QString("图元类型: %1 \n").arg(type);
-    info += QString("图元坐标: (%2 , %3)     \n").arg(pos.x()).arg(pos.y());
-    info += QString("图元大小: %4 X %5").arg(size.width()).arg(size.height());
-    return info;
 }
 
 void MyView::test()
@@ -965,46 +774,41 @@ void MyView::InitViewRect()
     this->viewport()->update();
 }
 
-void MyView::SetDrawFlag(bool drawShape)
+int MyView::getPenWidth()
 {
-    foreach (bool flag, drawFlags) {
-        if(flag== drawShape)
-            flag = true;
-        else
-            flag = false;
-    }
+    PenWidth = m_main->getPenWidth();
+    return PenWidth;
+}
+
+Qt::PenStyle MyView::getPenStyle()
+{
+    PenStyle = m_main->getPenStyle();
+    return PenStyle;
+}
+//没在mainwindow里选,则PenColor是invalid
+QColor MyView::getColor()
+{
+    PenColor = m_main->getPenColor();
+    if(!PenColor.isValid())
+        PenColor = Qt::white;
+    return PenColor;
+}
+//没在mainwindow里选,则没有brush
+QBrush MyView::getBrush()
+{
+    PenBrush = m_main->getPenBrush();
+    return PenBrush;
 }
 
 QPen MyView::getPen()
 {
-    if(sender()->objectName() == "PenStyle")
-    {
-        QComboBox* StyleBox = qobject_cast<QComboBox*>(sender());
-        PenStyle = getPenStyle(StyleBox);
-    }
-    if(sender()->objectName() == "PenWidth")
-    {
-        QComboBox* WidthBox = qobject_cast<QComboBox*>(sender());
-        PenWidth = getPenWidth(WidthBox);
-    }
-    if(sender()->objectName() == "MainWindow")
-    {qDebug()<<sender()->objectName();
-        MainWindow* m = qobject_cast<MainWindow*>(sender());
-        PenColor = m->getPenColor();
-//        PenBrush = m->getPenBrush();
-//        delete m;
-    }
-    if(PenStyle == Qt::NoPen)
-        PenStyle = Qt::SolidLine;
-    if(PenWidth==0)
-        PenWidth = 1;
-    if(!PenColor.isValid())
-        PenColor = Qt::white;
-
-    pen.setStyle(PenStyle);
-    pen.setWidth(PenWidth);
-    pen.setColor(PenColor);
-//    pen.setBrush(PenBrush);
+    //函数也能找到sender()
+//    qDebug()<<"sender name:"<<sender()->objectName();
+    pen.setWidth(getPenWidth());
+    pen.setStyle(getPenStyle());
+    pen.setColor(getColor());
+    if(getBrush().style()!=Qt::NoBrush)
+        pen.setBrush(getBrush());
     return pen;
 }
 
@@ -1033,4 +837,9 @@ void MyView::setNew(bool flag)
 bool MyView::IsNew()
 {
     return m_new;
+}
+
+void MyView::SetMoveFlag(bool flag)
+{
+    m_movable = flag;
 }

@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :
     InitActions();
     InitMenus();
     InitDir();
-
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
 }
@@ -35,6 +34,58 @@ MainWindow::~MainWindow()
     QSettings settings;
     settings.setValue("recentFiles", recentFilesMenu->saveState());
     delete ui;
+}
+
+int MainWindow::getPenWidth()
+{
+    switch(ui->PenWidth->currentIndex())
+    {
+    case 0:
+        PenWidth = 1;
+        break;
+    case 1:
+        PenWidth = 2;
+        break;
+    case 2:
+        PenWidth = 3;
+        break;
+    case 3:
+        PenWidth = 4;
+        break;
+    case 4:
+        PenWidth = 5;
+        break;
+    default:
+        PenWidth = 1;
+        break;
+    }
+    return PenWidth;
+}
+
+Qt::PenStyle MainWindow::getPenStyle()
+{
+    switch(ui->PenStyle->currentIndex())
+    {
+    case 0:
+        PenStyle = Qt::SolidLine;
+        break;
+    case 1:
+        PenStyle = Qt::DashLine;
+        break;
+    case 2:
+        PenStyle = Qt::DotLine;
+        break;
+    case 3:
+        PenStyle = Qt::DashDotLine;
+        break;
+    case 4:
+        PenStyle = Qt::DashDotDotLine;
+        break;
+    default:
+        PenStyle = Qt::SolidLine;
+        break;
+    }
+    return PenStyle;
 }
 
 QColor MainWindow::getPenColor()
@@ -134,12 +185,6 @@ void MainWindow::InitConnects(MyView* view)
     foreach(QAction* act, textActions)
         connect(act, &QAction::triggered, view, &MyView::DrawText );
 
-//    connect(ui->DrawText, &QPushButton::clicked, view, &MyView::DrawText);
-
-    connect(ui->PenStyle, SIGNAL(currentIndexChanged(int)), view, SLOT(getPen()) );
-    connect(ui->PenWidth, SIGNAL(currentIndexChanged(int)), view, SLOT(getPen()) );
-    connect(this, SIGNAL(toColor(QColor)), view, SLOT(getPen()) );
-    connect(this, SIGNAL(toBrush(QBrush)), view, SLOT(getPen()) );
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
 }
 
@@ -435,14 +480,13 @@ void MainWindow::on_action_Redraw_triggered()
 
 void MainWindow::on_ColorPicker_clicked()
 {
-    PenColor = QColorDialog::getColor(Qt::white);
-    emit toColor(PenColor);
+    PenColor = QColorDialog::getColor(Qt::yellow);
 }
 
 void MainWindow::on_BrushPicker_clicked()
 {
     PenBrush.setColor(QColorDialog::getColor(Qt::white));
-    emit toBrush(PenBrush);
+    PenBrush.setStyle(Qt::SolidPattern);
 }
 
 void MainWindow::on_FontPicker_clicked()
