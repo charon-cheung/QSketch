@@ -14,6 +14,7 @@
 #include <QDateTime>
 #include <QDate>
 #include <QColorDialog>
+#include <QFontDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -44,6 +45,11 @@ QColor MainWindow::getPenColor()
 QBrush MainWindow::getPenBrush()
 {
     return PenBrush;
+}
+
+QFont MainWindow::getFont()
+{
+    return TextFont;
 }
 
 void MainWindow::InitUi()
@@ -90,7 +96,7 @@ void MainWindow::InitMenus()
     connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(LoadFile(const QString &)));
 //    几种绘图
     QMenu* ptMenu = new QMenu(this);
-    ptActions<< ui->act1 << ui->act2 << ui->act3 <<ui->act4;
+    ptActions<< ui->act1 << ui->act2 << ui->act3;
     ptMenu->addActions(ptActions);
     ui->DrawPt->setMenu(ptMenu);
 
@@ -105,27 +111,36 @@ void MainWindow::InitMenus()
     ui->DrawRect->setMenu(rectMenu);
 
     QMenu* ellipseMenu = new QMenu(this);
-    ellipseActions<< ui->actEllipse_1<< ui->actEllipse_2;
+    ellipseActions<< ui->actEllipse_1<< ui->actEllipse_2<<ui->ring;
     ellipseMenu->addActions(ellipseActions);
     ui->DrawEllipse->setMenu(ellipseMenu);
+
+    QMenu* textMenu = new QMenu(this);
+    textActions << ui->textAct << ui->multiTextAct;
+    textMenu->addActions(textActions);
+    ui->DrawText->setMenu(textMenu);
 }
 
-void MainWindow::InitConnect(MyView* view)
+void MainWindow::InitConnects(MyView* view)
 {
     foreach(QAction* act, ptActions)
-        connect(act, &QAction::triggered, view, &MyView::setPt);
+        connect(act, &QAction::triggered, view, &MyView::DrawPt);
     foreach(QAction* act, lineActions)
-        connect(act, &QAction::triggered, view, &MyView::setLine );
+        connect(act, &QAction::triggered, view, &MyView::DrawLine );
     foreach(QAction* act, rectActions)
-        connect(act, &QAction::triggered, view, &MyView::setRect );
+        connect(act, &QAction::triggered, view, &MyView::DrawRect );
     foreach(QAction* act, ellipseActions)
-        connect(act, &QAction::triggered, view, &MyView::setEllipse );
+        connect(act, &QAction::triggered, view, &MyView::DrawEllipse );
+    foreach(QAction* act, textActions)
+        connect(act, &QAction::triggered, view, &MyView::DrawText );
+
+//    connect(ui->DrawText, &QPushButton::clicked, view, &MyView::DrawText);
 
     connect(ui->PenStyle, SIGNAL(currentIndexChanged(int)), view, SLOT(getPen()) );
     connect(ui->PenWidth, SIGNAL(currentIndexChanged(int)), view, SLOT(getPen()) );
     connect(this, SIGNAL(toColor(QColor)), view, SLOT(getPen()) );
     connect(this, SIGNAL(toBrush(QBrush)), view, SLOT(getPen()) );
-
+    connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
 }
 
 void MainWindow::InitDir()
@@ -208,7 +223,7 @@ void MainWindow::on_NewView_triggered()
     ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),name);
     ui->tabView->setCurrentWidget(newView);
 
-    InitConnect(newView);
+    InitConnects(newView);
 }
 
 void MainWindow::on_Open_triggered()
@@ -242,7 +257,7 @@ void MainWindow::on_Open_triggered()
     ui->tabView->currentWidget()->setObjectName(tabName);
     ui->tabView->setTabToolTip(ui->tabView->currentIndex(),ModifiedTime);
 
-    InitConnect(openView);
+    InitConnects(openView);
 
     QFileSystemWatcher *watcher = new QFileSystemWatcher(this);
     watcher->addPath(dirPath+"/Files/"+fullName);
@@ -348,7 +363,7 @@ void MainWindow::on_startBtn_clicked()
         ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
         ui->tabView->setCurrentWidget(newView);
 
-        InitConnect(newView);
+        InitConnects(newView);
     }
 }
 
@@ -428,6 +443,15 @@ void MainWindow::on_BrushPicker_clicked()
 {
     PenBrush.setColor(QColorDialog::getColor(Qt::white));
     emit toBrush(PenBrush);
+}
+
+void MainWindow::on_FontPicker_clicked()
+{
+    bool ok;
+    TextFont = QFontDialog::getFont(&ok, QFont("Inconsolata", 12), 0);
+//    a comma-separated list of the attributes,suited for use in QSettings.
+//    qDebug()<<TextFont.toString();
+    emit toFont(TextFont);
 }
 
 void MainWindow::on_translateAct_triggered()

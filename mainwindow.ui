@@ -61,7 +61,7 @@ QPushButton::menu-indicator{image:None;}</string>
            <string/>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="res.qrc">
             <normaloff>:/Shape/Shape/point.png</normaloff>:/Shape/Shape/point.png</iconset>
           </property>
           <property name="iconSize">
@@ -90,7 +90,7 @@ QPushButton::menu-indicator{image:None;}</string>
            <string/>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="res.qrc">
             <normaloff>:/Shape/Shape/line.png</normaloff>:/Shape/Shape/line.png</iconset>
           </property>
           <property name="iconSize">
@@ -116,7 +116,7 @@ QPushButton::menu-indicator{image:None;}</string>
            <string/>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="res.qrc">
             <normaloff>:/Shape/Shape/ellipse.png</normaloff>:/Shape/Shape/ellipse.png</iconset>
           </property>
           <property name="iconSize">
@@ -142,7 +142,7 @@ QPushButton::menu-indicator{image:None;}</string>
            <string/>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="res.qrc">
             <normaloff>:/Shape/Shape/rectangle.png</normaloff>:/Shape/Shape/rectangle.png</iconset>
           </property>
           <property name="iconSize">
@@ -168,7 +168,7 @@ QPushButton::menu-indicator{image:None;}</string>
            <string/>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="res.qrc">
             <normaloff>:/Shape/Shape/text.png</normaloff>:/Shape/Shape/text.png</iconset>
           </property>
           <property name="iconSize">
@@ -265,6 +265,19 @@ QPushButton::menu-indicator{image:None;}</string>
            <string> 刷子</string>
           </property>
          </widget>
+         <widget class="QToolButton" name="FontPicker">
+          <property name="geometry">
+           <rect>
+            <x>572</x>
+            <y>12</y>
+            <width>51</width>
+            <height>19</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>字体</string>
+          </property>
+         </widget>
          <zorder>PenStyle</zorder>
          <zorder>style_label</zorder>
          <zorder>PenWidth</zorder>
@@ -276,6 +289,7 @@ QPushButton::menu-indicator{image:None;}</string>
          <zorder>DrawLine</zorder>
          <zorder>DrawRect</zorder>
          <zorder>DrawEllipse</zorder>
+         <zorder>FontPicker</zorder>
         </widget>
         <widget class="QWidget" name="Insert">
          <attribute name="title">
@@ -332,7 +346,7 @@ QPushButton::menu-indicator{image:None;}</string>
            <string/>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="res.qrc">
             <normaloff>:/Icon/Icon/start.png</normaloff>:/Icon/Icon/start.png</iconset>
           </property>
           <property name="iconSize">
@@ -401,7 +415,7 @@ QPushButton::menu-indicator{image:None;}</string>
       <string>关闭</string>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="res.qrc">
        <normaloff>:/Icon/Icon/close.png</normaloff>:/Icon/Icon/close.png</iconset>
      </property>
      <addaction name="action_Current"/>
@@ -412,7 +426,7 @@ QPushButton::menu-indicator{image:None;}</string>
       <string>另存为</string>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="res.qrc">
        <normaloff>:/Icon/Icon/save_as.png</normaloff>:/Icon/Icon/save_as.png</iconset>
      </property>
      <addaction name="action_Pic"/>
@@ -736,13 +750,25 @@ QPushButton::menu-indicator{image:None;}</string>
     <string>旋转一定角度</string>
    </property>
   </action>
-  <action name="act4">
+  <action name="ring">
    <property name="text">
     <string>画圆环</string>
    </property>
   </action>
+  <action name="textAct">
+   <property name="text">
+    <string>单行文本</string>
+   </property>
+  </action>
+  <action name="multiTextAct">
+   <property name="text">
+    <string>多行文本</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

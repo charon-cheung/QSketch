@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QStatusBar>
-
+#include <QInputDialog>
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
@@ -41,7 +41,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
     case Qt::LeftButton:
         // 窗口坐标转为场景坐标
         start = this->mapToScene(event->pos());
-        if(!drawLine && !drawPt && !drawRect && !drawElli)
+        if(!drawLine && !drawPt && !drawRect && !drawElli && !drawText)
         {
             mode = NORMAL;
             showStatus("当前为普通模式");
@@ -67,16 +67,23 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 pt->setPos(start);
                 press_scene->addItem(pt);
             }
-            else if(drawPt && drawRing)    // 画圆环
+            else if(drawElli && drawRing)    // 画圆环
             {
                 Ring *r = new Ring();
                 r->setPos(start);
                 press_scene->addItem(r);
             }
-            else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY ||drawRing)
+            else if(drawText)
             {
-                mode = NORMAL;
+                Text = press_scene->addSimpleText((drawMulti ? inputText(true): inputText(false) ), TextFont);
+                Text->setPos(start);
+                Text->setTransform(QTransform::fromScale(1,-1));
+                Text->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
             }
+//            else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY ||drawRing)
+//            {
+//                mode = NORMAL;
+//            }
         }
     default:
         event->ignore();
@@ -324,13 +331,53 @@ void MyView::showItemInfo()
     QMessageBox::information(0, "图元信息",info);
 }
 
-void MyView::setLine()
+void MyView::DrawPt()
 {
-    drawLine=true;
-    drawPt=false;
-    drawRect=false;
-    drawElli=false;
+    drawPt = true;
+    drawLine = false;
+    drawRect = false;
+    drawElli = false;
+    drawText = false;
+    if(sender()->objectName() == "act1")
+    {
+        drawCirPt=true;
+        drawCross=false;
+        drawPtXY=false;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
+    }
+    else if(sender()->objectName() == "act2")
+    {
+        drawCirPt=false;
+        drawCross=true;
+        drawPtXY=false;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
+    }
+    else if(sender()->objectName() == "act3")
+    {
+        changeCursor(Qt::ArrowCursor);
+        drawCirPt=false;
+        drawCross=false;
+        drawPtXY=true;
+        dlg = new PosDialog(this);
+        dlg->showPt();
+        if(dlg->exec() != QDialog::Accepted)    return;
+        QPointF pt1 = dlg->getPt();
 
+        CirclePt *pt = new CirclePt();
+        pt->setPos(pt1);
+        m_scene->addItem(pt);
+    }
+}
+
+void MyView::DrawLine()
+{
+    drawPt = false;
+    drawLine = true;
+    drawRect = false;
+    drawElli = false;
+    drawText = false;
     if(sender()->objectName() == "actLine_1")
     {
         drawLineXY=false;
@@ -389,65 +436,13 @@ void MyView::setLine()
     }
 }
 
-void MyView::setPt()
+void MyView::DrawRect()
 {
-    drawLine=false;
-    drawPt=true;
-    drawRect=false;
-    drawElli=false;
-
-    if(sender()->objectName() == "act1")
-    {
-        drawCirPt=true;
-        drawCross=false;
-        drawPtXY=false;
-        drawRing=false;
-        changeCursor("cross");
-        showStatus("当前为编辑模式");
-    }
-    else if(sender()->objectName() == "act2")
-    {
-        drawCirPt=false;
-        drawCross=true;
-        drawPtXY=false;
-        drawRing=false;
-        changeCursor("cross");
-        showStatus("当前为编辑模式");
-    }
-    else if(sender()->objectName() == "act3")
-    {
-        changeCursor(Qt::ArrowCursor);
-        drawCirPt=false;
-        drawCross=false;
-        drawPtXY=true;
-        drawRing=false;
-        dlg = new PosDialog(this);
-        dlg->showPt();
-        if(dlg->exec() != QDialog::Accepted)    return;
-        QPointF pt1 = dlg->getPt();
-
-        CirclePt *pt = new CirclePt();
-        pt->setPos(pt1);
-        m_scene->addItem(pt);
-    }
-    else if(sender()->objectName() == "act4")
-    {
-        drawCirPt=false;
-        drawCross=false;
-        drawPtXY=false;
-        drawRing=true;
-        changeCursor("cross");
-        showStatus("当前为编辑模式");
-    }
-}
-
-void MyView::setRect()
-{
-    drawLine=false;
-    drawPt=false;
-    drawRect=true;
-    drawElli=false;
-
+    drawPt = false;
+    drawLine = false;
+    drawRect = true;
+    drawElli = false;
+    drawText = false;
     if(sender()->objectName()=="actRect_1")
     {
         drawRectXY=false;
@@ -480,16 +475,17 @@ void MyView::setRect()
     }
 }
 
-void MyView::setEllipse()
+void MyView::DrawEllipse()
 {
-    drawLine=false;
-    drawPt=false;
-    drawRect=false;
-    drawElli=true;
-
+    drawPt = false;
+    drawLine = false;
+    drawRect = false;
+    drawElli = true;
+    drawText = false;
     if(sender()->objectName()=="actEllipse_1")
     {
         drawElliXY=false;
+        drawRing=false;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
@@ -497,6 +493,7 @@ void MyView::setEllipse()
     {
         changeCursor(Qt::ArrowCursor);
         drawElliXY=true;
+        drawRing=false;
         dlg = new PosDialog(this);
         dlg->showEllipse();
         if(dlg->exec() != QDialog::Accepted)    return;
@@ -507,6 +504,34 @@ void MyView::setEllipse()
                 value[0], value[1], getPen() )->
                 setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
+    }
+    else if(sender()->objectName()=="ring")
+    {
+        drawElliXY=false;
+        drawRing=true;
+        changeCursor("cross");
+        showStatus("当前为编辑模式");
+    }
+}
+
+void MyView::DrawText()
+{
+    drawPt = false;
+    drawLine = false;
+    drawRect = false;
+    drawElli = false;
+    drawText = true;
+    changeCursor("cross");
+    showStatus("当前为编辑模式");
+    if(sender()->objectName()=="textAct")
+    {
+        drawSingle = true;
+        drawMulti = false;
+    }
+    else if(sender()->objectName()=="multiTextAct")
+    {
+        drawSingle = false;
+        drawMulti = true;
     }
 }
 
@@ -873,6 +898,20 @@ int MyView::getPenWidth(QComboBox *WidthBox)
     return PenWidth;
 }
 
+QString MyView::inputText(bool multi)
+{
+    bool ok;
+    QString text;
+    if(multi)
+        text = QInputDialog::getMultiLineText(0, tr("请输入文本"),"",
+                                              "第一行\n第二行", &ok);
+    else
+        text = QInputDialog::getText(0, tr("请输入文本"),"",
+                                     QLineEdit::Normal,"text",&ok);
+    if (ok && !text.isEmpty())
+        return text;
+}
+
 QString MyView::getItemInfo(QString type, QPointF pos, QSizeF size)
 {
     QString info;
@@ -890,15 +929,7 @@ void MyView::test()
 void MyView::InitView()
 {
     mode = NORMAL;
-    drawPt = false;
-    drawLine = false;
-    drawRect = false;
-    drawElli = false;
-    m_copied = false;
-    m_movable = false;
-    m_saved = false;
-    m_new = false;
-
+    InitBools();
     this->setDragMode(QGraphicsView::RubberBandDrag);
     this->setRenderHints(QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -907,7 +938,20 @@ void MyView::InitView()
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 //    qDebug()<<this->matrix();   //默认是单位矩阵
 //    QMatrix m(10,0,0,10,0,0);
-//    this->setMatrix(m);
+    //    this->setMatrix(m);
+}
+
+void MyView::InitBools()
+{
+    drawPt = false;
+    drawLine = false;
+    drawRect = false;
+    drawElli = false;
+    drawText = false;
+    m_copied = false;
+    m_movable = false;
+    m_saved = false;
+    m_new = false;
 }
 
 void MyView::InitViewRect()
@@ -919,6 +963,16 @@ void MyView::InitViewRect()
     viewCenter = new QGraphicsRectItem(visible_scene_rect);
 //    m_scene->addItem(viewCenter);
     this->viewport()->update();
+}
+
+void MyView::SetDrawFlag(bool drawShape)
+{
+    foreach (bool flag, drawFlags) {
+        if(flag== drawShape)
+            flag = true;
+        else
+            flag = false;
+    }
 }
 
 QPen MyView::getPen()
@@ -934,13 +988,14 @@ QPen MyView::getPen()
         PenWidth = getPenWidth(WidthBox);
     }
     if(sender()->objectName() == "MainWindow")
-    {
+    {qDebug()<<sender()->objectName();
         MainWindow* m = qobject_cast<MainWindow*>(sender());
         PenColor = m->getPenColor();
 //        PenBrush = m->getPenBrush();
+//        delete m;
     }
-    if(PenStyle == Qt::PenStyle::NoPen)
-        PenStyle = Qt::PenStyle::SolidLine;
+    if(PenStyle == Qt::NoPen)
+        PenStyle = Qt::SolidLine;
     if(PenWidth==0)
         PenWidth = 1;
     if(!PenColor.isValid())
@@ -951,6 +1006,13 @@ QPen MyView::getPen()
     pen.setColor(PenColor);
 //    pen.setBrush(PenBrush);
     return pen;
+}
+
+QFont MyView::getFont()
+{
+    MainWindow* m = qobject_cast<MainWindow*>(sender());
+    TextFont = m->getFont();
+    return TextFont;
 }
 
 void MyView::setSaved(bool flag)

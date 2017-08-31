@@ -19,6 +19,7 @@ public:
     ~MainWindow();
     QColor getPenColor();
     QBrush getPenBrush();
+    QFont  getFont();
 private slots:
 
     void on_Open_triggered();
@@ -61,6 +62,8 @@ private slots:
 
     void on_BrushPicker_clicked();
 
+    void on_FontPicker_clicked();
+
     void on_translateAct_triggered();
 
     void on_offsetAct_triggered();
@@ -69,10 +72,13 @@ private slots:
 
     void on_mirrorAct_triggered();
 
+
+
 signals:
-    void getPt(QPointF pt1);
+//    void getPt(QPointF pt1);
     void toColor(QColor c);
     void toBrush(QBrush b);
+    void toFont(QFont f);
 private:
     Ui::MainWindow *ui;
     QString dirPath,filePath;
@@ -87,16 +93,18 @@ private:
     QList<QAction*> lineActions;
     QList<QAction*> rectActions;
     QList<QAction*> ellipseActions;
+    QList<QAction*> textActions;
     bool m_modified;
     MyView *newView;
 
     QColor PenColor;
     QBrush PenBrush;
+    QFont TextFont;
 private:
     void InitUi();
     void InitActions();
     void InitMenus();
-    void InitConnect(MyView* view);
+    void InitConnects(MyView* view);
     void InitDir();
     void ShowSaveBox();
     MyView* getCurrentView();
