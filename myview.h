@@ -82,6 +82,7 @@ private:
     QString inputText(bool multi);
     QPointF getScenePos();
     void selectAll(bool state);
+    void catchPt(QPointF pt);
 
 public slots:
     void DrawPt();
@@ -97,7 +98,6 @@ public slots:
     void Locate();      //重置原点
     void Reset();       //重置放缩倍数
     void SetMovable(bool state);
-    void Cut();
     void Copy();
     void Paste();
     void Delete();
@@ -105,8 +105,6 @@ public slots:
     void Redraw();
     void Translate(int direction);
     void Translate(QPointF pt);
-    void catchPt(QPointF pt);
-
     void showItemInfo();
 
 protected:

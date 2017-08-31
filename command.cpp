@@ -120,7 +120,6 @@ void Command::ShowItemInfo()
     foreach (QGraphicsItem* item, chosenItems)
     {
         pos = item->scenePos();  //场景坐标,图元坐标是item->pos()
-//        qDebug()<<pos<<item->type();
         switch(item->type())
         {
         case QGraphicsRectItem::Type:

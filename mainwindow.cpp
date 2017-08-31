@@ -401,6 +401,7 @@ void MainWindow::on_startBtn_clicked()
     else
     {
         newView = new MyView(this);
+        newView->setToolTip("第一层");
         newView->setNew(true);
         newView->setFocus();    //获得焦点
         newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
@@ -523,4 +524,18 @@ void MainWindow::on_rotateAct_triggered()
 void MainWindow::on_mirrorAct_triggered()
 {
 
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    newView = new MyView(this);
+    newView->setToolTip("第二层");
+    newView->setNew(true);
+    newView->setFocus();    //获得焦点
+    newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
+    newView->updateCenterRect();
+    ui->tabView->setCurrentWidget(newView);
+//    ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
+
+    InitConnects(newView);
 }

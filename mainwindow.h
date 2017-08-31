@@ -74,6 +74,8 @@ private slots:
     void on_rotateAct_triggered();
 
     void on_mirrorAct_triggered();
+    void on_pushButton_clicked();
+
 signals:
     void toFont(QFont f);
 private:

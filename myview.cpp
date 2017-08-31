@@ -14,7 +14,7 @@ MyView::MyView(QWidget *parent):
     m_scene = new MyScene(0);   //注意this->scene()是 QGraphicsScene*
     this->setScene(m_scene);
 
-//    Cmd = new Command(m_scene);
+    Cmd = new Command(m_scene);
     m_main = qobject_cast<MainWindow*>(this->topLevelWidget());
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
@@ -181,7 +181,10 @@ void MyView::keyPressEvent(QKeyEvent *event)
     if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_C)
         this->Copy();
     if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_X)
-        this->Cut();
+    {
+        Copy();
+        Delete();
+    }
     else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_V)
         this->Paste();
     else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_A)
@@ -479,9 +482,7 @@ void MyView::ShowContextMenu()
     QAction *Normal = m.addAction("重置为普通模式");
     QAction *Locate = m.addAction("定位到原点");
     QAction *Reset = m.addAction("重置视图");
-    QAction *Movable = m.addAction("设置为可动");
     QAction *Delete = m.addAction("删除");
-
     QAction *Redraw = m.addAction("清空重画");
     QAction *Cut = m.addAction("剪切");
     QAction *Copy = m.addAction("复制");
@@ -491,27 +492,22 @@ void MyView::ShowContextMenu()
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
-    Movable->setIcon(QIcon(":/Shape/Shape/movable.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
-
     Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
     Cut->setIcon(QIcon(":/Icon/Icon/cut.png"));
     Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
     Paste->setIcon(QIcon(":/Icon/Icon/paste.png"));
     Info->setIcon(QIcon(":/Icon/Icon/info.png"));
-    Cmd = new Command(m_scene);
+
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
-    connect(Movable,SIGNAL(triggered(bool)), this,  SLOT(SetMovable(bool)) );
-    connect(Delete,SIGNAL(triggered(bool)), this, SLOT(Delete()) );
-//    connect(Delete,SIGNAL(triggered(bool)), Cmd, SLOT(Delete()) );
-
-    connect(Cut,SIGNAL(triggered(bool)), this,  SLOT(Cut()) );
+    connect(Delete, SIGNAL(triggered(bool)), this, SLOT(Delete()) );
+    connect(Cut,&QAction::triggered, [this]{this->Copy(); this->Delete();} );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
     connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
     connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
-    connect(Info,SIGNAL(triggered(bool)), this, SLOT(showItemInfo()) );
+    connect(Info, SIGNAL(triggered(bool)), this, SLOT(showItemInfo()) );
 
     m.exec(QCursor::pos());
 }
@@ -523,6 +519,7 @@ void MyView::setNormal()
     drawLine=false;
     drawElli = false;
     drawRect = false;
+    drawText = false;
     changeCursor(Qt::ArrowCursor);
     showStatus("切换为普通模式");
 }
@@ -548,12 +545,6 @@ void MyView::SetMovable(bool state)
 {
     Cmd = new Command(this);
     Cmd->SetMovable(state);
-}
-
-void MyView::Cut()
-{
-    Copy();
-    Delete();
 }
 
 void MyView::Copy()
@@ -727,7 +718,7 @@ QString MyView::inputText(bool multi)
                                      QLineEdit::Normal,"text",&ok);
     if (ok && !text.isEmpty())
         ok = true;
-        return text;
+    return text;
 }
 
 void MyView::test()
@@ -802,13 +793,10 @@ QBrush MyView::getBrush()
 
 QPen MyView::getPen()
 {
-    //函数也能找到sender()
-//    qDebug()<<"sender name:"<<sender()->objectName();
+    //sender()->objectName();  函数也能找到 sender()
     pen.setWidth(getPenWidth());
     pen.setStyle(getPenStyle());
     pen.setColor(getColor());
-    if(getBrush().style()!=Qt::NoBrush)
-        pen.setBrush(getBrush());
     return pen;
 }
 

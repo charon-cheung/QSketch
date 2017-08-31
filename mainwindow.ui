@@ -39,7 +39,7 @@ QPushButton::menu-indicator{image:None;}</string>
          </size>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="Home">
          <attribute name="title">
@@ -232,8 +232,8 @@ QPushButton::menu-indicator{image:None;}</string>
            <rect>
             <x>480</x>
             <y>12</y>
-            <width>81</width>
-            <height>19</height>
+            <width>80</width>
+            <height>20</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -251,8 +251,8 @@ QPushButton::menu-indicator{image:None;}</string>
            <rect>
             <x>480</x>
             <y>37</y>
-            <width>81</width>
-            <height>21</height>
+            <width>80</width>
+            <height>20</height>
            </rect>
           </property>
           <property name="minimumSize">
@@ -268,10 +268,10 @@ QPushButton::menu-indicator{image:None;}</string>
          <widget class="QToolButton" name="FontPicker">
           <property name="geometry">
            <rect>
-            <x>572</x>
+            <x>570</x>
             <y>12</y>
-            <width>51</width>
-            <height>19</height>
+            <width>60</width>
+            <height>20</height>
            </rect>
           </property>
           <property name="text">
@@ -295,6 +295,19 @@ QPushButton::menu-indicator{image:None;}</string>
          <attribute name="title">
           <string>插入</string>
          </attribute>
+         <widget class="QPushButton" name="pushButton">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>20</y>
+            <width>80</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>PushButton</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
