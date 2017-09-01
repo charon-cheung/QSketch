@@ -122,6 +122,7 @@ void MainWindow::InitUi()
     ui->PenWidth->insertItems(0,PenWidths);
     ui->statusBar->showMessage("初始化完成");
 
+
 }
 
 void MainWindow::InitActions()

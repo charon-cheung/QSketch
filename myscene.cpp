@@ -48,8 +48,8 @@ void MyScene::InitData()
 void MyScene::InitScene()
 {
     this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
-    this->setBackgroundBrush(QBrush(QColor(0,43,54)));
-
+//    this->setBackgroundBrush(QBrush(QColor(0,43,54)));
+    this->setBackgroundBrush(QBrush(QColor(33,40,48)));
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
                                QBrush(QColor(122,103,238), Qt::SolidPattern) );
     Origin->setToolTip("原点");

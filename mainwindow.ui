@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
-    <height>582</height>
+    <width>730</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,117 @@
 {
     padding: -1;
 } 
-QPushButton::menu-indicator{image:None;}</string>
+QPushButton::menu-indicator{image:None;}
+
+QMainWindow
+{
+	background-color: rgb(56,56,56);
+}
+
+
+
+QTabWidget::pane { /* The tab widget frame */
+border-top: 1px solid rgb(53,53,53);
+border-left: 1px solid rgb(53,53,53);
+border-bottom: 1px solid rgb(53,53,53);
+border-right: 1px solid rgb(53,53,53);
+
+background-color: rgb(93,93,93);
+left:    0px;
+right:   0px;
+bottom:  5px;
+right:   0px;
+}
+
+
+QTabWidget::tab-bar:top {
+    top: 1px;
+}
+
+QTabWidget::tab-bar:bottom {
+    bottom: 1px;
+}
+
+QTabWidget::tab-bar:left {
+    right: 1px;
+}
+
+QTabWidget::tab-bar:right {
+    left: 1px;
+}
+
+QTabBar::tab {
+    border: 1px solid black;
+	min-width: 70px;
+    min-height: 10px;
+}
+
+QTabBar::tab:selected {
+    background: rgb(115,115,115);
+}
+
+QTabBar::tab:!selected {
+    background: rgb(93,93,93);
+}
+
+QTabBar::tab:!selected:hover {
+    background: #999;
+}
+
+QTabBar::tab:top:!selected {
+    margin-top: 3px;
+}
+
+QTabBar::tab:bottom:!selected {
+    margin-bottom: 3px;
+}
+
+QTabBar::tab:top, QTabBar::tab:bottom {
+    min-width: 8px;
+    margin-right: -1px;
+    padding: 5px 10px 5px 10px;
+}
+
+QTabBar::tab:top:selected {
+    border-bottom-color: none;
+}
+
+QTabBar::tab:bottom:selected {
+    border-top-color: none;
+}
+
+QTabBar::tab:top:last, QTabBar::tab:bottom:last,
+QTabBar::tab:top:only-one, QTabBar::tab:bottom:only-one {
+    margin-right: 0;
+}
+
+QTabBar::tab:left:!selected {
+    margin-right: 3px;
+}
+
+QTabBar::tab:right:!selected {
+    margin-left: 3px;
+}
+
+QTabBar::tab:left, QTabBar::tab:right {
+    min-height: 8px;
+    margin-bottom: -1px;
+    padding: 10px 5px 10px 5px;
+}
+
+QTabBar::tab:left:selected {
+    border-left-color: none;
+}
+
+QTabBar::tab:right:selected {
+    border-right-color: none;
+}
+
+QTabBar::tab:left:last, QTabBar::tab:right:last,
+QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
+    margin-bottom: 0;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -404,8 +514,8 @@ QPushButton::menu-indicator{image:None;}</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>660</width>
-     <height>22</height>
+     <width>730</width>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="openMenu">
@@ -413,8 +523,8 @@ QPushButton::menu-indicator{image:None;}</string>
      <rect>
       <x>291</x>
       <y>103</y>
-      <width>183</width>
-      <height>254</height>
+      <width>154</width>
+      <height>252</height>
      </rect>
     </property>
     <property name="title">
