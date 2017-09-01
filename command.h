@@ -12,7 +12,6 @@ public:
     Command(MyView* view);
     MyScene* getScene();
 
-
     enum Direction
     {
         UP,
@@ -26,6 +25,7 @@ public slots:
     void Rotate(QPointF pt, float angle);
     void Translate(int direction);
     void Translate(QPointF pt);
+    void Zoom(bool in);
     void SelectAll(bool state);
     void SetMovable(bool state);
     void ShowItemInfo();

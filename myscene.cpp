@@ -80,9 +80,7 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
 {
     foreach (QGraphicsItem* item, items)
     {
-        if(item->data(0).toString()=="origin"||item->data(0).toString()=="x"
-                ||item->data(0).toString()=="y"||item->data(0).toString()=="arrowX"
-                ||item->data(0).toString()=="arrowY")
+        if(!item->data(0).toString().isEmpty())
         {
             continue;
         }
@@ -146,7 +144,22 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             s<< rectangle->pos().x();
             s<< rectangle->pos().y();
         }
-
+        else if(item->type()== QGraphicsSimpleTextItem::Type)
+        {
+            className = "QGraphicsSimpleTextItem";
+            QGraphicsSimpleTextItem* text = qgraphicsitem_cast<QGraphicsSimpleTextItem*>(item);
+            s<< className;
+            s<< int(text->flags());
+            s<< text->text();
+            s<< text->font().family();
+            s<< text->font().pointSizeF();
+            s<< text->font().bold();
+            s<< text->pos().x();
+            s<< text->pos().y();
+            s<< text->pen().color();
+            s<< int(text->pen().style());  //强制转换Qt::PenStyle
+            s<< text->pen().width();
+        }
         else if(item->type()==6)
         {
             className = "QGraphicsLineItem";
@@ -192,7 +205,7 @@ void MyScene::Import(QDataStream &s, int count)
         QPen pen;
         s>>className;   //不能直接用字符串
         s >> flags;
-        if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem")
+        if(className =="QGraphicsEllipseItem"||className=="QGraphicsRectItem")
         {
             qreal x,y,w,h;
             qreal px,py;
@@ -217,7 +230,7 @@ void MyScene::Import(QDataStream &s, int count)
                 rect->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
             }
         }
-        else if(className=="CrossPt")
+        else if(className =="CrossPt")
         {
             qreal x,y,w,h;
             qreal px,py;
@@ -230,7 +243,7 @@ void MyScene::Import(QDataStream &s, int count)
             pt->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
             this->addItem(pt);
         }
-        else if(className=="CirclePt")
+        else if(className =="CirclePt")
         {
             qreal x,y,w,h;
             qreal px,py;
@@ -243,7 +256,32 @@ void MyScene::Import(QDataStream &s, int count)
             pt->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
             this->addItem(pt);
         }
+        else if(className == "QGraphicsSimpleTextItem")
+        {
+            QString text,family;
+            qreal fontSizeF;
+            bool bold;
+            qreal px,py;
 
+            s >> text;  s >> family;
+            s >> fontSizeF; s >> bold;
+            QFont font;
+            font.setFamily(family);
+            font.setPointSize(fontSizeF);
+            font.setBold(bold);
+
+            s >> px;    s >> py;
+            s >> c; s >> style; s >> width;
+            pen.setColor(c);
+            pen.setStyle(Qt::PenStyle(style) );
+            pen.setWidth(width);
+
+            QGraphicsSimpleTextItem* Text = this->addSimpleText(text,font);
+            Text->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
+            Text->setPos(px,py);
+            Text->setTransform(QTransform::fromScale(1,-1));
+            Text->setPen(pen);
+        }
         else if(className=="QGraphicsLineItem")
         {
             qreal x1,y1,x2,y2;

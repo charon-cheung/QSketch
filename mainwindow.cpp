@@ -111,6 +111,7 @@ void MainWindow::InitUi()
     ui->tabView->setTabsClosable(true);
     ui->tabView->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
+//    ui->statusBar->addPermanentWidget();
 
     QStringList PenStyles;
     PenStyles<< "实线" <<"虚线"<< "点线" << "点划线" << "点点划线";
@@ -120,6 +121,7 @@ void MainWindow::InitUi()
     PenWidths<< QString::number(1) << QString::number(2) << QString::number(3) << QString::number(4) << QString::number(5);
     ui->PenWidth->insertItems(0,PenWidths);
     ui->statusBar->showMessage("初始化完成");
+
 }
 
 void MainWindow::InitActions()
@@ -170,6 +172,13 @@ void MainWindow::InitMenus()
     textActions << ui->textAct << ui->multiTextAct;
     textMenu->addActions(textActions);
     ui->DrawText->setMenu(textMenu);
+
+//    dock = new QDockWidget(tr("浮动"), ui->tabView);
+//    dock->resize(40,300);
+//    dock->setWidget(ui->normal);
+//    dock->addActions(lineActions);
+//    dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+//    this->addDockWidget(Qt::RightDockWidgetArea, dock);
 }
 
 void MainWindow::InitConnects(MyView* view)
@@ -183,7 +192,7 @@ void MainWindow::InitConnects(MyView* view)
     foreach(QAction* act, ellipseActions)
         connect(act, &QAction::triggered, view, &MyView::DrawEllipse );
     foreach(QAction* act, textActions)
-        connect(act, &QAction::triggered, view, &MyView::DrawText );
+        connect(act, &QAction::triggered, view, &MyView::DrawTexts );
 
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
 }
@@ -508,20 +517,10 @@ void MainWindow::on_translateAct_triggered()
     getCurrentView()->Translate(pt);
 }
 
-void MainWindow::on_offsetAct_triggered()
-{
-
-}
-
 void MainWindow::on_rotateAct_triggered()
 {
     dlg = new PosDialog(this);
     dlg->showPtAngle();
     if(dlg->exec() != QDialog::Accepted)    return;
     getCurrentView()->Rotate(dlg->getPt(), dlg->getAngle());
-}
-
-void MainWindow::on_mirrorAct_triggered()
-{
-
 }

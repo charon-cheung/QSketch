@@ -76,6 +76,19 @@ void Command::Translate(QPointF pt)
     }
 }
 
+void Command::Zoom(bool in)
+{
+    qreal factor;
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        factor = item->scale();
+        if(in)
+            item->setScale(1.414*factor);
+        else
+            item->setScale(0.707*factor);
+    }
+}
+
 void Command::SelectAll(bool state)
 {
     QList<QGraphicsItem*> all = m_scene->items(m_scene->sceneRect(),

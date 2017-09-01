@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport
+QT       += core gui printsupport quick
 QMAKE_CXXFLAGS += -Wno-unused-variable -Wno-unused-parameter
 QMAKE_CFLAGS_WARN_OFF += -Wreturn-type
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -49,7 +49,8 @@ SOURCES += \
     myscene.cpp \
     posdialog.cpp \
     QRecentFilesMenu.cpp \
-    command.cpp
+    command.cpp \
+    clock.cpp
 
 
 HEADERS += \
@@ -58,7 +59,8 @@ HEADERS += \
     myscene.h \
     posdialog.h \
     QRecentFilesMenu.h \
-    command.h
+    command.h \
+    clock.h
 
 
 FORMS += \

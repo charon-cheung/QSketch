@@ -11,9 +11,6 @@ MyView::MyView(QWidget *parent):
 {
     InitView();
     InitViewRect();
-    LineCount = 0;
-    RectCount = 0;
-    ElliCount = 0;
     m_scene = new MyScene(0);   //注意this->scene()是 QGraphicsScene*
     this->setScene(m_scene);
 
@@ -111,7 +108,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 Text->setFlag(QGraphicsItem::ItemIsSelectable);
                 Text->setPos(StartPt);
                 Text->setTransform(QTransform::fromScale(1,-1));
-                Text->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
+//                qDebug()<<Text->transform().m11()<<"  "<<Text->transform().m22();  //对应 1和 -1
+                Text->setPen(getPen());
                 break;
             }
             default:
@@ -259,7 +257,7 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
                 ElliCount++;
             }
             mode = NORMAL;     // 不加就报错,会多产生moveEvent,为什么
-        }
+            this->setDragMode(QGraphicsView::RubberBandDrag);        }
     default:
         event->ignore();
         break;
@@ -315,6 +313,12 @@ void MyView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Minus:
         this->scale(0.70711, 0.70711);
         this->updateCenterRect();
+        break;
+    case Qt::Key_PageUp:
+        this->Zoom(true);
+        break;
+    case Qt::Key_PageDown:
+        this->Zoom(false);
         break;
     case Qt::Key_M :
         this->SetMovable(!m_movable);
@@ -503,7 +507,7 @@ void MyView::DrawEllipse()
     }
 }
 
-void MyView::DrawText()
+void MyView::DrawTexts()
 {
     flag = drawText;
     changeCursor("cross");
@@ -574,6 +578,12 @@ void MyView::Reset()
     this->centerOn(0,0);
     this->updateCenterRect();
     showStatus("重置");
+}
+
+void MyView::Zoom(bool in)
+{
+    Cmd = new Command(m_scene);
+    Cmd->Zoom(in);
 }
 
 void MyView::SetMovable(bool state)
@@ -763,9 +773,7 @@ void MyView::test()
 
 void MyView::InitView()
 {
-    mode = NORMAL;
-    flag = drawNone;
-    InitBools();
+    InitParameters();
     this->setDragMode(QGraphicsView::RubberBandDrag);
     this->setRenderHints(QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -777,13 +785,18 @@ void MyView::InitView()
     //    this->setMatrix(m);
 }
 
-void MyView::InitBools()
+void MyView::InitParameters()
 {
+    mode = NORMAL;
+    flag = drawNone;
     m_drawMulti = false;
     m_copied = false;
     m_movable = false;
     m_saved = false;
     m_new = false;
+    LineCount = 0;
+    RectCount = 0;
+    ElliCount = 0;
 }
 
 void MyView::InitViewRect()

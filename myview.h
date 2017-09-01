@@ -85,7 +85,7 @@ private:
 private:
     inline void test();
     void InitView();
-    void InitBools();
+    void InitParameters();
     void InitViewRect();
 
     inline void changeCursor(const QString& shape);
@@ -107,7 +107,7 @@ public slots:
     void DrawLine();
     void DrawRect();
     void DrawEllipse();
-    void DrawText();
+    void DrawTexts();
 
     QFont getFont();
     void ShowContextMenu();  //加右键菜单
@@ -115,6 +115,7 @@ public slots:
     void setNormal();
     void Locate();      //重置原点
     void Reset();       //重置放缩倍数
+    void Zoom(bool in);
     void SetMovable(bool state);
     void Copy();
     void Paste();

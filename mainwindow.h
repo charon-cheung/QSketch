@@ -5,6 +5,8 @@
 #include "posdialog.h"
 #include "QRecentFilesMenu.h"
 #include <QMainWindow>
+#include <QDockWidget>
+#include <QQuickView>
 
 namespace Ui {
 class MainWindow;
@@ -69,11 +71,7 @@ private slots:
 
     void on_translateAct_triggered();
 
-    void on_offsetAct_triggered();
-
     void on_rotateAct_triggered();
-
-    void on_mirrorAct_triggered();
 
 signals:
     void toFont(QFont f);
@@ -92,6 +90,8 @@ private:
     QList<QAction*> rectActions;
     QList<QAction*> ellipseActions;
     QList<QAction*> textActions;
+    QDockWidget* dock;
+
     bool m_modified;
     MyView *newView;
 
