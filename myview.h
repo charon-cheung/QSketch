@@ -32,15 +32,33 @@ private:
     PosDialog* dlg;
     Command* Cmd;
     MainWindow* m_main;
-    QList<bool> drawFlags;
-    bool drawPt, drawCirPt, drawCross, drawPtXY;
-    bool drawLine, drawLineXY, drawLineAH;
-    bool drawRect, drawRectXY, drawRounded;
-    bool drawElli, drawElliXY, drawRing;
-    bool drawText, drawSingle, drawMulti;
-    QGraphicsLineItem* Line;
+
+    enum DrawFlag{
+        drawNone =  0x0,
+        drawCirPt = 0x1,
+        drawCross = 0x2,
+        drawPtXY = 0x4,
+        drawLine = 0x8,
+        drawLineXY = 0x10,
+        drawLineAH = 0x20,
+        drawRect = 0x40,
+        drawRectXY = 0x80,
+        drawElli = 0x100,
+        drawElliXY = 0x200,
+        drawRing = 0x400,
+        drawText = 0x800
+    };
+    DrawFlag flag;
+    bool m_drawMulti;
+
+    QVector<QGraphicsLineItem*> LineVec;
+    QVector<QGraphicsRectItem*> RectVec;
+    QVector<QGraphicsEllipseItem*> ElliVec;
+    int LineCount,RectCount,ElliCount;
+//    QGraphicsLineItem* Line;
+
     QGraphicsSimpleTextItem* Text;
-    QPointF start;
+    QPointF StartPt;
     QPointF end;
     QPointF mouseMovePos;
     enum AppMode
@@ -79,7 +97,7 @@ private:
     QBrush getBrush();
     QPen getPen();
 
-    QString inputText(bool multi);
+    QString inputMultiText(bool multi);
     QPointF getScenePos();
     void selectAll(bool state);
     void catchPt(QPointF pt);

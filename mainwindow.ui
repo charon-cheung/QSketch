@@ -39,7 +39,7 @@ QPushButton::menu-indicator{image:None;}</string>
          </size>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="Home">
          <attribute name="title">
@@ -295,19 +295,6 @@ QPushButton::menu-indicator{image:None;}</string>
          <attribute name="title">
           <string>插入</string>
          </attribute>
-         <widget class="QPushButton" name="pushButton">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>20</y>
-            <width>80</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>PushButton</string>
-          </property>
-         </widget>
         </widget>
         <widget class="QWidget" name="tab_5">
          <attribute name="title">
@@ -525,11 +512,6 @@ QPushButton::menu-indicator{image:None;}</string>
   <action name="actEllipse_2">
    <property name="text">
     <string>坐标画圆</string>
-   </property>
-  </action>
-  <action name="actRect_3">
-   <property name="text">
-    <string>画圆角矩形</string>
    </property>
   </action>
   <action name="NewView">

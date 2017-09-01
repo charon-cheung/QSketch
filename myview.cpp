@@ -11,6 +11,9 @@ MyView::MyView(QWidget *parent):
 {
     InitView();
     InitViewRect();
+    LineCount = 0;
+    RectCount = 0;
+    ElliCount = 0;
     m_scene = new MyScene(0);   //注意this->scene()是 QGraphicsScene*
     this->setScene(m_scene);
 
@@ -22,7 +25,8 @@ MyView::MyView(QWidget *parent):
 
 MyView::~MyView()
 {
-
+    delete m_scene;
+    delete Cmd;
 }
 
 MyScene* MyView::getScene()
@@ -43,8 +47,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
         break;
     case Qt::LeftButton:
         // 窗口坐标转为场景坐标
-        start = this->mapToScene(event->pos());
-        if(!drawLine && !drawPt && !drawRect && !drawElli && !drawText)
+        StartPt = this->mapToScene(event->pos());
+        if(flag == drawNone)
         {
             mode = NORMAL;
             showStatus("当前为普通模式");
@@ -53,40 +57,66 @@ void MyView::mousePressEvent(QMouseEvent *event)
         {
             mode =EDIT;
             showStatus("当前为编辑模式");
-            MyScene * press_scene = this->getScene();
-//            if(drawLine && !drawLineXY &&!drawLineAH
-            if(0)
+            this->setDragMode(QGraphicsView::NoDrag);
+            switch (flag)
             {
-            }
-            else if(drawPt && drawCirPt)    // 画圆点,start为圆心,pt_size为半径
+            case drawCirPt:
             {
-                CirclePt *pt = new CirclePt();
-                pt->setPos(start);  //这里不是图元坐标，是场景坐标
-                press_scene->addItem(pt);
+                CirclePt *pt1 = new CirclePt();
+                pt1->setPos(StartPt);  //这里不是图元坐标，是场景坐标
+                m_scene->addItem(pt1);
+                break;
             }
-            else if(drawPt && drawCross)    // 画X样式的点
+            case drawCross:
             {
-                CrossPt *pt = new CrossPt();
-                pt->setPos(start);
-                press_scene->addItem(pt);
+                CrossPt *pt2 = new CrossPt();
+                pt2->setPos(StartPt);
+                m_scene->addItem(pt2);
+                break;
             }
-            else if(drawElli && drawRing)    // 画圆环
+            case drawLine:
+            {
+                LineVec.push_back(new QGraphicsLineItem(QLineF(StartPt,StartPt)));
+                LineVec.at(LineCount)->setPen(getPen());
+                LineVec.at(LineCount)->setFlag(QGraphicsItem::ItemIsSelectable);
+                m_scene->addItem(LineVec.at(LineCount));
+                break;
+            }
+            case drawRect:
+            {
+                RectVec.push_back(new QGraphicsRectItem(QRectF(StartPt,StartPt)));
+                RectVec.at(RectCount)->setPen(getPen());
+                RectVec.at(RectCount)->setFlag(QGraphicsItem::ItemIsSelectable);
+                m_scene->addItem(RectVec.at(RectCount));
+                break;
+            }
+            case drawElli:
+            {
+                ElliVec.push_back(new QGraphicsEllipseItem(QRectF(StartPt,StartPt)));
+                ElliVec.at(ElliCount)->setPen(getPen());
+                ElliVec.at(ElliCount)->setFlag(QGraphicsItem::ItemIsSelectable);
+                m_scene->addItem(ElliVec.at(ElliCount));
+                break;
+            }
+            case drawRing:
             {
                 Ring *r = new Ring();
-                r->setPos(start);
-                press_scene->addItem(r);
+                r->setPos(StartPt);
+                m_scene->addItem(r);
+                break;
             }
-            else if(drawText)
+            case drawText:
             {
-                Text = press_scene->addSimpleText((drawMulti ? inputText(true): inputText(false) ), TextFont);
-                Text->setPos(start);
+                Text = m_scene->addSimpleText(inputMultiText(m_drawMulti), TextFont);
+                Text->setFlag(QGraphicsItem::ItemIsSelectable);
+                Text->setPos(StartPt);
                 Text->setTransform(QTransform::fromScale(1,-1));
                 Text->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
+                break;
             }
-//            else if(drawLineXY || drawLineAH || drawRectXY || drawElliXY ||drawRing)
-//            {
-//                mode = NORMAL;
-//            }
+            default:
+                break;
+            }
         }
     default:
         event->ignore();
@@ -97,7 +127,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
 
 void MyView::mouseMoveEvent(QMouseEvent *event)
 {
-    QPointF dragEnd,dragTrans;
+    QPointF dragTrans;
+    QPointF EndPt =this->mapToScene(event->pos()); // 不能直接mapToScene(pt).y()
     switch (mode) {
     case NORMAL:
     {
@@ -105,9 +136,8 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     }
     case DRAG:
     {
-        // Calculate the offset to drag relative to scene coordinates.
-        dragEnd = this->mapToScene(event->pos());
-        dragTrans = dragBegin - dragEnd;
+        //Calculate the offset to drag relative to scene coordinates.
+        dragTrans = dragBegin - EndPt;
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
         event->accept();
@@ -115,16 +145,84 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     }
     case EDIT:
     {
-        if(mode!=EDIT)  return;
-//        qDebug()<<"mode:"<<mode;
-//        end = this->mapToScene(event->pos());
-//        qDebug()<<"end:"<<end;
-//        m_scene->addLine(QLineF(start,end) );
-//        start = this->mapToScene(event->pos());
+        if(flag == drawLine)
+        {
+            QLineF newLine;
+            newLine.setP1(StartPt);
+            newLine.setP2(EndPt);
+            LineVec.at(LineCount)->setLine(newLine);
+        }
+        else if(flag == drawRect)
+        {
+            if( (RectVec.at(RectCount)->rect().y() <  EndPt.y() ) &&
+                    (RectVec.at(RectCount)->rect().x() < EndPt.x() )  )
+            {
+                QRectF newRect;
+                newRect.setTopLeft(StartPt);
+                newRect.setBottomRight(EndPt);
+                RectVec.at(RectCount)->setRect(newRect);
+            }
+            else if((RectVec.at(RectCount)->rect().top() > EndPt.y() )&&
+                    (RectVec.at(RectCount)->rect().left() < EndPt.x() ))
+            {
+                QRectF newRect;
+                newRect.setBottomLeft(StartPt);
+                newRect.setTopRight(EndPt);
+                RectVec.at(RectCount)->setRect(newRect);
+            }
+            else if((RectVec.at(RectCount)->rect().y() > EndPt.y())&&
+                    (RectVec.at(RectCount)->rect().x() > EndPt.x()))
+            {
+                QRectF newRect;
+                newRect.setBottomRight(StartPt);
+                newRect.setTopLeft(EndPt);
+                RectVec.at(RectCount)->setRect(newRect);
+            }
+            else if((RectVec.at(RectCount)->rect().top() < EndPt.y())
+                    &&(RectVec.at(RectCount)->rect().left() > EndPt.x()))
+            {
+                QRectF newRect;
+                newRect.setTopRight(StartPt);
+                newRect.setBottomLeft(EndPt);
+                RectVec.at(RectCount)->setRect(newRect);
+            }
+        }
+        else if(flag == drawElli)
+        {
+            if( (ElliVec.at(ElliCount)->rect().y() <  EndPt.y() ) &&
+                    (ElliVec.at(ElliCount)->rect().x() < EndPt.x() )  )
+            {
+                QRectF newRect;
+                newRect.setTopLeft(StartPt);
+                newRect.setBottomRight(EndPt);
+                ElliVec.at(ElliCount)->setRect(newRect);
+            }
+            else if((ElliVec.at(ElliCount)->rect().top() > EndPt.y() )&&
+                    (ElliVec.at(ElliCount)->rect().left() < EndPt.x() ))
+            {
+                QRectF newRect;
+                newRect.setBottomLeft(StartPt);
+                newRect.setTopRight(EndPt);
+                ElliVec.at(ElliCount)->setRect(newRect);
+            }
+            else if((ElliVec.at(ElliCount)->rect().y() > EndPt.y())&&
+                    (ElliVec.at(ElliCount)->rect().x() > EndPt.x()))
+            {
+                QRectF newRect;
+                newRect.setBottomRight(StartPt);
+                newRect.setTopLeft(EndPt);
+                ElliVec.at(ElliCount)->setRect(newRect);
+            }
+            else if((ElliVec.at(ElliCount)->rect().top() < EndPt.y())
+                    &&(ElliVec.at(ElliCount)->rect().left() > EndPt.x()))
+            {
+                QRectF newRect;
+                newRect.setTopRight(StartPt);
+                newRect.setBottomLeft(EndPt);
+                ElliVec.at(ElliCount)->setRect(newRect);
+            }
+        }
 
-//        qreal angle1= qAtan2( start.y(),start.x());
-//        qreal angle2= qAtan2( end.y(), end.x());
-//        Line->setRotation((angle2 - angle1)*180 / PI);
         break;
     }
     default:
@@ -148,12 +246,19 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
     case Qt::LeftButton:
         if(mode==EDIT)
         {
-//            end = this->mapToScene(event->pos());
-//            if(drawLine && !drawLineXY)
-//            {
-//                Line = m_scene->addLine(QLineF(start,end),QPen(QColor(Qt::white)));
-//            }
-//            mode = NORMAL;
+            if(flag == drawLine)
+            {
+                 LineCount++;
+            }
+            else if(flag == drawRect)
+            {
+                RectCount++;
+            }
+            else if(flag == drawElli)
+            {
+                ElliCount++;
+            }
+            mode = NORMAL;     // 不加就报错,会多产生moveEvent,为什么
         }
     default:
         event->ignore();
@@ -200,11 +305,8 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->selectAll(false);
         break;
     case Qt::Key_Home:
-    {
         this->Locate();
         this->Reset();
-        showStatus("重置");
-    }
         break;
     case Qt::Key_Plus:
         this->scale(1.41421, 1.41421);
@@ -215,10 +317,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->updateCenterRect();
         break;
     case Qt::Key_M :
-        if(m_movable)
-            this->SetMovable(false);
-        else
-            this->SetMovable(true);
+        this->SetMovable(!m_movable);
         break;
     case Qt::Key_R :
         this->showItemInfo();
@@ -227,28 +326,20 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->Delete();
         break;
     case Qt::Key_Up:
-    {
         this->Translate(Command::UP);
         showStatus("向上平移5个单位");
-    }
         break;
     case Qt::Key_Down:
-    {
         this->Translate(Command::DOWN);
         showStatus("向下平移5个单位");
-    }
         break;
     case Qt::Key_Left:
-    {
         this->Translate(Command::LEFT);
         showStatus("向左平移5个单位");
-    }
         break;
     case Qt::Key_Right:
-    {
         this->Translate(Command::RIGHT);
         showStatus("向右平移5个单位");
-    }
         break;
     default:
         event->ignore();
@@ -272,33 +363,22 @@ void MyView::showItemInfo()
 
 void MyView::DrawPt()
 {
-    drawPt = true;
-    drawLine = false;
-    drawRect = false;
-    drawElli = false;
-    drawText = false;
     if(sender()->objectName() == "act1")
     {
-        drawCirPt=true;
-        drawCross=false;
-        drawPtXY=false;
+        flag = drawCirPt;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
     else if(sender()->objectName() == "act2")
     {
-        drawCirPt=false;
-        drawCross=true;
-        drawPtXY=false;
+        flag = drawCross;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
     else if(sender()->objectName() == "act3")
     {
+        flag = drawPtXY;
         changeCursor(Qt::ArrowCursor);
-        drawCirPt=false;
-        drawCross=false;
-        drawPtXY=true;
         dlg = new PosDialog(this);
         dlg->showPt();
         if(dlg->exec() != QDialog::Accepted)    return;
@@ -312,23 +392,16 @@ void MyView::DrawPt()
 
 void MyView::DrawLine()
 {
-    drawPt = false;
-    drawLine = true;
-    drawRect = false;
-    drawElli = false;
-    drawText = false;
     if(sender()->objectName() == "actLine_1")
     {
-        drawLineXY=false;
-        drawLineAH = false;
+        flag = drawLine;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
     else if(sender()->objectName() == "actLine_2")
     {
+        flag = drawLineXY;
         changeCursor(Qt::ArrowCursor);
-        drawLineXY = true;
-        drawLineAH = false;
         dlg = new PosDialog(this);
         dlg->showLineXY();
         if(dlg->exec() != QDialog::Accepted)    return;
@@ -340,17 +413,13 @@ void MyView::DrawLine()
             QMessageBox::warning(0,"出错了","两个点的坐标不能相同!");
             return;
         }
-
-        qDebug()<<this->getPenWidth();
-        m_scene->addLine(QLineF(list.at(0), list.at(1)),
-                       getPen())->
+        m_scene->addLine(QLineF(list.at(0), list.at(1)),getPen())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
     }
     else if(sender()->objectName() == "actLine_3")
     {
+        flag = drawLineAH;
         changeCursor(Qt::ArrowCursor);
-        drawLineXY = false;
-        drawLineAH = true;
         dlg = new PosDialog(this);
         dlg->showLineAH();
         if(dlg->exec() != QDialog::Accepted)    return;
@@ -379,23 +448,16 @@ void MyView::DrawLine()
 
 void MyView::DrawRect()
 {
-    drawPt = false;
-    drawLine = false;
-    drawRect = true;
-    drawElli = false;
-    drawText = false;
     if(sender()->objectName()=="actRect_1")
     {
-        drawRectXY=false;
-        drawRounded=false;
+        flag = drawRect;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
     else if(sender()->objectName()=="actRect_2")
     {
+        flag = drawRectXY;
         changeCursor(Qt::ArrowCursor);
-        drawRectXY=true;
-        drawRounded=false;
         dlg = new PosDialog(this);
         dlg->showRectXY();
         if(dlg->exec() != QDialog::Accepted)    return;
@@ -408,33 +470,20 @@ void MyView::DrawRect()
                 setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
     }
-    else if(sender()->objectName()=="actRect_3")
-    {
-        drawRectXY=false;
-        drawRounded=true;
-
-    }
 }
 
 void MyView::DrawEllipse()
 {
-    drawPt = false;
-    drawLine = false;
-    drawRect = false;
-    drawElli = true;
-    drawText = false;
     if(sender()->objectName()=="actEllipse_1")
     {
-        drawElliXY=false;
-        drawRing=false;
+        flag = drawElli;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
     else if(sender()->objectName()=="actEllipse_2")
     {
+        flag =drawElliXY;
         changeCursor(Qt::ArrowCursor);
-        drawElliXY=true;
-        drawRing=false;
         dlg = new PosDialog(this);
         dlg->showEllipse();
         if(dlg->exec() != QDialog::Accepted)    return;
@@ -448,8 +497,7 @@ void MyView::DrawEllipse()
     }
     else if(sender()->objectName()=="ring")
     {
-        drawElliXY=false;
-        drawRing=true;
+        flag = drawRing;
         changeCursor("cross");
         showStatus("当前为编辑模式");
     }
@@ -457,23 +505,13 @@ void MyView::DrawEllipse()
 
 void MyView::DrawText()
 {
-    drawPt = false;
-    drawLine = false;
-    drawRect = false;
-    drawElli = false;
-    drawText = true;
+    flag = drawText;
     changeCursor("cross");
     showStatus("当前为编辑模式");
     if(sender()->objectName()=="textAct")
-    {
-        drawSingle = true;
-        drawMulti = false;
-    }
+        m_drawMulti = false;
     else if(sender()->objectName()=="multiTextAct")
-    {
-        drawSingle = false;
-        drawMulti = true;
-    }
+        m_drawMulti = true;
 }
 
 void MyView::ShowContextMenu()
@@ -515,11 +553,7 @@ void MyView::ShowContextMenu()
 void MyView::setNormal()
 {
     mode = NORMAL;
-    drawPt=false;
-    drawLine=false;
-    drawElli = false;
-    drawRect = false;
-    drawText = false;
+    flag = drawNone;
     changeCursor(Qt::ArrowCursor);
     showStatus("切换为普通模式");
 }
@@ -539,6 +573,7 @@ void MyView::Reset()
     this->scale(2,-2);
     this->centerOn(0,0);
     this->updateCenterRect();
+    showStatus("重置");
 }
 
 void MyView::SetMovable(bool state)
@@ -569,7 +604,7 @@ void MyView::Paste()
     const QMimeData * md = cb->mimeData();
     QByteArray ba = md->data("GraphicsItem");
     if(ba.isEmpty()){
-        qDebug()<<"没有复制图元数据";
+        QMessageBox::warning(0,"出错了!","没有复制图元数据");
         return;
     }
     m_scene->clearSelection();
@@ -706,7 +741,7 @@ void MyView::showStatus(QString msg)
     m_main->statusBar()->showMessage(msg);
 }
 
-QString MyView::inputText(bool multi)
+QString MyView::inputMultiText(bool multi)
 {
     bool ok;
     QString text;
@@ -729,6 +764,7 @@ void MyView::test()
 void MyView::InitView()
 {
     mode = NORMAL;
+    flag = drawNone;
     InitBools();
     this->setDragMode(QGraphicsView::RubberBandDrag);
     this->setRenderHints(QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
@@ -743,11 +779,7 @@ void MyView::InitView()
 
 void MyView::InitBools()
 {
-    drawPt = false;
-    drawLine = false;
-    drawRect = false;
-    drawElli = false;
-    drawText = false;
+    m_drawMulti = false;
     m_copied = false;
     m_movable = false;
     m_saved = false;
