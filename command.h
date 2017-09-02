@@ -3,6 +3,7 @@
 
 #include "myview.h"
 #include "mainwindow.h"
+#include "brushdlg.h"
 
 class MainWindow;
 class Command
@@ -27,6 +28,8 @@ public slots:
     void Translate(QPointF pt);
     void Zoom(bool in);
     void SelectAll(bool state);
+    void CatchPt();
+    void FillBrush();
     void SetMovable(bool state);
     void ShowItemInfo();
     QString getItemInfo(QString type, QPointF pos, QSizeF size);
@@ -36,7 +39,7 @@ private:
     MyScene* m_scene;
     QList<QGraphicsItem*> chosenItems;
     QTransform m_translate;
-
+    BrushDlg* dlg;
 };
 
 #endif // COMMAND_H

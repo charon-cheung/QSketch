@@ -1,15 +1,15 @@
 <RCC>
     <qresource prefix="/Shape">
         <file>Shape/point_clicked.png</file>
-        <file>Shape/point.png</file>
-        <file>Shape/line.png</file>
-        <file>Shape/ellipse.png</file>
         <file>Shape/curve.png</file>
         <file>Shape/rectangle.png</file>
         <file>Shape/text.png</file>
         <file>Shape/cross.png</file>
         <file>Shape/drag.png</file>
         <file>Shape/movable.png</file>
+        <file>Shape/ellipse.png</file>
+        <file>Shape/line.png</file>
+        <file>Shape/point.png</file>
     </qresource>
     <qresource prefix="/Icon">
         <file>Icon/editor.png</file>

@@ -50,7 +50,8 @@ SOURCES += \
     posdialog.cpp \
     QRecentFilesMenu.cpp \
     command.cpp \
-    clock.cpp
+    clock.cpp \
+    brushdlg.cpp
 
 
 HEADERS += \
@@ -60,12 +61,14 @@ HEADERS += \
     posdialog.h \
     QRecentFilesMenu.h \
     command.h \
-    clock.h
+    clock.h \
+    brushdlg.h
 
 
 FORMS += \
         mainwindow.ui \
-    posdialog.ui
+    posdialog.ui \
+    brushdlg.ui
 
 RESOURCES += \
     res.qrc

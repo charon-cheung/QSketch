@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>730</width>
-    <height>570</height>
+    <height>574</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -465,6 +465,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
             <height>199</height>
            </size>
           </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
          </widget>
          <widget class="QPushButton" name="pushButton_3">
           <property name="geometry">
@@ -477,6 +480,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
           </property>
           <property name="text">
            <string>打开文件</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
           </property>
          </widget>
          <widget class="QLabel" name="label_3">
@@ -568,8 +574,20 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <property name="title">
      <string>命令</string>
     </property>
+    <widget class="QMenu" name="zoom">
+     <property name="title">
+      <string>放缩</string>
+     </property>
+     <addaction name="zoomIn"/>
+     <addaction name="zoomOut"/>
+    </widget>
     <addaction name="translateAct"/>
     <addaction name="rotateAct"/>
+    <addaction name="movableAct"/>
+    <addaction name="brushAct"/>
+    <addaction name="zoom"/>
+    <addaction name="deleteAct"/>
+    <addaction name="infoAct"/>
    </widget>
    <addaction name="openMenu"/>
    <addaction name="menu"/>
@@ -868,6 +886,36 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
   <action name="multiTextAct">
    <property name="text">
     <string>多行文本</string>
+   </property>
+  </action>
+  <action name="movableAct">
+   <property name="text">
+    <string>设为可动 </string>
+   </property>
+  </action>
+  <action name="brushAct">
+   <property name="text">
+    <string>填充图案</string>
+   </property>
+  </action>
+  <action name="deleteAct">
+   <property name="text">
+    <string>删除</string>
+   </property>
+  </action>
+  <action name="zoomIn">
+   <property name="text">
+    <string>放大</string>
+   </property>
+  </action>
+  <action name="zoomOut">
+   <property name="text">
+    <string>缩小</string>
+   </property>
+  </action>
+  <action name="infoAct">
+   <property name="text">
+    <string>显示信息</string>
    </property>
   </action>
  </widget>

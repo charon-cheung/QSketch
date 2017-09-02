@@ -6,6 +6,7 @@
 #include <QClipboard>
 #include <QStatusBar>
 #include <QInputDialog>
+
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
 {
@@ -298,7 +299,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
 
     switch(event->key())
     {
-    case Qt::Key_Escape:
+    case Qt::Key_Space:
         this->setNormal();
         this->selectAll(false);
         break;
@@ -322,6 +323,14 @@ void MyView::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_M :
         this->SetMovable(!m_movable);
+        break;
+    case Qt::Key_C :
+        Cmd = new Command(this);
+        Cmd->CatchPt();
+        break;
+    case Qt::Key_F :
+        Cmd = new Command(this);
+        Cmd->FillBrush();
         break;
     case Qt::Key_R :
         this->showItemInfo();

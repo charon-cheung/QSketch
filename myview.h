@@ -26,6 +26,7 @@ public:
     bool IsNew();
     void SetMoveFlag(bool flag);
     void showStatus(QString msg);
+    void catchPt(QPointF pt);
 
 private:
     MyScene* m_scene;
@@ -100,7 +101,6 @@ private:
     QString inputMultiText(bool multi);
     QPointF getScenePos();
     void selectAll(bool state);
-    void catchPt(QPointF pt);
 
 public slots:
     void DrawPt();

@@ -101,6 +101,72 @@ void Command::SelectAll(bool state)
     }
 }
 
+void Command::CatchPt()
+{
+    if(chosenItems.size()!=1)
+    {
+        QMessageBox::warning(0, "注意!","只能选择一个图元 !");
+        return;
+    }
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        switch(item->type())
+        {
+            case QGraphicsLineItem::Type:
+            {
+                QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(item);
+                QPointF p1 = L->line().p1();
+                m_view->catchPt(p1);
+            }
+            case QGraphicsRectItem::Type:
+            {
+                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+                QPointF p1 = R->rect().center();
+                m_view->catchPt(p1);
+            }
+            case QGraphicsEllipseItem::Type:
+            {
+                QGraphicsEllipseItem* E = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+                QPointF p1 = E->rect().center();
+                m_view->catchPt(p1);
+            }
+        }
+    }
+}
+
+void Command::FillBrush()
+{
+    dlg = new BrushDlg();
+    if(dlg->exec() != QDialog::Accepted)    return;
+
+    Qt::BrushStyle style = dlg->getStyle();
+    QColor color = dlg->getColor();
+    if(!color.isValid())
+        color = Qt::white;
+    QBrush brush;
+    brush.setStyle(style);
+    brush.setColor(color);
+
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        switch(item->type())
+        {
+            case QGraphicsRectItem::Type:
+            {
+                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+                R->setBrush(brush);
+                break;      // 低级错误,经常忘了加 break
+            }
+            case QGraphicsEllipseItem::Type:
+            {
+                QGraphicsEllipseItem* E = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+                E->setBrush(brush);
+                break;
+            }
+        }
+    }
+}
+
 void Command::SetMovable(bool state)
 {
     foreach(QGraphicsItem* item, chosenItems)
