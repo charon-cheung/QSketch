@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "command.h"
 #include "myview.h"
 #include "posdialog.h"
 #include "QRecentFilesMenu.h"
@@ -12,6 +13,7 @@ namespace Ui {
 class MainWindow;
 }
 
+class Command;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -73,6 +75,22 @@ private slots:
 
     void on_rotateAct_triggered();
 
+    void on_changeStyleAct_triggered();
+
+    void on_ResetStyle_clicked();
+
+    void on_movableAct_triggered();
+
+    void on_brushAct_triggered();
+
+    void on_zoomIn_triggered();
+
+    void on_zoomOut_triggered();
+
+    void on_deleteAct_triggered();
+
+    void on_infoAct_triggered();
+
 signals:
     void toFont(QFont f);
 private:
@@ -100,6 +118,8 @@ private:
     QColor PenColor;
     QBrush PenBrush;
     QFont TextFont;
+
+    Command* Cmd;
 private:
     void InitUi();
     void InitActions();

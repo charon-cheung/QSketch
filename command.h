@@ -4,6 +4,7 @@
 #include "myview.h"
 #include "mainwindow.h"
 #include "brushdlg.h"
+#include "selectdlg.h"
 
 class MainWindow;
 class Command
@@ -31,6 +32,8 @@ public slots:
     void CatchPt();
     void FillBrush();
     void SetMovable(bool state);
+    void Stretch();
+    void changeStyle();
     void ShowItemInfo();
     QString getItemInfo(QString type, QPointF pos, QSizeF size);
 private:
@@ -39,7 +42,8 @@ private:
     MyScene* m_scene;
     QList<QGraphicsItem*> chosenItems;
     QTransform m_translate;
-    BrushDlg* dlg;
+    BrushDlg* brush_dlg;
+    SelectDlg* select_dlg;
 };
 
 #endif // COMMAND_H

@@ -28,6 +28,8 @@ public:
     void showStatus(QString msg);
     void catchPt(QPointF pt);
 
+    QBrush getBrush();
+    QPen getPen();
 private:
     MyScene* m_scene;
     PosDialog* dlg;
@@ -56,7 +58,6 @@ private:
     QVector<QGraphicsRectItem*> RectVec;
     QVector<QGraphicsEllipseItem*> ElliVec;
     int LineCount,RectCount,ElliCount;
-//    QGraphicsLineItem* Line;
 
     QGraphicsSimpleTextItem* Text;
     QPointF StartPt;
@@ -95,8 +96,7 @@ private:
     int getPenWidth();
     Qt::PenStyle getPenStyle();
     QColor getColor();
-    QBrush getBrush();
-    QPen getPen();
+
 
     QString inputMultiText(bool multi);
     QPointF getScenePos();
@@ -116,11 +116,9 @@ public slots:
     void Locate();      //重置原点
     void Reset();       //重置放缩倍数
     void Zoom(bool in);
-    void SetMovable(bool state);
     void Copy();
     void Paste();
     void Delete();
-    void Rotate(QPointF pt, float angle);
     void Redraw();
     void Translate(int direction);
     void Translate(QPointF pt);

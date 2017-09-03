@@ -388,6 +388,19 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <string>字体</string>
           </property>
          </widget>
+         <widget class="QPushButton" name="ResetStyle">
+          <property name="geometry">
+           <rect>
+            <x>570</x>
+            <y>37</y>
+            <width>60</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>重置样式</string>
+          </property>
+         </widget>
          <zorder>PenStyle</zorder>
          <zorder>style_label</zorder>
          <zorder>PenWidth</zorder>
@@ -400,6 +413,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
          <zorder>DrawRect</zorder>
          <zorder>DrawEllipse</zorder>
          <zorder>FontPicker</zorder>
+         <zorder>ResetStyle</zorder>
         </widget>
         <widget class="QWidget" name="Insert">
          <attribute name="title">
@@ -588,6 +602,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <addaction name="zoom"/>
     <addaction name="deleteAct"/>
     <addaction name="infoAct"/>
+    <addaction name="changeStyleAct"/>
    </widget>
    <addaction name="openMenu"/>
    <addaction name="menu"/>
@@ -890,7 +905,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
   </action>
   <action name="movableAct">
    <property name="text">
-    <string>设为可动 </string>
+    <string>设为可动</string>
    </property>
   </action>
   <action name="brushAct">
@@ -916,6 +931,11 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
   <action name="infoAct">
    <property name="text">
     <string>显示信息</string>
+   </property>
+  </action>
+  <action name="changeStyleAct">
+   <property name="text">
+    <string>改变样式</string>
    </property>
   </action>
  </widget>

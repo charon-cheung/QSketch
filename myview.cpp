@@ -322,11 +322,20 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->Zoom(false);
         break;
     case Qt::Key_M :
-        this->SetMovable(!m_movable);
+        Cmd = new Command(this);
+        Cmd->SetMovable(!m_movable);
         break;
     case Qt::Key_C :
         Cmd = new Command(this);
         Cmd->CatchPt();
+        break;
+    case Qt::Key_V :
+        Cmd = new Command(m_scene);
+        Cmd->Stretch();
+        break;
+    case Qt::Key_D :
+        Cmd = new Command(this);
+        Cmd->changeStyle();
         break;
     case Qt::Key_F :
         Cmd = new Command(this);
@@ -428,6 +437,7 @@ void MyView::DrawLine()
         }
         m_scene->addLine(QLineF(list.at(0), list.at(1)),getPen())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
+        setNormal();
     }
     else if(sender()->objectName() == "actLine_3")
     {
@@ -456,6 +466,7 @@ void MyView::DrawLine()
         }
         m_scene->addLine(line, getPen())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
+        setNormal();
     }
 }
 
@@ -595,12 +606,6 @@ void MyView::Zoom(bool in)
     Cmd->Zoom(in);
 }
 
-void MyView::SetMovable(bool state)
-{
-    Cmd = new Command(this);
-    Cmd->SetMovable(state);
-}
-
 void MyView::Copy()
 {
     QByteArray ba;
@@ -687,12 +692,6 @@ void MyView::Delete()
 {
     Cmd = new Command(m_scene);
     Cmd->Delete();
-}
-
-void MyView::Rotate(QPointF pt, float angle)
-{
-    Cmd = new Command(m_scene);
-    Cmd->Rotate(pt, angle);
 }
 
 void MyView::Redraw()
@@ -885,3 +884,4 @@ void MyView::SetMoveFlag(bool flag)
 {
     m_movable = flag;
 }
+

@@ -1,12 +1,12 @@
 #include "command.h"
 #include <QMessageBox>
 #include <QStatusBar>
+#include <QInputDialog>
 
 Command::Command(MyScene *scene)
 {
     m_scene = scene;
     chosenItems = m_scene->selectedItems();
-//    if(chosenItems.size()==0)
 }
 
 Command::Command(MyView *view)
@@ -136,11 +136,11 @@ void Command::CatchPt()
 
 void Command::FillBrush()
 {
-    dlg = new BrushDlg();
-    if(dlg->exec() != QDialog::Accepted)    return;
+    brush_dlg = new BrushDlg();
+    if(brush_dlg->exec() != QDialog::Accepted)    return;
 
-    Qt::BrushStyle style = dlg->getStyle();
-    QColor color = dlg->getColor();
+    Qt::BrushStyle style = brush_dlg->getStyle();
+    QColor color = brush_dlg->getColor();
     if(!color.isValid())
         color = Qt::white;
     QBrush brush;
@@ -182,6 +182,54 @@ void Command::SetMovable(bool state)
             m_view->SetMoveFlag(false);
             m_view->showStatus("当前所选图元无法再拖动");
         }
+    }
+}
+
+void Command::Stretch()
+{
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        switch(item->type())
+        {
+        case QGraphicsLineItem::Type:
+        {
+            select_dlg = new SelectDlg();
+            if(select_dlg->exec()!=QDialog::Accepted)   return;
+            qreal len = select_dlg->getLength();
+            int direction = select_dlg->getDirection();
+
+            QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(item);
+            qreal angle = L->line().angle();
+            QPointF p1 = L->line().p1();
+            QPointF p2 = L->line().p2();
+
+            QLineF line;
+            line.setLength(len);
+
+            if(direction== SelectDlg::Direction::start)
+            {
+                line.setP1(p1);
+                line.setAngle(180+angle);
+            }
+            else if(direction== SelectDlg::Direction::end)
+            {
+                line.setP1(p2);
+                line.setAngle(360+angle);
+            }
+            m_scene->addLine(line,QPen(Qt::white))->setFlag(QGraphicsItem::ItemIsSelectable);
+            break;
+        }
+        }
+    }
+}
+
+void Command::changeStyle()
+{
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        QAbstractGraphicsShapeItem* shape = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+        shape->setPen(m_view->getPen());
+        shape->setBrush(m_view->getBrush());
     }
 }
 

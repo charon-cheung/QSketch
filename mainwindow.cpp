@@ -523,5 +523,58 @@ void MainWindow::on_rotateAct_triggered()
     dlg = new PosDialog(this);
     dlg->showPtAngle();
     if(dlg->exec() != QDialog::Accepted)    return;
-    getCurrentView()->Rotate(dlg->getPt(), dlg->getAngle());
+
+    Cmd = new Command(getCurrentView()->getScene());
+    Cmd->Rotate(dlg->getPt(), dlg->getAngle());
+}
+
+void MainWindow::on_changeStyleAct_triggered()
+{
+    Cmd = new Command(getCurrentView());
+    Cmd->changeStyle();
+}
+
+void MainWindow::on_ResetStyle_clicked()
+{
+    PenWidth = 1;
+    PenStyle = Qt::SolidLine;
+    PenColor = Qt::white;
+    PenBrush.setColor(Qt::white);
+    PenBrush.setStyle(Qt::NoBrush);
+    ui->PenWidth->setCurrentText("1");
+    ui->PenStyle->setCurrentText("实线");
+}
+
+void MainWindow::on_movableAct_triggered()
+{
+    Cmd = new Command(getCurrentView());
+    Cmd->SetMovable(true);
+}
+
+void MainWindow::on_brushAct_triggered()
+{
+    Cmd = new Command(getCurrentView());
+    Cmd->FillBrush();
+}
+
+void MainWindow::on_zoomIn_triggered()
+{
+    Cmd = new Command(getCurrentView());
+    Cmd->Zoom(true);
+}
+
+void MainWindow::on_zoomOut_triggered()
+{
+    Cmd = new Command(getCurrentView());
+    Cmd->Zoom(false);
+}
+
+void MainWindow::on_deleteAct_triggered()
+{
+    getCurrentView()->Delete();
+}
+
+void MainWindow::on_infoAct_triggered()
+{
+    getCurrentView()->showItemInfo();
 }

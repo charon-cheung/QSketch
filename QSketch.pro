@@ -3,7 +3,7 @@
 # Project created by QtCreator 2017-08-02T20:48:06
 #
 #-------------------------------------------------
-
+18251828830
 QT       += core gui printsupport quick
 QMAKE_CXXFLAGS += -Wno-unused-variable -Wno-unused-parameter
 QMAKE_CFLAGS_WARN_OFF += -Wreturn-type
@@ -51,7 +51,8 @@ SOURCES += \
     QRecentFilesMenu.cpp \
     command.cpp \
     clock.cpp \
-    brushdlg.cpp
+    brushdlg.cpp \
+    selectdlg.cpp
 
 
 HEADERS += \
@@ -62,13 +63,15 @@ HEADERS += \
     QRecentFilesMenu.h \
     command.h \
     clock.h \
-    brushdlg.h
+    brushdlg.h \
+    selectdlg.h
 
 
 FORMS += \
         mainwindow.ui \
     posdialog.ui \
-    brushdlg.ui
+    brushdlg.ui \
+    selectdlg.ui
 
 RESOURCES += \
     res.qrc
