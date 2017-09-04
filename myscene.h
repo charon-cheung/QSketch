@@ -12,11 +12,20 @@ class MyView;     //需要前置声明
 class MyScene : public QGraphicsScene
 {
     Q_OBJECT
+
 public:
     enum SIZE{
         width = 1200,
         height = 800
     };
+    enum GridMode
+    {
+        POINT,
+        GRID,
+        NONE
+    };
+    GridMode mode;
+
 public:
     explicit MyScene(QObject *parent = Q_NULLPTR);
     virtual ~MyScene();
@@ -28,15 +37,10 @@ public:
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
     void Load(QDataStream& s);
     void Import(QDataStream& s,int count);
-
+    void setMode(GridMode m);
+    GridMode getMode();
 private:
-    enum GridMode
-    {
-        ALL,
-        MAJOR,
-        NONE
-    };
-    GridMode mode;
+
     int space;
     int min_space;
 
@@ -48,7 +52,7 @@ private:
 private:
 
 protected:
-//    virtual void drawBackground(QPainter * painter, const QRectF & rect);
+    virtual void drawBackground(QPainter * painter, const QRectF & rect);
 
 };
 

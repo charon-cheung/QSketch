@@ -14,14 +14,15 @@ public:
     Command(MyView* view);
     MyScene* getScene();
 
-    enum Direction
+    enum TransDirection
     {
-        UP,
+        UP,     //不能再有同名的枚举变量
         DOWN,
         LEFT,
         RIGHT,
         PACE =5
     };
+
 public slots:
     void Delete();
     void Rotate(QPointF pt, float angle);
@@ -34,8 +35,10 @@ public slots:
     void SetMovable(bool state);
     void Stretch();
     void changeStyle();
+    void SetSymmetry(Qt::Axis axis);
     void ShowItemInfo();
-    QString getItemInfo(QString type, QPointF pos, QSizeF size);
+
+    QString getItemInfo(QString type, QPointF pos, QSizeF size, QColor c);
 private:
 
     MyView* m_view;

@@ -93,8 +93,10 @@ void Command::SelectAll(bool state)
 {
     QList<QGraphicsItem*> all = m_scene->items(m_scene->sceneRect(),
                        Qt::IntersectsItemShape,Qt::AscendingOrder);
-    foreach (QGraphicsItem* item, all) {
-        if(item->data(0).isNull())  //去掉场景初始化的5个图元
+    foreach (QGraphicsItem* item, all)
+    {
+        //去掉场景初始化的5个图元
+        if(item->data(0).isNull())
         {
             item->setSelected(state);
         }
@@ -233,6 +235,15 @@ void Command::changeStyle()
     }
 }
 
+void Command::SetSymmetry(Qt::Axis axis)
+{
+    QTransform t;
+    t.rotate(180, axis);
+    foreach(QGraphicsItem* item, chosenItems)
+        // combine为true,否则连续对称操作会出错,仍是以原始位置为准
+        item->setTransform(t,true);
+}
+
 void Command::ShowItemInfo()
 {
     if(chosenItems.size()!=1)
@@ -243,6 +254,7 @@ void Command::ShowItemInfo()
     QString type;
     QPointF pos;
     QSizeF size;
+    QColor color;
     QString info;
     foreach (QGraphicsItem* item, chosenItems)
     {
@@ -255,7 +267,8 @@ void Command::ShowItemInfo()
             type = "矩形";
             pos = R->rect().center();
             size = R->rect().size();
-            info = getItemInfo(type, pos, size);
+            color = R->pen().color();
+            info = getItemInfo(type, pos, size, color);
             break;
         }
         case QGraphicsEllipseItem::Type:
@@ -265,22 +278,24 @@ void Command::ShowItemInfo()
             pos = Ell->rect().center();
             qDebug()<<"坐标:"<<Ell->scenePos();
             size = Ell->rect().size();
-            info = getItemInfo(type, pos, size);
+            color = Ell->pen().color();
+            info = getItemInfo(type, pos, size, color);
             break;
         }
         case CrossPt::Type :
         {
             type = "X形点";
             size = QSize(2,2);
-            qDebug()<<type;
-            info = getItemInfo(type, pos, size);
+            color = QColor(247, 160, 57);
+            info = getItemInfo(type, pos, size, color);
             break;
         }
         case CirclePt::Type :
         {
             type = "圆形点";
             size = QSize(2,2);
-            info = getItemInfo(type, pos, size);
+            color = QColor(247, 160, 57);
+            info = getItemInfo(type, pos, size, color);
             break;
         }
         case QGraphicsLineItem::Type :
@@ -295,9 +310,11 @@ void Command::ShowItemInfo()
             if(angle > 360)   angle -= 360;
 
             type = "直线";
+            color = L->pen().color();
             info =  QString("图元类型: %1 \n").arg(type);
             info += QString("两个点的坐标: (%2 . %3) 和 (%4 . %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
-            info += QString("直线长度: %4   直线角度: %5").arg(length).arg(angle);
+            info += QString("直线长度: %4   直线角度: %5               \n").arg(length).arg(angle);
+            info += QString("直线颜色: %6").arg(QVariant(color.toRgb()).toString());
             break;
         }
         default:
@@ -307,11 +324,12 @@ void Command::ShowItemInfo()
     QMessageBox::information(0, "图元信息",info);
 }
 
-QString Command::getItemInfo(QString type, QPointF pos, QSizeF size)
+QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
 {
     QString info;
     info = QString("图元类型: %1 \n").arg(type);
     info += QString("图元坐标: (%2 , %3)     \n").arg(pos.x()).arg(pos.y());
-    info += QString("图元大小: %4 X %5").arg(size.width()).arg(size.height());
+    info += QString("图元大小: %4 X %5       \n").arg(size.width()).arg(size.height());
+    info += QString("图元颜色: %6").arg(QVariant(c.toRgb()).toString());
     return info;
 }

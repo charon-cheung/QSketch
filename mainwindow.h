@@ -8,7 +8,7 @@
 #include <QMainWindow>
 #include <QDockWidget>
 #include <QQuickView>
-
+#include <QLabel>
 namespace Ui {
 class MainWindow;
 }
@@ -27,6 +27,7 @@ public:
     QColor getPenColor();
     QBrush getPenBrush();
     QFont  getFont();
+    void showScale(QString s);
 private slots:
 
     void on_Open_triggered();
@@ -55,7 +56,7 @@ private slots:
 
     void on_action_Save_triggered();
 
-    void on_pushButton_3_clicked();
+    void on_openBtn_clicked();
 
     void LoadFile(const QString &name);
 
@@ -91,6 +92,14 @@ private slots:
 
     void on_infoAct_triggered();
 
+    void on_action_PDF_triggered();
+
+    void on_actionX_triggered();
+
+    void on_actionY_triggered();
+
+    void SwitchSceneMode();
+
 signals:
     void toFont(QFont f);
 private:
@@ -108,6 +117,7 @@ private:
     QList<QAction*> rectActions;
     QList<QAction*> ellipseActions;
     QList<QAction*> textActions;
+    QList<QAction*> SceneModes;
     QDockWidget* dock;
 
     bool m_modified;
@@ -119,6 +129,9 @@ private:
     QBrush PenBrush;
     QFont TextFont;
 
+    QLabel* scale;
+    QPushButton* showGrid;
+
     Command* Cmd;
 private:
     void InitUi();
@@ -128,7 +141,7 @@ private:
     void InitDir();
     void ShowSaveBox();
     MyView* getCurrentView();
-
+    QString getCurrentTabName();
 protected:
 
 };

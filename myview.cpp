@@ -275,6 +275,8 @@ void MyView::wheelEvent(QWheelEvent *event)
 //        qDebug()<<event->delta();     为正负120
         this->scale(scaleFactor, scaleFactor);
         this->updateCenterRect();
+        QString t = "当前比例为 "+QString::number(matrix().m11(),'f',2)+":1";
+        m_main->showScale(t);   //状态栏显示当前比例
     }
     else
         QGraphicsView::wheelEvent(event);
@@ -756,6 +758,7 @@ void MyView::selectAll(bool state)
 // 可以与之前的方式做对比
 void MyView::showStatus(QString msg)
 {
+    m_main->statusBar()->setFont(QFont("Inconsolata",14));
     m_main->statusBar()->showMessage(msg);
 }
 
@@ -788,9 +791,9 @@ void MyView::InitView()
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     //锚点以鼠标为准,放缩时效果跟网络地图一样
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-//    qDebug()<<this->matrix();   //默认是单位矩阵
-//    QMatrix m(10,0,0,10,0,0);
-    //    this->setMatrix(m);
+    this->setMatrix(QMatrix(1,0,0,-1,0,0));     // x,y轴比例为1:1和1:-1
+//    qDebug()<<this->transform();
+//    qDebug()<<matrix().m11() << matrix().m22();
 }
 
 void MyView::InitParameters()
@@ -884,4 +887,3 @@ void MyView::SetMoveFlag(bool flag)
 {
     m_movable = flag;
 }
-

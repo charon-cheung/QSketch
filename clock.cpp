@@ -169,8 +169,3 @@ void Clock::clear(QPainter &paint)
 {
     paint.eraseRect(0,0,200,200);
 }
-
-
-
-
-

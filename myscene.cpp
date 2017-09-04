@@ -7,9 +7,9 @@ MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
 {
     InitScene();
-    space = 50;
-    min_space = 10;
-    mode = ALL;
+    min_space = 20;
+    space = min_space*5;
+    mode = NONE;
 }
 
 MyScene::~MyScene()
@@ -25,7 +25,7 @@ void MyScene::InitText()
 
     X = this->addSimpleText("X轴",font);
     X->setPos(120,-5);
-//    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());   //总是Pos的2倍
+    //    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());   //总是Pos的2倍
     X->setTransform(QTransform::fromScale(1,-1));
     X->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
 
@@ -48,7 +48,6 @@ void MyScene::InitData()
 void MyScene::InitScene()
 {
     this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
-//    this->setBackgroundBrush(QBrush(QColor(0,43,54)));
     this->setBackgroundBrush(QBrush(QColor(33,40,48)));
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
                                QBrush(QColor(122,103,238), Qt::SolidPattern) );
@@ -297,7 +296,17 @@ void MyScene::Import(QDataStream &s, int count)
     }
 }
 
-#if 0
+void MyScene::setMode(MyScene::GridMode m)
+{
+    mode = m;
+    this->update();
+}
+
+MyScene::GridMode MyScene::getMode()
+{
+    return mode;
+}
+
 //如果此函数声明，但函数体为空，则场景是白色背景,不会调用 setBackgroundBrush
 void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
@@ -305,17 +314,19 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
 
     double x = rect.x();
     double y = rect.y();
-
     QRectF newRect(rect);
     newRect.setTopLeft(QPointF(floor(x/space)*space,
                                floor(y/space)*space) );
 
     QPolygonF whitePoints, greenPoints;
+    //    qDebug()<<"x: "<<x<<"y: "<<y;
+
+    //调用构造函数里的 setBackgroundBrush
     painter->fillRect(newRect, backgroundBrush());
 
     switch (mode)
     {
-    case ALL:
+    case POINT:
         for (qreal i = newRect.left(); i < newRect.right(); i = i + min_space)
         {
             for (qreal j = newRect.top(); j < newRect.bottom(); j = j + min_space)
@@ -323,15 +334,35 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
                 greenPoints.append(QPointF(i, j));
             }
         }
-    case MAJOR:
+        break;
+    case GRID:
+        //画粗线,先竖线后横线
         for (qreal i = newRect.left(); i < newRect.right(); i = i + space)
         {
-            for (qreal j = newRect.top(); j < newRect.bottom(); j = j + space)
-            {
-                whitePoints.append(QPointF(i, j));
-            }
+            painter->setPen(QColor(48,54,100));
+            painter->drawLine(QLineF( QPointF(i,newRect.top()), QPointF(i,newRect.bottom()) ) );
         }
+        for (qreal j = newRect.top(); j < newRect.bottom(); j = j + space)
+        {
+            painter->setPen(QColor(48,54,100));
+            painter->drawLine(QLineF( QPointF(newRect.left(), j), QPointF(newRect.right(), j) ) );
+        }
+        //画细线
+        for (qreal i = newRect.left(); i < newRect.right(); i = i + min_space)
+        {
+            painter->setPen(QColor(37,50,70));
+            if(qRound(i)%space !=0 && qRound(i)%space !=0)
+                painter->drawLine(QLineF( QPointF(i,newRect.top()), QPointF(i,newRect.bottom()) ) );
+        }
+        for (qreal j = newRect.top(); j < newRect.bottom(); j = j + min_space)
+        {
+            painter->setPen(QColor(37,44,54));
+            if(qRound(j) %space !=0 && qRound(j) %space !=0)
+                painter->drawLine(QLineF( QPointF(newRect.left(), j), QPointF(newRect.right(), j) ) );
+        }
+        break;
     case NONE:
+        break;
     default:
         break;
     }
@@ -341,24 +372,10 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
         painter->setPen(Qt::darkGreen);
         painter->drawPoints(greenPoints);
     }
-
-    if (!whitePoints.empty())
-    {
-        painter->setPen(Qt::white);
-        painter->drawPoints(whitePoints);
-    }
-
-    // Short origin marker
-    //    painter->setPen(Qt::lightGray);
-    //    painter->drawLine(-20, 0, 20, 0);
-    //    painter->drawLine(0, -20, 0, 20);
-
     // Long origin marker
     painter->setPen(Qt::lightGray);
     painter->drawLine(0, rect.top(), 0, rect.bottom());
     painter->drawLine(rect.left(), 0, rect.right(), 0);
 
     painter->restore();
-    //    qDebug()<<"draw background";
 }
-#endif

@@ -483,7 +483,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <bool>true</bool>
           </property>
          </widget>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="openBtn">
           <property name="geometry">
            <rect>
             <x>20</x>
@@ -541,8 +541,8 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <widget class="QMenu" name="openMenu">
     <property name="geometry">
      <rect>
-      <x>291</x>
-      <y>103</y>
+      <x>285</x>
+      <y>104</y>
       <width>154</width>
       <height>252</height>
      </rect>
@@ -595,6 +595,13 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
      <addaction name="zoomIn"/>
      <addaction name="zoomOut"/>
     </widget>
+    <widget class="QMenu" name="symmetryAct">
+     <property name="title">
+      <string>镜像</string>
+     </property>
+     <addaction name="actionX"/>
+     <addaction name="actionY"/>
+    </widget>
     <addaction name="translateAct"/>
     <addaction name="rotateAct"/>
     <addaction name="movableAct"/>
@@ -603,6 +610,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <addaction name="deleteAct"/>
     <addaction name="infoAct"/>
     <addaction name="changeStyleAct"/>
+    <addaction name="symmetryAct"/>
    </widget>
    <addaction name="openMenu"/>
    <addaction name="menu"/>
@@ -936,6 +944,31 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
   <action name="changeStyleAct">
    <property name="text">
     <string>改变样式</string>
+   </property>
+  </action>
+  <action name="actionX">
+   <property name="text">
+    <string>X轴镜像</string>
+   </property>
+  </action>
+  <action name="actionY">
+   <property name="text">
+    <string>Y轴镜像</string>
+   </property>
+  </action>
+  <action name="showGridAct">
+   <property name="text">
+    <string>显示网格</string>
+   </property>
+  </action>
+  <action name="showPtAct">
+   <property name="text">
+    <string>显示点阵</string>
+   </property>
+  </action>
+  <action name="resetSceneAct">
+   <property name="text">
+    <string>重置</string>
    </property>
   </action>
  </widget>

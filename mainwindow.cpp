@@ -103,6 +103,11 @@ QFont MainWindow::getFont()
     return TextFont;
 }
 
+void MainWindow::showScale(QString s)
+{
+    scale->setText(s);
+}
+
 void MainWindow::InitUi()
 {
     this->setWindowTitle("QSketch");
@@ -111,7 +116,6 @@ void MainWindow::InitUi()
     ui->tabView->setTabsClosable(true);
     ui->tabView->setCurrentIndex(0);
     ui->tabWidget->setCurrentIndex(0);
-//    ui->statusBar->addPermanentWidget();
 
     QStringList PenStyles;
     PenStyles<< "实线" <<"虚线"<< "点线" << "点划线" << "点点划线";
@@ -120,9 +124,24 @@ void MainWindow::InitUi()
     QStringList PenWidths;
     PenWidths<< QString::number(1) << QString::number(2) << QString::number(3) << QString::number(4) << QString::number(5);
     ui->PenWidth->insertItems(0,PenWidths);
+    ui->statusBar->setFont(QFont("Inconsolata",14));
     ui->statusBar->showMessage("初始化完成");
 
+    scale = new QLabel(this);
+    scale->setFont(QFont("Inconsolata",14));
+    scale->setText("当前比例为 1:1");
+    scale->show();
+    ui->statusBar->addPermanentWidget(scale);
 
+    SceneModes<<ui->showGridAct <<ui->showPtAct <<ui->resetSceneAct;
+    QMenu* modes = new QMenu(this);
+    modes->addActions(SceneModes);
+
+    showGrid = new QPushButton(this);
+    showGrid->setText("场景模式");
+    showGrid->setMenu(modes);
+    showGrid->show();
+    ui->statusBar->addPermanentWidget(showGrid);
 }
 
 void MainWindow::InitActions()
@@ -194,6 +213,8 @@ void MainWindow::InitConnects(MyView* view)
         connect(act, &QAction::triggered, view, &MyView::DrawEllipse );
     foreach(QAction* act, textActions)
         connect(act, &QAction::triggered, view, &MyView::DrawTexts );
+    foreach (QAction* mode, SceneModes)
+        connect(mode, &QAction::triggered, this, &MainWindow::SwitchSceneMode );
 
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
 }
@@ -255,6 +276,18 @@ MyView *MainWindow::getCurrentView()
         return view;
 }
 
+QString MainWindow::getCurrentTabName()
+{
+    if(!getCurrentView())
+    {
+        QMessageBox::warning(0,"出错了!","当前不存在画面");
+        return "";
+    }
+    QString name = ui->tabView->tabText(ui->tabView->currentIndex());
+    name.remove(".gph");
+    return name;
+}
+
 void MainWindow::on_NewView_triggered()
 {
     QString fullName = QFileDialog::getSaveFileName(this, tr("新建画面"),
@@ -266,8 +299,6 @@ void MainWindow::on_NewView_triggered()
     newView->setObjectName(name);
     newView->setNew(true);
     newView->setFocus();    //获得焦点
-    // 坐标放大倍数,倍数为1时,1个单位坐标就是1个像素
-    newView->scale(1,-1);
     newView->updateCenterRect();     //改善坐标轴不清晰的问题,但补得不全
     int count = ui->tabView->count();
     for(int i =0;i<count;i++)
@@ -306,7 +337,6 @@ void MainWindow::on_Open_triggered()
     //MyView已经包含了一个MyScene对象,不能再定义一个对象,否则打开的是另一个场景,无法编辑
     openView->getScene()->Load(ds);
 
-    openView->scale(1,-1);
     ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),tabName);
     ui->tabView->setCurrentWidget(openView);
     ui->tabView->currentWidget()->setObjectName(tabName);
@@ -358,7 +388,7 @@ void MainWindow::on_Print_triggered()
     m.left=10;
     m.right=10;
     printer.setMargins(m);
-
+    //不管是否提前对y轴对称,得到的结果总是y轴向下
     QPainter painter(&printer);
     getCurrentView()->getScene()->render(&painter);
 }
@@ -414,7 +444,8 @@ void MainWindow::on_startBtn_clicked()
         newView->setToolTip("第一层");
         newView->setNew(true);
         newView->setFocus();    //获得焦点
-        newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
+//        newView->setMatrix(QMatrix(1,0,0,-1,0,0));
+//        newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
         newView->updateCenterRect();
         ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
         ui->tabView->setCurrentWidget(newView);
@@ -433,7 +464,7 @@ void MainWindow::on_action_Pic_triggered()
 
 //    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
     QImage mirroredImage = image.mirrored(false, true);
-    QString path = QApplication::applicationDirPath()+"/Images";
+    QString path = QApplication::applicationDirPath();
     QDateTime time = QDateTime::currentDateTime();
     QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
     QString file = path+ "/" +str+ ".png";
@@ -455,9 +486,9 @@ void MainWindow::on_action_Save_triggered()
     on_Save_triggered();
 }
 
-void MainWindow::on_pushButton_3_clicked()
+void MainWindow::on_openBtn_clicked()
 {
-    on_Open_triggered();
+    on_action_Open_triggered();
 }
 
 void MainWindow::LoadFile(const QString &fileName)
@@ -491,7 +522,7 @@ void MainWindow::on_action_Redraw_triggered()
 
 void MainWindow::on_ColorPicker_clicked()
 {
-    PenColor = QColorDialog::getColor(Qt::yellow);
+    PenColor = QColorDialog::getColor(Qt::white);
 }
 
 void MainWindow::on_BrushPicker_clicked()
@@ -577,4 +608,52 @@ void MainWindow::on_deleteAct_triggered()
 void MainWindow::on_infoAct_triggered()
 {
     getCurrentView()->showItemInfo();
+}
+
+void MainWindow::on_action_PDF_triggered()
+{
+    if(!getCurrentView())   return;
+    QPrinter printer( QPrinter::HighResolution );
+    printer.setPageSize( QPrinter::A4 );
+    printer.setOrientation( QPrinter::Landscape );
+    printer.setOutputFormat( QPrinter::PdfFormat );
+    // file will be created in build directory
+    printer.setOutputFileName( getCurrentTabName()+".pdf" );
+
+    QPainter p;
+    if( !p.begin( &printer ) )
+    {
+        qDebug() << "Error!";
+        return;
+    }
+    //不管是否提前对y轴对称,得到的结果总是y轴向下 ???
+//    getCurrentView()->scale(1,-1);
+    getCurrentView()->getScene()->render(&p);
+    p.end();
+    ui->statusBar->showMessage("画面保存为PDF文件");
+}
+
+void MainWindow::on_actionX_triggered()
+{
+    Cmd = new Command(getCurrentView());
+    Cmd->SetSymmetry(Qt::XAxis);
+}
+
+void MainWindow::on_actionY_triggered()
+{
+    Cmd = new Command(getCurrentView());
+    Cmd->SetSymmetry(Qt::YAxis);
+}
+
+void MainWindow::SwitchSceneMode()
+{
+    if(sender()->objectName()=="showGridAct")
+        getCurrentView()->getScene()->setMode(MyScene::GridMode::GRID);
+    else if(sender()->objectName()=="showPtAct")
+    {
+        qDebug()<<"show pt";
+        getCurrentView()->getScene()->setMode(MyScene::GridMode::POINT);
+    }
+    else if(sender()->objectName()=="resetSceneAct")
+        getCurrentView()->getScene()->setMode(MyScene::GridMode::NONE);
 }
