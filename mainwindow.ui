@@ -462,8 +462,8 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <rect>
             <x>20</x>
             <y>60</y>
-            <width>272</width>
-            <height>199</height>
+            <width>260</width>
+            <height>181</height>
            </rect>
           </property>
           <property name="text">
@@ -541,7 +541,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <widget class="QMenu" name="openMenu">
     <property name="geometry">
      <rect>
-      <x>285</x>
+      <x>1651</x>
       <y>104</y>
       <width>154</width>
       <height>252</height>
@@ -876,6 +876,11 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    </property>
   </action>
   <action name="translateAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/translate.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>平移</string>
    </property>
@@ -912,46 +917,91 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    </property>
   </action>
   <action name="movableAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/movable.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>设为可动</string>
    </property>
   </action>
   <action name="brushAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/brush.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>填充图案</string>
    </property>
   </action>
   <action name="deleteAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/delete.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>删除</string>
    </property>
   </action>
   <action name="zoomIn">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/zoom_in.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>放大</string>
    </property>
   </action>
   <action name="zoomOut">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/zoom_out.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>缩小</string>
    </property>
   </action>
   <action name="infoAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/info.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>显示信息</string>
    </property>
   </action>
   <action name="changeStyleAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/style.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>改变样式</string>
    </property>
   </action>
   <action name="actionX">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/mirrorX.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>X轴镜像</string>
    </property>
   </action>
   <action name="actionY">
+   <property name="icon">
+    <iconset>
+     <normalon>:/Icon/Icon/mirrorY.png</normalon>
+    </iconset>
+   </property>
    <property name="text">
     <string>Y轴镜像</string>
    </property>

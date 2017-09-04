@@ -31,7 +31,6 @@
         <file>Icon/exit.png</file>
         <file>Icon/close.png</file>
         <file>Icon/gph.png</file>
-        <file>Icon/start.png</file>
         <file>Icon/reset.png</file>
         <file>Icon/pdf.png</file>
         <file>Icon/svg.png</file>
@@ -43,5 +42,17 @@
         <file>Icon/redraw.png</file>
         <file>Icon/cube.png</file>
         <file>Icon/rotate.png</file>
+        <file>Icon/start.png</file>
+        <file>Icon/style.png</file>
+        <file>Icon/sound.png</file>
+        <file>Icon/image.png</file>
+        <file>Icon/zoom_in.png</file>
+        <file>Icon/zoom_out.png</file>
+        <file>Icon/fill.png</file>
+        <file>Icon/movable.png</file>
+        <file>Icon/translate.png</file>
+        <file>Icon/brush.png</file>
+        <file>Icon/mirrorX.png</file>
+        <file>Icon/mirrorY.png</file>
     </qresource>
 </RCC>

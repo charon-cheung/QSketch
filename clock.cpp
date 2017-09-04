@@ -8,6 +8,8 @@ Clock::Clock(QWidget *parent)
     Ox = 100; Oy = 100;
     upX = 100; upY = 5;
     first = true;
+    // 背景透明
+    setStyleSheet("Clock{ background-color:rgba(0,0,0,0%); }  ");
     initTime();
     startTimer(1000);
 }
@@ -90,8 +92,8 @@ void Clock::paintEvent(QPaintEvent *e)
 
 void Clock::drawBase(QPainter &paint)
 {
-    paint.setPen(QPen(Qt::black,3,Qt::SolidLine));
-    paint.setRenderHint(QPainter::Antialiasing, true);
+    paint.setPen(QPen(QColor(33,40,48),5,Qt::SolidLine));
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.drawEllipse(5,5,190,190);
 
     double nowUpX=195,nowUpY=100,nowDownX=180,nowDownY=100;
@@ -131,12 +133,11 @@ void Clock::drawBase(QPainter &paint)
     }
 }
 
-
 void Clock::drawSeconds(QPainter &paint, double alpha)
 {
     QPair<double,double> tmp = getPoint(upX,upY+15,alpha);
     paint.setPen(QPen(Qt::green,1,Qt::SolidLine));
-    paint.setRenderHint(QPainter::Antialiasing, true);
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
     tmp = getPoint(upX,100-30,alpha+180.0);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
@@ -146,7 +147,7 @@ void Clock::drawMinutes(QPainter &paint, double alpha)
 {
     QPair<double,double> tmp = getPoint(upX,upY+15,alpha);
     paint.setPen(QPen(Qt::red,2,Qt::SolidLine));
-    paint.setRenderHint(QPainter::Antialiasing, true);
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
 }
 
@@ -154,14 +155,14 @@ void Clock::drawHours(QPainter &paint, double alpha)
 {
     QPair<double,double> tmp = getPoint(upX,upY+50,alpha);
     paint.setPen(QPen(Qt::blue,2,Qt::SolidLine));
-    paint.setRenderHint(QPainter::Antialiasing, true);
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
 }
 
 void Clock::drawCenter(QPainter &paint)
 {
     paint.setPen(QPen(Qt::black,6,Qt::SolidLine,Qt::RoundCap));
-    paint.setRenderHint(QPainter::Antialiasing, true);
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.drawPoint(100,100);
 }
 
