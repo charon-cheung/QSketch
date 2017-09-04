@@ -324,6 +324,15 @@ void Command::ShowItemInfo()
     QMessageBox::information(0, "图元信息",info);
 }
 
+void Command::test()
+{
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+
+
+    }
+}
+
 QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
 {
     QString info;

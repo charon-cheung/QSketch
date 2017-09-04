@@ -157,8 +157,3 @@ void BaseItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
     update();
     QGraphicsItem::hoverMoveEvent(event);
 }
-
-void BaseItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-
-}

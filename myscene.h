@@ -31,6 +31,7 @@ public:
     virtual ~MyScene();
     void InitText();
     void InitData();
+    void InitShape();
     void InitScene();
 //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
@@ -38,9 +39,8 @@ public:
     void Load(QDataStream& s);
     void Import(QDataStream& s,int count);
     void setMode(GridMode m);
-    GridMode getMode();
-private:
 
+private:
     int space;
     int min_space;
 

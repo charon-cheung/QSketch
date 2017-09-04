@@ -365,6 +365,10 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->Translate(Command::RIGHT);
         showStatus("向右平移5个单位");
         break;
+    case Qt::Key_T:
+        Cmd = new Command(this);
+        Cmd->test();
+        break;
     default:
         event->ignore();
     }

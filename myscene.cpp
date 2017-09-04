@@ -6,6 +6,8 @@ const int MAGIC = 0x1234;
 MyScene::MyScene(QObject *parent):
     QGraphicsScene(parent)
 {
+    setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
+    setBackgroundBrush(QBrush(QColor(33,40,48)));
     InitScene();
     min_space = 20;
     space = min_space*5;
@@ -45,10 +47,8 @@ void MyScene::InitData()
     ArrowY->setData(0,"arrowY");
 }
 
-void MyScene::InitScene()
+void MyScene::InitShape()
 {
-    this->setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
-    this->setBackgroundBrush(QBrush(QColor(33,40,48)));
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
                                QBrush(QColor(122,103,238), Qt::SolidPattern) );
     Origin->setToolTip("原点");
@@ -61,6 +61,11 @@ void MyScene::InitScene()
     poly_Y<<QPointF(0, 80)<<QPointF(3, 72)<<QPointF(-3, 72);
     ArrowX = this->addPolygon(poly_X,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
     ArrowY = this->addPolygon(poly_Y,QPen(QColor(Qt::darkMagenta)),QBrush(QColor(Qt::darkMagenta)));
+}
+
+void MyScene::InitScene()
+{
+    InitShape();
     InitData();
     InitText();
 }
@@ -302,11 +307,6 @@ void MyScene::setMode(MyScene::GridMode m)
     this->update();
 }
 
-MyScene::GridMode MyScene::getMode()
-{
-    return mode;
-}
-
 //如果此函数声明，但函数体为空，则场景是白色背景,不会调用 setBackgroundBrush
 void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
@@ -319,7 +319,6 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
                                floor(y/space)*space) );
 
     QPolygonF whitePoints, greenPoints;
-    //    qDebug()<<"x: "<<x<<"y: "<<y;
 
     //调用构造函数里的 setBackgroundBrush
     painter->fillRect(newRect, backgroundBrush());
@@ -356,7 +355,7 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
         }
         for (qreal j = newRect.top(); j < newRect.bottom(); j = j + min_space)
         {
-            painter->setPen(QColor(37,44,54));
+            painter->setPen(QColor(37,50,70));
             if(qRound(j) %space !=0 && qRound(j) %space !=0)
                 painter->drawLine(QLineF( QPointF(newRect.left(), j), QPointF(newRect.right(), j) ) );
         }

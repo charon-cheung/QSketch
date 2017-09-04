@@ -37,7 +37,7 @@ public slots:
     void changeStyle();
     void SetSymmetry(Qt::Axis axis);
     void ShowItemInfo();
-
+    void test();
     QString getItemInfo(QString type, QPointF pos, QSizeF size, QColor c);
 private:
 

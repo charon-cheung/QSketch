@@ -16,7 +16,7 @@ public:
     explicit BaseItem(QGraphicsItem *parent = Q_NULLPTR);
     virtual ~BaseItem();
 
-    // 模仿Qt源码,不应定义基类的Type,否则子类中重新赋值的Type也无法覆盖这里的Type值
+    // 模仿Qt源码,不应定义基类的Type,否则子类中重新赋值的Type无法覆盖这里的Type值
     void setBoundingRect(const QRectF &rect);
     void setBoundingRect(qreal x, qreal y, qreal w, qreal h);
     QRectF boundingRect() const;
@@ -49,7 +49,7 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+
 };
 
 #endif // BASEITEM_H

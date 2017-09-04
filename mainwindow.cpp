@@ -648,12 +648,10 @@ void MainWindow::on_actionY_triggered()
 void MainWindow::SwitchSceneMode()
 {
     if(sender()->objectName()=="showGridAct")
-        getCurrentView()->getScene()->setMode(MyScene::GridMode::GRID);
+        //不要写成MyScene::GridMode::GRID,有的编译器报错
+        getCurrentView()->getScene()->setMode(MyScene::GRID);
     else if(sender()->objectName()=="showPtAct")
-    {
-        qDebug()<<"show pt";
-        getCurrentView()->getScene()->setMode(MyScene::GridMode::POINT);
-    }
+        getCurrentView()->getScene()->setMode(MyScene::POINT);
     else if(sender()->objectName()=="resetSceneAct")
-        getCurrentView()->getScene()->setMode(MyScene::GridMode::NONE);
+        getCurrentView()->getScene()->setMode(MyScene::NONE);
 }

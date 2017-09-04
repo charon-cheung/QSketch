@@ -3,12 +3,13 @@
 # Project created by QtCreator 2017-08-02T20:48:06
 #
 #-------------------------------------------------
-18251828830
+
 QT       += core gui printsupport quick
 QMAKE_CXXFLAGS += -Wno-unused-variable -Wno-unused-parameter
 QMAKE_CFLAGS_WARN_OFF += -Wreturn-type
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += c++11     # 有的编译器不添加会在lambda语法上报错
 TARGET = QSketch
 TEMPLATE = app
 
