@@ -30,7 +30,6 @@ public slots:
     void Translate(QPointF pt);
     void Zoom(bool in);
     void SelectAll(bool state);
-    void CatchPt();
     void FillBrush();
     void SetMovable(bool state);
     void Stretch();

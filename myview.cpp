@@ -6,6 +6,7 @@
 #include <QClipboard>
 #include <QStatusBar>
 #include <QInputDialog>
+#include "myline.h"
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
@@ -17,6 +18,7 @@ MyView::MyView(QWidget *parent):
 
     Cmd = new Command(m_scene);
     m_main = qobject_cast<MainWindow*>(this->topLevelWidget());
+    m_main->showScale("当前比例为 1:1 ");
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(ShowContextMenu()) );
 }
@@ -275,7 +277,7 @@ void MyView::wheelEvent(QWheelEvent *event)
 //        qDebug()<<event->delta();     为正负120
         this->scale(scaleFactor, scaleFactor);
         this->updateCenterRect();
-        QString t = "当前比例为 "+QString::number(matrix().m11(),'f',2)+":1";
+        QString t = "当前比例为 "+QString::number(matrix().m11(),'f',2)+":1 ";
         m_main->showScale(t);   //状态栏显示当前比例
     }
     else
@@ -328,8 +330,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         Cmd->SetMovable(!m_movable);
         break;
     case Qt::Key_C :
-        Cmd = new Command(this);
-        Cmd->CatchPt();
+        setCatch(!m_catch);     //捕捉模式
         break;
     case Qt::Key_V :
         Cmd = new Command(m_scene);
@@ -381,6 +382,16 @@ void MyView::catchPt(QPointF pt)
     QPointF f= mapFromScene(pt);
     f = mapToGlobal(f.toPoint());
     QCursor::setPos(f.toPoint());
+}
+
+void MyView::setCatch(bool flag)
+{
+    m_catch = flag;
+}
+
+bool MyView::goCatch()
+{
+    return m_catch;
 }
 
 void MyView::showItemInfo()
@@ -441,8 +452,12 @@ void MyView::DrawLine()
             QMessageBox::warning(0,"出错了","两个点的坐标不能相同!");
             return;
         }
-        m_scene->addLine(QLineF(list.at(0), list.at(1)),getPen())->
-                setFlag(QGraphicsItem::ItemIsSelectable);
+
+        MyLine* line = new MyLine(0,list.at(0),list.at(1));
+        line->setView(this);
+        m_scene->addItem(line);
+//        m_scene->addLine(QLineF(list.at(0), list.at(1)),getPen())->
+//                setFlag(QGraphicsItem::ItemIsSelectable);
         setNormal();
     }
     else if(sender()->objectName() == "actLine_3")
@@ -809,6 +824,7 @@ void MyView::InitParameters()
     m_movable = false;
     m_saved = false;
     m_new = false;
+    m_catch = false;
     LineCount = 0;
     RectCount = 0;
     ElliCount = 0;

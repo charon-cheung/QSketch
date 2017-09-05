@@ -103,39 +103,6 @@ void Command::SelectAll(bool state)
     }
 }
 
-void Command::CatchPt()
-{
-    if(chosenItems.size()!=1)
-    {
-        QMessageBox::warning(0, "注意!","只能选择一个图元 !");
-        return;
-    }
-    foreach(QGraphicsItem* item, chosenItems)
-    {
-        switch(item->type())
-        {
-            case QGraphicsLineItem::Type:
-            {
-                QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(item);
-                QPointF p1 = L->line().p1();
-                m_view->catchPt(p1);
-            }
-            case QGraphicsRectItem::Type:
-            {
-                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-                QPointF p1 = R->rect().center();
-                m_view->catchPt(p1);
-            }
-            case QGraphicsEllipseItem::Type:
-            {
-                QGraphicsEllipseItem* E = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-                QPointF p1 = E->rect().center();
-                m_view->catchPt(p1);
-            }
-        }
-    }
-}
-
 void Command::FillBrush()
 {
     brush_dlg = new BrushDlg();

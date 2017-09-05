@@ -1,15 +1,24 @@
 #include "clock.h"
 #include <QPair>
-
+#include <QPalette>
+#include <QPixmap>
+#include <QBrush>
 Clock::Clock(QWidget *parent)
     : QWidget(parent)
 {
-    resize(200,200);
+    resize(256,256);
     Ox = 100; Oy = 100;
     upX = 100; upY = 5;
     first = true;
-    // 背景透明
-    setStyleSheet("Clock{ background-color:rgba(0,0,0,0%); }  ");
+    // 背景透明, 妨碍了图片的加载
+    setStyleSheet("Clock{ background-color:rgba(0,0,0,0%);}  ");
+//    this->setAutoFillBackground(true);
+//    QPixmap pixmap;
+//    pixmap.load("D:/QSketch/Shape/clock.png");
+//    QPalette palette;
+//    palette.setBrush(QPalette::Background,QBrush(pixmap));
+//    this->setPalette(palette);
+
     initTime();
     startTimer(1000);
 }
@@ -136,7 +145,7 @@ void Clock::drawBase(QPainter &paint)
 void Clock::drawSeconds(QPainter &paint, double alpha)
 {
     QPair<double,double> tmp = getPoint(upX,upY+15,alpha);
-    paint.setPen(QPen(Qt::green,1,Qt::SolidLine));
+    paint.setPen(QPen(QColor(200,55,55),3,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
     tmp = getPoint(upX,100-30,alpha+180.0);
@@ -146,7 +155,7 @@ void Clock::drawSeconds(QPainter &paint, double alpha)
 void Clock::drawMinutes(QPainter &paint, double alpha)
 {
     QPair<double,double> tmp = getPoint(upX,upY+15,alpha);
-    paint.setPen(QPen(Qt::red,2,Qt::SolidLine));
+    paint.setPen(QPen(QColor(25,25,25),6,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
 }
@@ -154,7 +163,7 @@ void Clock::drawMinutes(QPainter &paint, double alpha)
 void Clock::drawHours(QPainter &paint, double alpha)
 {
     QPair<double,double> tmp = getPoint(upX,upY+50,alpha);
-    paint.setPen(QPen(Qt::blue,2,Qt::SolidLine));
+    paint.setPen(QPen(QColor(25,25,25),9,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
 }

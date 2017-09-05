@@ -53,7 +53,8 @@ SOURCES += \
     command.cpp \
     clock.cpp \
     brushdlg.cpp \
-    selectdlg.cpp
+    selectdlg.cpp \
+    myline.cpp
 
 
 HEADERS += \
@@ -65,7 +66,8 @@ HEADERS += \
     command.h \
     clock.h \
     brushdlg.h \
-    selectdlg.h
+    selectdlg.h \
+    myline.h
 
 
 FORMS += \

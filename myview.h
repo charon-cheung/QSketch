@@ -27,6 +27,7 @@ public:
     void SetMoveFlag(bool flag);
     void showStatus(QString msg);
     void catchPt(QPointF pt);
+    bool goCatch();
 
     QBrush getBrush();
     QPen getPen();
@@ -74,7 +75,7 @@ private:
     QPointF dragBegin;
     QGraphicsItem *viewCenter;
     QPointF pastePos;
-    bool m_copied, m_movable, m_saved, m_new;
+    bool m_copied, m_movable, m_saved, m_new, m_catch;
     QTransform m_translate;
     QList<QGraphicsItem*> chosenItems;
     // 画笔样式
@@ -109,6 +110,7 @@ public slots:
     void DrawEllipse();
     void DrawTexts();
 
+    void setCatch(bool flag);
     QFont getFont();
     void ShowContextMenu();  //加右键菜单
 

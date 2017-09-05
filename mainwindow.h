@@ -9,6 +9,8 @@
 #include <QDockWidget>
 #include <QQuickView>
 #include <QLabel>
+#include <QCheckBox>
+
 namespace Ui {
 class MainWindow;
 }
@@ -27,6 +29,7 @@ public:
     QColor getPenColor();
     QBrush getPenBrush();
     QFont  getFont();
+    QFont btnFont();
     void showScale(QString s);
 private slots:
 
@@ -130,8 +133,8 @@ private:
     QFont TextFont;
 
     QLabel* scale;
-    QPushButton* showGrid;
-
+    QPushButton *SceneMode;
+    QCheckBox *CatchMode;
     Command* Cmd;
 private:
     void InitUi();

@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-//#include <QCursor>
-//#include <QTransform>
 #include <QDateTime>
 #include <QDebug>
 #include <QFileDialog>
@@ -15,6 +13,7 @@
 #include <QDate>
 #include <QColorDialog>
 #include <QFontDialog>
+#include <QGridLayout>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -103,6 +102,14 @@ QFont MainWindow::getFont()
     return TextFont;
 }
 
+QFont MainWindow::btnFont()
+{
+    QFont f;
+    f.setFamily("Inconsolata");
+    f.setPointSize(14);
+    return f;
+}
+
 void MainWindow::showScale(QString s)
 {
     scale->setText(s);
@@ -124,12 +131,11 @@ void MainWindow::InitUi()
     QStringList PenWidths;
     PenWidths<< QString::number(1) << QString::number(2) << QString::number(3) << QString::number(4) << QString::number(5);
     ui->PenWidth->insertItems(0,PenWidths);
-    ui->statusBar->setFont(QFont("Inconsolata",14));
+    ui->statusBar->setFont(btnFont());
     ui->statusBar->showMessage("初始化完成");
-
+    //无法设置QLabel QPushButton的大小,暂时通过设置字体来控制
     scale = new QLabel(this);
-    scale->setFont(QFont("Inconsolata",14));
-    scale->setText("当前比例为 1:1");
+    scale->setFont(btnFont());
     scale->show();
     ui->statusBar->addPermanentWidget(scale);
 
@@ -137,11 +143,19 @@ void MainWindow::InitUi()
     QMenu* modes = new QMenu(this);
     modes->addActions(SceneModes);
 
-    showGrid = new QPushButton(this);
-    showGrid->setText("场景模式");
-    showGrid->setMenu(modes);
-    showGrid->show();
-    ui->statusBar->addPermanentWidget(showGrid);
+    SceneMode = new QPushButton(this);
+    SceneMode->setFont(btnFont());
+    SceneMode->setText("场景模式");
+    SceneMode->setMenu(modes);
+    SceneMode->show();
+    ui->statusBar->addPermanentWidget(SceneMode);
+
+    CatchMode = new QCheckBox(this);
+    CatchMode->setFont(btnFont());
+    CatchMode->setText("捕捉模式");
+    CatchMode->show();
+    ui->statusBar->addPermanentWidget(CatchMode);
+
 }
 
 void MainWindow::InitActions()
@@ -217,6 +231,7 @@ void MainWindow::InitConnects(MyView* view)
         connect(mode, &QAction::triggered, this, &MainWindow::SwitchSceneMode );
 
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
+    connect(CatchMode, SIGNAL(toggled(bool)), view, SLOT(setCatch(bool)) );
 }
 
 void MainWindow::InitDir()

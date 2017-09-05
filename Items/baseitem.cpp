@@ -45,7 +45,7 @@ QPen BaseItem::getSelectedPen()
 {
 //    选择时的边界矩形样式
     QPen pen;
-    pen.setColor(Qt::white);
+    pen.setColor(QColor(255,185,15));
     pen.setStyle(Qt::DashLine);
     pen.setWidthF(0.2);
 

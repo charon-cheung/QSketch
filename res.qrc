@@ -10,6 +10,7 @@
         <file>Shape/ellipse.png</file>
         <file>Shape/line.png</file>
         <file>Shape/point.png</file>
+        <file>Shape/clock.png</file>
     </qresource>
     <qresource prefix="/Icon">
         <file>Icon/editor.png</file>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>730</width>
-    <height>574</height>
+    <width>733</width>
+    <height>578</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -515,10 +515,10 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
          <widget class="Clock" name="clock" native="true">
           <property name="geometry">
            <rect>
-            <x>390</x>
-            <y>60</y>
-            <width>221</width>
-            <height>201</height>
+            <x>380</x>
+            <y>50</y>
+            <width>256</width>
+            <height>256</height>
            </rect>
           </property>
          </widget>
@@ -534,7 +534,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>730</width>
+     <width>733</width>
      <height>23</height>
     </rect>
    </property>
