@@ -6,7 +6,7 @@
 #include "Items/crosspt.h"
 #include "Items/ring.h"
 #include <QDataStream>
-//#include <myview.h>
+
 
 class MyView;     //需要前置声明
 class MyScene : public QGraphicsScene

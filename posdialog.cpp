@@ -23,7 +23,7 @@ PosDialog::PosDialog(QWidget *parent) :
     ui->width->setValidator(Positive);
     ui->height->setValidator(Positive);
 
-    Angle = new QDoubleValidator(-360,360,2,this);
+    Angle = new QDoubleValidator(0,360,2,this);
     ui->angle->setValidator(Angle);
     ui->pt1_x->setFocus();
 }

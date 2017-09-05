@@ -28,7 +28,7 @@ public:
     void showStatus(QString msg);
     void catchPt(QPointF pt);
     bool goCatch();
-
+    QPointF getP3();
     QBrush getBrush();
     QPen getPen();
 private:
@@ -85,6 +85,7 @@ private:
     QBrush PenBrush;
     QPen pen;
     QFont TextFont;
+    QPointF p2;
 private:
     inline void test();
     void InitView();

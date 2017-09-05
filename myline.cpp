@@ -1,17 +1,18 @@
 #include "myline.h"
 #include <QDebug>
 #include <QMessageBox>
+#include <QtMath>
 
 //构造函数后直接调用paint函数,所有必须在构造函数初始化两个端点
-MyLine::MyLine(QGraphicsItem *parent,QPointF src1,QPointF src3)
+MyLine::MyLine(QGraphicsItem *parent, QPointF src1,QPointF src3)
         :QGraphicsItem(parent),
         p1(src1),
         p3(src3)
 {
     p2.setX((p1.x() + p3.x())/2);
     p2.setY((p1.y() + p3.y())/2);
-    int ratio= (p3.y()-p1.y()) / (p3.x()-p1.x());
-    if(ratio>0)
+
+    if(getSlope()>0)
     {
         QPointF b1(p1.x()-margin, p1.y()-margin);
         QPointF b2(p3.x()+margin, p3.y()+margin);
@@ -23,6 +24,34 @@ MyLine::MyLine(QGraphicsItem *parent,QPointF src1,QPointF src3)
         QPointF b2(p3.x()+margin, p3.y()-margin);
         setBoundingRect( QRectF(b1,b2) );
     }
+    this->setAcceptHoverEvents(true);
+    this->setFlags(QGraphicsItem::ItemIsSelectable);
+}
+
+MyLine::MyLine(QGraphicsItem *parent, QPointF src,qreal length, qreal angle)
+        :QGraphicsItem(parent),
+        p1(src),
+        length(length),
+        angle(angle)
+{
+//    qDebug()<<"sin:"<<qSin(qDegreesToRadians(90.0f));
+//    if(getSlope()>0)
+//    {
+//        QPointF b1(p1.x()-margin, p1.y()-margin);
+//        QPointF b2(p3.x()+margin, p3.y()+margin);
+//        setBoundingRect( QRectF(b1,b2) );
+//    }
+//    else
+//    {
+//        QPointF b1(p1.x()-margin, p1.y()+margin);
+//        QPointF b2(p3.x()+margin, p3.y()-margin);
+//        setBoundingRect( QRectF(b1,b2) );
+//    }
+    //第一种情况
+//    qreal width = length * qSin(qDegreesToRadians(angle));
+//    qreal height = length * qCos(qDegreesToRadians(angle));
+//    setBoundingRect(QRectF(p1.x()-margin,p1.y()-margin,
+//                         width+2*margin, height+2*margin));
     this->setAcceptHoverEvents(true);
     this->setFlags(QGraphicsItem::ItemIsSelectable);
 }
@@ -134,9 +163,37 @@ void MyLine::DrawElli(QPainter *painter)
     painter->setBrush(QColor( 72, 61, 139 ));
     painter->setRenderHint(QPainter::HighQualityAntialiasing, true);
 
+    if(equalToOrigin(p3) && equalToOrigin(p2))
+        p3 = m_view->getP3();
+    p2.setX((p1.x() + p3.x())/2);
+    p2.setY((p1.y() + p3.y())/2);
+
     painter->drawEllipse(p1.x()- size/2, p1.y()-size/2, size,size);
     painter->drawEllipse(p2.x()- size/2, p2.y()-size/2, size,size);
     painter->drawEllipse(p3.x()- size/2, p3.y()-size/2, size,size);
+    QPointF b1, b2;
+    if(getSlope()>0)
+    {
+        b1.setX( p1.x()-margin);    b1.setY(p1.y()-margin);
+        b2.setX(p3.x()+margin);     b2.setY(p3.y()+margin);
+        if( angle>90 && angle<270)
+        {   // 225°时有问题
+            b1.setX(p1.x()+margin); b1.setY(p1.y()+margin);
+            b2.setX(p3.x()-margin); b2.setY(p3.y()-margin);
+        }
+    }
+    else
+    {
+        b1.setX(p1.x()-margin); b1.setY(p1.y()+margin);
+        b2.setX(p3.x()+margin); b2.setY(p3.y()-margin);
+        if(angle>90 && angle<270)
+        {
+            b1.setX(p1.x()+margin); b1.setY(p1.y()-margin);
+            b2.setX(p3.x()-margin); b2.setY(p3.y()+margin);
+        }
+    }
+    setBoundingRect( QRectF(b1,b2) );
+
     update();
 }
 
@@ -144,8 +201,20 @@ void MyLine::DrawLines(QPainter *painter)
 {
     painter->setPen(QColor(Qt::white));
     painter->setRenderHint(QPainter::HighQualityAntialiasing, true);
-    painter->drawLine(QLineF(p1,p2));
-    painter->drawLine(QLineF(p2,p3));
+
+    if(equalToOrigin(p3) && equalToOrigin(p2))
+    {
+        QLineF line;
+        line.setP1(p1);
+        line.setAngle(360-angle);
+        line.setLength(length);
+        painter->drawLine(line);
+    }
+    else
+    {
+        painter->drawLine(QLineF(p1,p2));
+        painter->drawLine(QLineF(p2,p3));
+    }
     update();
 }
 
@@ -162,6 +231,22 @@ void MyLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 void MyLine::updateRect()
 {
 
+}
+
+bool MyLine::equalToOrigin(QPointF pt)
+{
+    bool flag;
+    if(pt.x()==0 && pt.y()==0)
+        flag = true;
+    else
+        flag = false;
+    return flag;
+}
+
+qreal MyLine::getSlope()
+{
+    int slope = (p3.y()-p1.y()) / (p3.x()-p1.x());
+    return slope;
 }
 
 void MyLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -188,14 +273,12 @@ void MyLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void MyLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     update();
-    qDebug()<<"enter";
     QGraphicsItem::hoverEnterEvent(event);
 }
 
 void MyLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     update();
-    qDebug()<<"leave";
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
@@ -208,7 +291,7 @@ void MyLine::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
     qreal offsetY2 = event->pos().y()-p2.y();
     qreal offsetX3 = event->pos().x()-p3.x();
     qreal offsetY3 = event->pos().y()-p3.y();
-
+    //捕捉两个端点和中点,感应范围为点周围边长为2的矩形区域
     if(m_view->goCatch())
     {
         if( qAbs(offsetX1)<1 || qAbs(offsetY1)<1)

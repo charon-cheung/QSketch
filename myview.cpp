@@ -394,6 +394,11 @@ bool MyView::goCatch()
     return m_catch;
 }
 
+QPointF MyView::getP3()
+{
+    return p2;
+}
+
 void MyView::showItemInfo()
 {
     Cmd = new Command(this);
@@ -485,8 +490,13 @@ void MyView::DrawLine()
             QMessageBox::warning(0,"出错了","直线无效!");
             return;
         }
-        m_scene->addLine(line, getPen())->
-                setFlag(QGraphicsItem::ItemIsSelectable);
+        p2 = line.p2();
+
+        MyLine* L = new MyLine(0, pt1, length, angle);
+        L->setView(this);
+        m_scene->addItem(L);
+//        m_scene->addLine(line, getPen())->
+//                setFlag(QGraphicsItem::ItemIsSelectable);
         setNormal();
     }
 }

@@ -1,7 +1,7 @@
 #ifndef MYLINE_H
 #define MYLINE_H
 
-#include <QGraphicsLineItem>
+#include <QGraphicsItem>
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -13,6 +13,7 @@ class MyLine : public QGraphicsItem
 {
 public:
     explicit MyLine(QGraphicsItem* parent,QPointF src1,QPointF src3);
+    explicit MyLine(QGraphicsItem* parent,QPointF p1,qreal length, qreal angle);
     ~MyLine();
 
     enum { Type = UserType +4 };
@@ -36,7 +37,8 @@ public:
 
 private:
     void updateRect();
-
+    bool equalToOrigin(QPointF pt);
+    qreal getSlope();
 private:
     enum{
         size = 6,
@@ -44,6 +46,7 @@ private:
         };
     MyView* m_view;
     QPointF p1, p2, p3;
+    qreal length,angle;
     QRectF m_rect;
     mutable QRectF m_boundingRect;
     bool m_hovered;
