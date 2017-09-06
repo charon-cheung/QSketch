@@ -29,7 +29,7 @@ public:
     QColor getPenColor();
     QBrush getPenBrush();
     QFont  getFont();
-    QFont btnFont();
+    QFont btnFont(int size);
     void showScale(QString s);
 
 public slots:
@@ -63,12 +63,6 @@ public slots:
     void on_openBtn_clicked();
 
     void LoadFile(const QString &name);
-
-    void on_action_Reset_triggered();
-
-    void on_action_Normal_triggered();
-
-    void on_action_Redraw_triggered();
 
     void on_ColorPicker_clicked();
 
@@ -105,6 +99,7 @@ public slots:
     void SwitchSceneMode();
 
     void showFullView(bool full);
+    void test();
 signals:
     void toFont(QFont f);
 private:
@@ -135,19 +130,21 @@ private:
     QFont TextFont;
 
     QLabel* scale;
-    QPushButton *SceneMode;
+    QPushButton *SceneMode, *NormalMode, *Reset, *Empty ;
     QCheckBox *CatchMode,*FullView;
     Command* Cmd;
+    QToolBar *floatToolBar;
 private:
     void InitUi();
     void InitActions();
+    void InitStatusBar();
+    void InitToolBar();
     void InitMenus();
     void InitConnects(MyView* view);
     void InitDir();
     void ShowSaveBox();
     MyView* getCurrentView();
     QString getCurrentTabName();
-protected:
 
 };
 

@@ -11,6 +11,7 @@
         <file>Shape/line.png</file>
         <file>Shape/point.png</file>
         <file>Shape/clock.png</file>
+        <file>Shape/crosshairs.png</file>
     </qresource>
     <qresource prefix="/Icon">
         <file>Icon/editor.png</file>
@@ -19,7 +20,6 @@
         <file>Icon/locate.png</file>
         <file>Icon/measure.png</file>
         <file>Icon/delete.png</file>
-        <file>Icon/normal.png</file>
         <file>Icon/save.png</file>
         <file>Icon/save_as.png</file>
         <file>Icon/open.png</file>
@@ -55,5 +55,6 @@
         <file>Icon/brush.png</file>
         <file>Icon/mirrorX.png</file>
         <file>Icon/mirrorY.png</file>
+        <file>Icon/normal.png</file>
     </qresource>
 </RCC>

@@ -293,7 +293,11 @@ void Command::ShowItemInfo()
 
 void Command::CatchPt()
 {
-    if(!m_view->goCatch())      return;
+    if(!m_view->goCatch())
+    {
+        QMessageBox::warning(0,"出错了!","没有打开捕捉模式 !");
+        return;
+    }
     if(chosenItems.size()!=1)   return;
 
     switch(chosenItems.at(0)->type())
@@ -313,6 +317,11 @@ void Command::CatchPt()
             m_view->catchPt(p2);
         else if(inCatchRange(m_view->getScenePos(),p3))
             m_view->catchPt(p3);
+        else
+        {
+            m_view->changeCursor(Qt::ArrowCursor);
+            return;
+        }
     }
         break;
     case QGraphicsRectItem::Type :
@@ -335,6 +344,11 @@ void Command::CatchPt()
             m_view->catchPt(tr);
         else if(inCatchRange(m_view->getScenePos(),bl))
             m_view->catchPt(bl);
+        else
+        {
+            m_view->changeCursor(Qt::ArrowCursor);
+            return;
+        }
     }
         break;
     case QGraphicsEllipseItem::Type :
@@ -343,6 +357,11 @@ void Command::CatchPt()
         QPointF center = Elli->rect().center();
         if(inCatchRange(m_view->getScenePos(),center))
             m_view->catchPt(center);
+        else
+        {
+            m_view->changeCursor(Qt::ArrowCursor);
+            return;
+        }
     }
         break;
     default:

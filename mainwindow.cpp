@@ -102,11 +102,11 @@ QFont MainWindow::getFont()
     return TextFont;
 }
 
-QFont MainWindow::btnFont()
+QFont MainWindow::btnFont(int size)
 {
     QFont f;
     f.setFamily("Inconsolata");
-    f.setPointSize(14);
+    f.setPointSize(size);
     return f;
 }
 
@@ -131,35 +131,9 @@ void MainWindow::InitUi()
     QStringList PenWidths;
     PenWidths<< QString::number(1) << QString::number(2) << QString::number(3) << QString::number(4) << QString::number(5);
     ui->PenWidth->insertItems(0,PenWidths);
-    ui->statusBar->setFont(btnFont());
-    ui->statusBar->showMessage("初始化完成");
-    //无法设置QLabel QPushButton的大小,暂时通过设置字体来控制
-    scale = new QLabel(this);
-    scale->setFont(btnFont());
-    scale->show();
-    ui->statusBar->addPermanentWidget(scale);
 
-    SceneModes<<ui->showGridAct <<ui->showPtAct <<ui->resetSceneAct;
-    QMenu* modes = new QMenu(this);
-    modes->addActions(SceneModes);
-
-    SceneMode = new QPushButton(this);
-    SceneMode->setFont(btnFont());
-    SceneMode->setText("场景模式");
-    SceneMode->setMenu(modes);
-//    SceneMode->show();
-    ui->statusBar->addPermanentWidget(SceneMode);
-
-    CatchMode = new QCheckBox(this);
-    CatchMode->setFont(btnFont());
-    CatchMode->setText("捕捉模式");
-//    CatchMode->show();
-    ui->statusBar->addPermanentWidget(CatchMode);
-
-    FullView = new QCheckBox(this);
-    FullView->setFont(btnFont());
-    FullView->setText("全屏画面");
-    ui->statusBar->addPermanentWidget(FullView);
+    InitStatusBar();
+    InitToolBar();
 }
 
 void MainWindow::InitActions()
@@ -169,12 +143,68 @@ void MainWindow::InitActions()
     ui->mainToolBar->addAction(ui->Save);
     ui->mainToolBar->addAction(ui->Print);
     ui->mainToolBar->addSeparator();
+}
 
-    ui->mainToolBar->addAction(ui->action_Normal);
-    ui->mainToolBar->addAction(ui->action_Reset);
-    ui->mainToolBar->addAction(ui->action_Redraw);
-    ui->mainToolBar->addSeparator();
+void MainWindow::InitStatusBar()
+{
+    //无法设置QLabel QPushButton的大小,暂时通过设置字体来控制
+    scale = new QLabel(this);
+    scale->setFont(btnFont(14));
+    scale->show();
+    ui->statusBar->addPermanentWidget(scale);
 
+    SceneModes<<ui->showGridAct <<ui->showPtAct <<ui->resetSceneAct;
+    QMenu* modes = new QMenu(this);
+    modes->addActions(SceneModes);
+
+    SceneMode = new QPushButton(this);
+    SceneMode->setFont(btnFont(14));
+    SceneMode->setText("场景模式");
+    SceneMode->setMenu(modes);
+    ui->statusBar->addPermanentWidget(SceneMode);
+
+    CatchMode = new QCheckBox(this);
+    CatchMode->setFont(btnFont(14));
+    CatchMode->setText("捕捉模式");
+    ui->statusBar->addPermanentWidget(CatchMode);
+
+    FullView = new QCheckBox(this);
+    FullView->setFont(btnFont(14));
+    FullView->setText("全屏画面");
+    ui->statusBar->addPermanentWidget(FullView);
+
+    ui->statusBar->setFont(btnFont(14));
+    ui->statusBar->showMessage("初始化完成");
+}
+
+void MainWindow::InitToolBar()
+{
+    NormalMode = new QPushButton(this);
+    NormalMode->setFlat(true);
+    NormalMode->setIconSize(QSize(36,36));
+    NormalMode->setIcon(QIcon(":/Icon/Icon/normal.png"));
+    NormalMode->resize(36,36);
+
+    Reset = new QPushButton(this);
+    Reset->setFlat(true);
+    Reset->setIconSize(QSize(36,36));
+    Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
+    Reset->resize(36,36);
+
+    Empty = new QPushButton(this);
+    Empty->setFlat(true);
+    Empty->setIconSize(QSize(36,36));
+    Empty->setIcon(QIcon(":/Icon/Icon/redraw.png"));
+    Empty->resize(36,36);
+
+    floatToolBar = new QToolBar();
+    floatToolBar->addWidget(NormalMode);
+    floatToolBar->addWidget(Reset);
+    floatToolBar->addWidget(Empty);
+    floatToolBar->setOrientation(Qt::Vertical);
+    floatToolBar->setAllowedAreas(Qt::LeftToolBarArea|Qt::RightToolBarArea);
+    addToolBar(floatToolBar);
+    connect(floatToolBar,SIGNAL(topLevelChanged(bool)),this,SLOT(test()) );
 }
 
 void MainWindow::InitMenus()
@@ -237,6 +267,9 @@ void MainWindow::InitConnects(MyView* view)
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
     connect(CatchMode, SIGNAL(toggled(bool)), view, SLOT(setCatch(bool)) );
     connect(FullView,  SIGNAL(toggled(bool)), this, SLOT(showFullView(bool)) );
+    connect(NormalMode, &QPushButton::clicked, view, &MyView::setNormal);
+    connect(Reset, &QPushButton::clicked, view, &MyView::Reset);
+    connect(Empty, &QPushButton::clicked, view, &MyView::Redraw);
 }
 
 void MainWindow::InitDir()
@@ -306,6 +339,12 @@ QString MainWindow::getCurrentTabName()
     QString name = ui->tabView->tabText(ui->tabView->currentIndex());
     name.remove(".gph");
     return name;
+}
+
+void MainWindow::test()
+{
+    qDebug()<<"test"<<qrand()%100;
+    floatToolBar->setOrientation(Qt::Vertical);
 }
 
 void MainWindow::on_NewView_triggered()
@@ -522,24 +561,6 @@ void MainWindow::LoadFile(const QString &fileName)
     ModifiedTime = info.lastModified().toString("上次修改时间: MM-dd hh:mm:ss");
 }
 
-void MainWindow::on_action_Reset_triggered()
-{
-    if(!getCurrentView())   return;
-    getCurrentView()->Reset();
-}
-
-void MainWindow::on_action_Normal_triggered()
-{
-    if(!getCurrentView())   return;
-    getCurrentView()->setNormal();
-}
-
-void MainWindow::on_action_Redraw_triggered()
-{
-    if(!getCurrentView())   return;
-    getCurrentView()->Redraw();
-}
-
 void MainWindow::on_ColorPicker_clicked()
 {
     PenColor = QColorDialog::getColor(Qt::white);
@@ -684,11 +705,15 @@ void MainWindow::showFullView(bool full)
         ui->tabWidget->setVisible(false);
         ui->menuBar->setVisible(false);
         ui->mainToolBar->setVisible(false);
+        floatToolBar->setVisible(false);
+        ui->statusBar->showMessage("进入全屏模式");
     }
     else
     {
         ui->tabWidget->setVisible(true);
         ui->menuBar->setVisible(true);
         ui->mainToolBar->setVisible(true);
+        floatToolBar->setVisible(true);
+        ui->statusBar->showMessage("退出全屏模式");
     }
 }

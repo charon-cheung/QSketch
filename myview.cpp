@@ -388,6 +388,7 @@ void MyView::catchPt(QPointF pt)
     QPointF f= mapFromScene(pt);
     f = mapToGlobal(f.toPoint());
     QCursor::setPos(f.toPoint());
+    changeCursor("crosshairs");
 }
 
 void MyView::setCatch(bool on)
@@ -402,7 +403,6 @@ void MyView::setCatch(bool on)
 void MyView::setFullView(bool full)
 {
     m_full = full;
-    qDebug()<<m_full;
     if(full)
         m_main->showFullView(true);
     else
@@ -645,7 +645,7 @@ void MyView::Locate()
 void MyView::Reset()
 {
     this->resetMatrix();
-    this->scale(2,-2);
+    this->scale(1,-1);
     this->centerOn(0,0);
     this->updateCenterRect();
     showStatus("重置");
@@ -692,7 +692,14 @@ void MyView::Paste()
     for(int i=0;i<=count;i++)
     {
         QString className;
+        int flags;
+        QColor c;
+        int style;
+        int width;
+        QPen pen;
         s>>className;   //不能直接用字符串
+        s >> flags;
+
         if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem"
                 || className=="CrossPt"|| className=="CirclePt")
         {
@@ -735,6 +742,32 @@ void MyView::Paste()
             t.translate(pos.x(),pos.y());
             Line->setTransform(t);
 //            Line->setFlag(QGraphicsItem::ItemIsSelectable);
+        }
+        else if(className == "QGraphicsSimpleTextItem")
+        {
+            QString text,family;
+            qreal fontSizeF;
+            bool bold;
+            qreal px,py;
+
+            s >> text;  s >> family;
+            s >> fontSizeF; s >> bold;
+            QFont font;
+            font.setFamily(family);
+            font.setPointSize(fontSizeF);
+            font.setBold(bold);
+
+            s >> px;    s >> py;
+            s >> c; s >> style; s >> width;
+            pen.setColor(c);
+            pen.setStyle(Qt::PenStyle(style) );
+            pen.setWidth(width);
+
+            QGraphicsSimpleTextItem* Text = m_scene->addSimpleText(text,font);
+            Text->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
+            Text->setPos(px,py);
+            Text->setTransform(QTransform::fromScale(1,-1));
+            Text->setPen(pen);
         }
     }
 }

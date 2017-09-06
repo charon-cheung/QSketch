@@ -34,7 +34,8 @@ public:
     QPen getPen();
 
     QPointF getScenePos();
-
+    void changeCursor(const QString& shape);
+    void changeCursor(Qt::CursorShape shape);
 private:
     MyScene* m_scene;
     PosDialog* dlg;
@@ -68,14 +69,15 @@ private:
     QPointF StartPt;
     QPointF end;
     QPointF mouseMovePos;
+
     enum AppMode
     {
         NORMAL,
         DRAG,
         EDIT
     };
-
     AppMode mode;
+
     QPointF dragBegin;
     QGraphicsItem *viewCenter;
     QPointF pastePos;
@@ -95,9 +97,6 @@ private:
     void InitView();
     void InitParameters();
     void InitViewRect();
-
-    inline void changeCursor(const QString& shape);
-    inline void changeCursor(Qt::CursorShape shape);
 
     int getPenWidth();
     Qt::PenStyle getPenStyle();
