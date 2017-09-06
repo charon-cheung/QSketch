@@ -1,13 +1,12 @@
-#INCLUDEPATH += Items
-HEADERS	+= \
-            baseitem.h \
-           circlept.h \
-           crosspt.h \
-           ring.h \
 
+ HEADERS +=  Items/baseitem.h \
+             Items/circlept.h \
+             Items/crosspt.h \
+             Items/ring.h\
+             Items/myline.h
 
-SOURCES += \
-            baseitem.cpp \
-           circlept.cpp \
-           crosspt.cpp \
-           ring.cpp \
+ SOURCES +=  Items/baseitem.cpp \
+             Items/circlept.cpp \
+             Items/crosspt.cpp \
+             Items/ring.cpp\
+             Items/myline.cpp

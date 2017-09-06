@@ -147,15 +147,19 @@ void MainWindow::InitUi()
     SceneMode->setFont(btnFont());
     SceneMode->setText("场景模式");
     SceneMode->setMenu(modes);
-    SceneMode->show();
+//    SceneMode->show();
     ui->statusBar->addPermanentWidget(SceneMode);
 
     CatchMode = new QCheckBox(this);
     CatchMode->setFont(btnFont());
     CatchMode->setText("捕捉模式");
-    CatchMode->show();
+//    CatchMode->show();
     ui->statusBar->addPermanentWidget(CatchMode);
 
+    FullView = new QCheckBox(this);
+    FullView->setFont(btnFont());
+    FullView->setText("全屏画面");
+    ui->statusBar->addPermanentWidget(FullView);
 }
 
 void MainWindow::InitActions()
@@ -232,6 +236,7 @@ void MainWindow::InitConnects(MyView* view)
 
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
     connect(CatchMode, SIGNAL(toggled(bool)), view, SLOT(setCatch(bool)) );
+    connect(FullView,  SIGNAL(toggled(bool)), this, SLOT(showFullView(bool)) );
 }
 
 void MainWindow::InitDir()
@@ -669,4 +674,21 @@ void MainWindow::SwitchSceneMode()
         getCurrentView()->getScene()->setMode(MyScene::POINT);
     else if(sender()->objectName()=="resetSceneAct")
         getCurrentView()->getScene()->setMode(MyScene::NONE);
+}
+
+void MainWindow::showFullView(bool full)
+{
+    if(!getCurrentView())   return;
+    if(full)
+    {
+        ui->tabWidget->setVisible(false);
+        ui->menuBar->setVisible(false);
+        ui->mainToolBar->setVisible(false);
+    }
+    else
+    {
+        ui->tabWidget->setVisible(true);
+        ui->menuBar->setVisible(true);
+        ui->mainToolBar->setVisible(true);
+    }
 }

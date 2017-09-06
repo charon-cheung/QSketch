@@ -291,13 +291,72 @@ void Command::ShowItemInfo()
     QMessageBox::information(0, "图元信息",info);
 }
 
-void Command::test()
+void Command::CatchPt()
 {
-    foreach(QGraphicsItem* item, chosenItems)
+    if(!m_view->goCatch())      return;
+    if(chosenItems.size()!=1)   return;
+
+    switch(chosenItems.at(0)->type())
     {
+    case QGraphicsLineItem::Type :
+    {
+        QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItems.at(0));
+        QPointF p1 = L->line().p1();
+        QPointF p2 = L->line().p2();
+        QPointF p3;
+        p3.setX( (p1.x()+p2.x())/2 );
+        p3.setY( (p1.y()+p2.y())/2 );
 
-
+        if(inCatchRange(m_view->getScenePos(),p1))
+            m_view->catchPt(p1);
+        else if(inCatchRange(m_view->getScenePos(),p2))
+            m_view->catchPt(p2);
+        else if(inCatchRange(m_view->getScenePos(),p3))
+            m_view->catchPt(p3);
     }
+        break;
+    case QGraphicsRectItem::Type :
+    {
+        QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(chosenItems.at(0));
+        QPointF bl = R->rect().topLeft();
+        QPointF br = R->rect().topRight();
+        QPointF tl = R->rect().bottomLeft();
+        QPointF tr = R->rect().bottomRight();
+        QPointF center = R->rect().center();
+        qDebug()<<tl<<tr<<bl<<br<<center;
+        //始终不能捕捉五个点,最多捕捉同一对角线的三个点
+        if(inCatchRange(m_view->getScenePos(),tl))
+            m_view->catchPt(tl);
+        else if(inCatchRange(m_view->getScenePos(),center))
+            m_view->catchPt(center);
+        else if(inCatchRange(m_view->getScenePos(),br))
+            m_view->catchPt(br);
+        else if(inCatchRange(m_view->getScenePos(),tr))
+            m_view->catchPt(tr);
+        else if(inCatchRange(m_view->getScenePos(),bl))
+            m_view->catchPt(bl);
+    }
+        break;
+    case QGraphicsEllipseItem::Type :
+    {
+        QGraphicsEllipseItem* Elli = qgraphicsitem_cast<QGraphicsEllipseItem*>(chosenItems.at(0));
+        QPointF center = Elli->rect().center();
+        if(inCatchRange(m_view->getScenePos(),center))
+            m_view->catchPt(center);
+    }
+        break;
+    default:
+        break;
+    }
+}
+
+bool Command::inCatchRange(QPointF src, QPointF des)
+{
+    bool ok;
+    if( qAbs(src.x()-des.x()) < range || qAbs(src.y()-des.y())<range )
+        ok = true;
+    else ok = false;
+    return ok;
 }
 
 QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
@@ -308,4 +367,9 @@ QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
     info += QString("图元大小: %4 X %5       \n").arg(size.width()).arg(size.height());
     info += QString("图元颜色: %6").arg(QVariant(c.toRgb()).toString());
     return info;
+}
+
+void Command::test()
+{
+
 }

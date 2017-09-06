@@ -3,8 +3,8 @@
 
 #include "myview.h"
 #include "mainwindow.h"
-#include "brushdlg.h"
-#include "selectdlg.h"
+#include "Dialogs/brushdlg.h"
+#include "Dialogs/selectdlg.h"
 
 class MainWindow;
 class Command
@@ -22,7 +22,9 @@ public:
         RIGHT,
         PACE =5
     };
-
+    enum{
+         range = 2
+    };
 public slots:
     void Delete();
     void Rotate(QPointF pt, float angle);
@@ -36,8 +38,11 @@ public slots:
     void changeStyle();
     void SetSymmetry(Qt::Axis axis);
     void ShowItemInfo();
-    void test();
     QString getItemInfo(QString type, QPointF pos, QSizeF size, QColor c);
+
+    void test();
+    void CatchPt();
+    bool inCatchRange(QPointF src, QPointF des);
 private:
 
     MyView* m_view;

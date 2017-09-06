@@ -15,8 +15,8 @@ TEMPLATE = app
 
 RC_ICONS = cube.ico
 
-include (Items.pri)
-
+include (Items/Items.pri)
+include (Dialogs/Dialogs.pri)
 
 DESTDIR = bin
 
@@ -48,33 +48,23 @@ SOURCES += \
         mainwindow.cpp \
     myview.cpp \
     myscene.cpp \
-    posdialog.cpp \
     QRecentFilesMenu.cpp \
     command.cpp \
     clock.cpp \
-    brushdlg.cpp \
-    selectdlg.cpp \
-    myline.cpp
 
 
 HEADERS += \
         mainwindow.h \
     myview.h \
     myscene.h \
-    posdialog.h \
     QRecentFilesMenu.h \
     command.h \
     clock.h \
-    brushdlg.h \
-    selectdlg.h \
-    myline.h
 
 
 FORMS += \
         mainwindow.ui \
-    posdialog.ui \
-    brushdlg.ui \
-    selectdlg.ui
+
 
 RESOURCES += \
     res.qrc

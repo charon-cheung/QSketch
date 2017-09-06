@@ -3,7 +3,7 @@
 
 #include "command.h"
 #include "myview.h"
-#include "posdialog.h"
+#include "Dialogs/posdialog.h"
 #include "QRecentFilesMenu.h"
 #include <QMainWindow>
 #include <QDockWidget>
@@ -31,7 +31,8 @@ public:
     QFont  getFont();
     QFont btnFont();
     void showScale(QString s);
-private slots:
+
+public slots:
 
     void on_Open_triggered();
 
@@ -103,6 +104,7 @@ private slots:
 
     void SwitchSceneMode();
 
+    void showFullView(bool full);
 signals:
     void toFont(QFont f);
 private:
@@ -134,7 +136,7 @@ private:
 
     QLabel* scale;
     QPushButton *SceneMode;
-    QCheckBox *CatchMode;
+    QCheckBox *CatchMode,*FullView;
     Command* Cmd;
 private:
     void InitUi();

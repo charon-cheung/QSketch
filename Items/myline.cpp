@@ -35,23 +35,6 @@ MyLine::MyLine(QGraphicsItem *parent, QPointF src,qreal length, qreal angle)
         angle(angle)
 {
 //    qDebug()<<"sin:"<<qSin(qDegreesToRadians(90.0f));
-//    if(getSlope()>0)
-//    {
-//        QPointF b1(p1.x()-margin, p1.y()-margin);
-//        QPointF b2(p3.x()+margin, p3.y()+margin);
-//        setBoundingRect( QRectF(b1,b2) );
-//    }
-//    else
-//    {
-//        QPointF b1(p1.x()-margin, p1.y()+margin);
-//        QPointF b2(p3.x()+margin, p3.y()-margin);
-//        setBoundingRect( QRectF(b1,b2) );
-//    }
-    //第一种情况
-//    qreal width = length * qSin(qDegreesToRadians(angle));
-//    qreal height = length * qCos(qDegreesToRadians(angle));
-//    setBoundingRect(QRectF(p1.x()-margin,p1.y()-margin,
-//                         width+2*margin, height+2*margin));
     this->setAcceptHoverEvents(true);
     this->setFlags(QGraphicsItem::ItemIsSelectable);
 }
@@ -148,11 +131,6 @@ void MyLine::setItemPainter(QPainter *painter)
 
 void MyLine::DrawBounding(QPainter *painter)
 {
-//    QPen p;
-//    p.setColor(Qt::white);
-//    p.setStyle(Qt::DashLine);
-//    p.setWidthF(0.3);
-//    painter->setPen(p);
     painter->drawRect(m_rect);
     update();
 }
@@ -294,7 +272,7 @@ void MyLine::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
     //捕捉两个端点和中点,感应范围为点周围边长为2的矩形区域
     if(m_view->goCatch())
     {
-        if( qAbs(offsetX1)<1 || qAbs(offsetY1)<1)
+        if( qAbs(offsetX1)< 1 || qAbs(offsetY1)<1)
             m_view->catchPt(p1);
         else if( qAbs(offsetX2)<1 || qAbs(offsetY2)<1)
             m_view->catchPt(p2);

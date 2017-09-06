@@ -4,7 +4,7 @@
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QGraphicsSimpleTextItem>
-#include "posdialog.h"
+#include "Dialogs/posdialog.h"
 #include "mainwindow.h"
 #include "command.h"
 
@@ -28,9 +28,13 @@ public:
     void showStatus(QString msg);
     void catchPt(QPointF pt);
     bool goCatch();
+
     QPointF getP3();
     QBrush getBrush();
     QPen getPen();
+
+    QPointF getScenePos();
+
 private:
     MyScene* m_scene;
     PosDialog* dlg;
@@ -75,7 +79,7 @@ private:
     QPointF dragBegin;
     QGraphicsItem *viewCenter;
     QPointF pastePos;
-    bool m_copied, m_movable, m_saved, m_new, m_catch;
+    bool m_copied, m_movable, m_saved, m_new, m_catch, m_full;
     QTransform m_translate;
     QList<QGraphicsItem*> chosenItems;
     // 画笔样式
@@ -101,7 +105,6 @@ private:
 
 
     QString inputMultiText(bool multi);
-    QPointF getScenePos();
     void selectAll(bool state);
 
 public slots:
@@ -111,7 +114,8 @@ public slots:
     void DrawEllipse();
     void DrawTexts();
 
-    void setCatch(bool flag);
+    void setCatch(bool on);
+    void setFullView(bool full);
     QFont getFont();
     void ShowContextMenu();  //加右键菜单
 

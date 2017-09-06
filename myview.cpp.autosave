@@ -402,7 +402,6 @@ void MyView::setCatch(bool on)
 void MyView::setFullView(bool full)
 {
     m_full = full;
-    qDebug()<<m_full;
     if(full)
         m_main->showFullView(true);
     else
