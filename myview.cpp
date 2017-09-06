@@ -765,7 +765,7 @@ void MyView::Paste()
 
             QGraphicsSimpleTextItem* Text = m_scene->addSimpleText(text,font);
             Text->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
-            Text->setPos(px,py);
+            Text->setPos(pos);
             Text->setTransform(QTransform::fromScale(1,-1));
             Text->setPen(pen);
         }
