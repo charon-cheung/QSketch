@@ -52,7 +52,6 @@ SOURCES += \
     command.cpp \
     clock.cpp \
 
-
 HEADERS += \
         mainwindow.h \
     myview.h \
@@ -60,7 +59,6 @@ HEADERS += \
     QRecentFilesMenu.h \
     command.h \
     clock.h \
-
 
 FORMS += \
         mainwindow.ui \

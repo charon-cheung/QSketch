@@ -40,17 +40,17 @@ public slots:
     void ShowItemInfo();
     QString getItemInfo(QString type, QPointF pos, QSizeF size, QColor c);
 
-    void test();
+    QList<QPointF> getDividePts();
     void CatchPt();
     bool inCatchRange(QPointF src, QPointF des);
-private:
 
+private:
     MyView* m_view;
     MyScene* m_scene;
     QList<QGraphicsItem*> chosenItems;
     QTransform m_translate;
     BrushDlg* brush_dlg;
-    SelectDlg* select_dlg;
+    SelectDlg* select_dlg;    
 };
 
 #endif // COMMAND_H

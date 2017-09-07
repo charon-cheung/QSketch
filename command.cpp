@@ -388,7 +388,34 @@ QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
     return info;
 }
 
-void Command::test()
+QList<QPointF> Command::getDividePts()
 {
+    QList<QPointF> list;
+    if(chosenItems.size()!=1)
+    {
+       QMessageBox::warning(0,"出错了!","请先选择直线");
+       list.clear();
+       return list;
+    }
+    if(chosenItems.at(0)->type()!=QGraphicsLineItem::Type)
+    {
+        QMessageBox::warning(0,"出错了!","只能选择直线");
+        list.clear();
+        return list;
+    }
+    QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItems.at(0));
+    QPointF p1 = L->line().p1();
+    QPointF p2 = L->line().p2();
+    int n = QInputDialog::getInt(0, QStringLiteral("请输入直线的分割数"),"",2,2,999);
 
+    QPointF *Pt = new QPointF[n];
+    for(int i=1;i<n;i++)
+    {
+//        poly.at(i).setX(p1.x()+i*(p2.x()-p1.x())/n);
+//        poly.at(i).setY(p1.y()+i*(p2.y()-p1.y())/n);
+        Pt[i].setX(p1.x()+i*(p2.x()-p1.x())/n);
+        Pt[i].setY(p1.y()+i*(p2.y()-p1.y())/n);
+        list<<Pt[i];
+    }
+    return list;
 }

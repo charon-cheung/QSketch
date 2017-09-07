@@ -217,7 +217,7 @@ void MainWindow::InitMenus()
     connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(LoadFile(const QString &)));
 //    几种绘图
     QMenu* ptMenu = new QMenu(this);
-    ptActions<< ui->act1 << ui->act2 << ui->act3;
+    ptActions<< ui->act1 << ui->act2 << ui->act3 <<ui->dividePt;
     ptMenu->addActions(ptActions);
     ui->DrawPt->setMenu(ptMenu);
 
@@ -240,13 +240,6 @@ void MainWindow::InitMenus()
     textActions << ui->textAct << ui->multiTextAct;
     textMenu->addActions(textActions);
     ui->DrawText->setMenu(textMenu);
-
-//    dock = new QDockWidget(tr("浮动"), ui->tabView);
-//    dock->resize(40,300);
-//    dock->setWidget(ui->normal);
-//    dock->addActions(lineActions);
-//    dock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-//    this->addDockWidget(Qt::RightDockWidgetArea, dock);
 }
 
 void MainWindow::InitConnects(MyView* view)
@@ -706,7 +699,8 @@ void MainWindow::showFullView(bool full)
         ui->menuBar->setVisible(false);
         ui->mainToolBar->setVisible(false);
         floatToolBar->setVisible(false);
-        ui->statusBar->showMessage("进入全屏模式");
+        ui->statusBar->setVisible(false);
+        getCurrentView()->Reset();
     }
     else
     {
@@ -714,6 +708,7 @@ void MainWindow::showFullView(bool full)
         ui->menuBar->setVisible(true);
         ui->mainToolBar->setVisible(true);
         floatToolBar->setVisible(true);
+        ui->statusBar->setVisible(true);
         ui->statusBar->showMessage("退出全屏模式");
     }
 }

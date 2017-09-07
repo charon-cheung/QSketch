@@ -57,7 +57,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
         {
             mode =EDIT;
             showStatus("当前为编辑模式");
-            this->setDragMode(QGraphicsView::NoDrag);
+//            this->setDragMode(QGraphicsView::NoDrag);
             switch (flag)
             {
             case drawCirPt:
@@ -300,7 +300,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->selectAll(true);
         showStatus("已经选择所有的图元");
     }
-    else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_Return)
+    else if( event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_Return )
         this->setFullView(!m_full);
 
     switch(event->key())
@@ -373,8 +373,8 @@ void MyView::keyPressEvent(QKeyEvent *event)
         showStatus("向右平移5个单位");
         break;
     case Qt::Key_T:
-        Cmd = new Command(this);
-        Cmd->test();
+//        Cmd = new Command(this);
+//        Cmd->test();
         break;
     default:
         event->ignore();
@@ -451,6 +451,23 @@ void MyView::DrawPt()
         CirclePt *pt = new CirclePt();
         pt->setPos(pt1);
         m_scene->addItem(pt);
+    }
+    else if(sender()->objectName() == "dividePt")
+    {
+        flag = drawDividePt;
+        changeCursor(Qt::ArrowCursor);
+        {
+            Cmd = new Command(this);
+            QList<QPointF> Positions = Cmd->getDividePts();
+            if(Positions.isEmpty())    return;
+
+            foreach (QPointF pos, Positions)
+            {
+                CirclePt *pt = new CirclePt();
+                pt->setPos(pos);
+                m_scene->addItem(pt);
+            }
+        }
     }
 }
 

@@ -47,6 +47,7 @@ private:
         drawCirPt = 0x1,
         drawCross = 0x2,
         drawPtXY = 0x4,
+        drawDividePt = 0x1000,
         drawLine = 0x8,
         drawLineXY = 0x10,
         drawLineAH = 0x20,

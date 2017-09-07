@@ -171,7 +171,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="res.qrc">
+           <iconset>
             <normaloff>:/Shape/Shape/point.png</normaloff>:/Shape/Shape/point.png</iconset>
           </property>
           <property name="iconSize">
@@ -200,7 +200,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="res.qrc">
+           <iconset>
             <normaloff>:/Shape/Shape/line.png</normaloff>:/Shape/Shape/line.png</iconset>
           </property>
           <property name="iconSize">
@@ -226,7 +226,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="res.qrc">
+           <iconset>
             <normaloff>:/Shape/Shape/ellipse.png</normaloff>:/Shape/Shape/ellipse.png</iconset>
           </property>
           <property name="iconSize">
@@ -252,7 +252,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="res.qrc">
+           <iconset>
             <normaloff>:/Shape/Shape/rectangle.png</normaloff>:/Shape/Shape/rectangle.png</iconset>
           </property>
           <property name="iconSize">
@@ -278,7 +278,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="res.qrc">
+           <iconset>
             <normaloff>:/Shape/Shape/text.png</normaloff>:/Shape/Shape/text.png</iconset>
           </property>
           <property name="iconSize">
@@ -470,7 +470,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="res.qrc">
+           <iconset>
             <normaloff>:/Icon/Icon/start.png</normaloff>:/Icon/Icon/start.png</iconset>
           </property>
           <property name="iconSize">
@@ -555,7 +555,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
       <string>关闭</string>
      </property>
      <property name="icon">
-      <iconset resource="res.qrc">
+      <iconset>
        <normaloff>:/Icon/Icon/close.png</normaloff>:/Icon/Icon/close.png</iconset>
      </property>
      <addaction name="action_Current"/>
@@ -566,7 +566,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
       <string>另存为</string>
      </property>
      <property name="icon">
-      <iconset resource="res.qrc">
+      <iconset>
        <normaloff>:/Icon/Icon/save_as.png</normaloff>:/Icon/Icon/save_as.png</iconset>
      </property>
      <addaction name="action_Pic"/>
@@ -1011,18 +1011,21 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <string>重置</string>
    </property>
   </action>
+  <action name="dividePt">
+   <property name="text">
+    <string>等分画点</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>Clock</class>
    <extends>QWidget</extends>
-   <header location="global">clock.h</header>
+   <header>clock.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

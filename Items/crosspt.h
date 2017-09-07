@@ -12,7 +12,7 @@ public:
     enum {Type = UserType + 2};
     int type() const Q_DECL_OVERRIDE;
     enum {
-        size = 2,
+        size = 5,
     };
 
 protected:
