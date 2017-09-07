@@ -168,10 +168,10 @@ void MainWindow::InitStatusBar()
     CatchMode->setText("捕捉模式");
     ui->statusBar->addPermanentWidget(CatchMode);
 
-    FullView = new QCheckBox(this);
-    FullView->setFont(btnFont(14));
-    FullView->setText("全屏画面");
-    ui->statusBar->addPermanentWidget(FullView);
+    DraftMode = new QCheckBox(this);
+    DraftMode->setFont(btnFont(14));
+    DraftMode->setText("草图模式");
+    ui->statusBar->addPermanentWidget(DraftMode);
 
     ui->statusBar->setFont(btnFont(14));
     ui->statusBar->showMessage("初始化完成");
@@ -259,7 +259,7 @@ void MainWindow::InitConnects(MyView* view)
 
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
     connect(CatchMode, SIGNAL(toggled(bool)), view, SLOT(setCatch(bool)) );
-    connect(FullView,  SIGNAL(toggled(bool)), this, SLOT(showFullView(bool)) );
+    connect(DraftMode, SIGNAL(toggled(bool)), view, SLOT(setDraftMode(bool)) );
     connect(NormalMode, &QPushButton::clicked, view, &MyView::setNormal);
     connect(Reset, &QPushButton::clicked, view, &MyView::Reset);
     connect(Empty, &QPushButton::clicked, view, &MyView::Redraw);
@@ -634,11 +634,6 @@ void MainWindow::on_zoomOut_triggered()
     Cmd->Zoom(false);
 }
 
-void MainWindow::on_deleteAct_triggered()
-{
-    getCurrentView()->Delete();
-}
-
 void MainWindow::on_infoAct_triggered()
 {
     getCurrentView()->showItemInfo();
@@ -700,7 +695,6 @@ void MainWindow::showFullView(bool full)
         ui->mainToolBar->setVisible(false);
         floatToolBar->setVisible(false);
         ui->statusBar->setVisible(false);
-        getCurrentView()->Reset();
     }
     else
     {
@@ -711,4 +705,67 @@ void MainWindow::showFullView(bool full)
         ui->statusBar->setVisible(true);
         ui->statusBar->showMessage("退出全屏模式");
     }
+}
+
+void MainWindow::on_lineAngle_triggered()
+{
+    Cmd = new Command(getCurrentView());
+    qreal angle = Cmd->getLinesAngle();
+    QString a = QString::number(angle,'f',2);
+    if(angle==0)
+        QMessageBox::information(0,"直线夹角",QString("两直线平行"));
+    else if(angle==90)
+        QMessageBox::information(0,"直线夹角",QString("两直线垂直"));
+    else
+    QMessageBox::information(0,"直线夹角",QString("两直线所成角度为%1°").arg(a));
+}
+
+void MainWindow::on_fullViewAct_triggered()
+{
+    showFullView(true);
+}
+
+void MainWindow::on_zoomInAct_triggered()
+{
+    this->on_zoomIn_triggered();
+}
+
+void MainWindow::on_zoomOutAct_triggered()
+{
+    this->on_zoomOut_triggered();
+}
+
+void MainWindow::on_adjustZoomAct_triggered()
+{
+
+}
+
+void MainWindow::on_windowZoomAct_triggered()
+{
+
+}
+
+void MainWindow::on_cutAct_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->Copy();
+    getCurrentView()->Delete();
+}
+
+void MainWindow::on_copyAct_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->Copy();
+}
+
+void MainWindow::on_pasteAct_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->Paste();
+}
+
+void MainWindow::on_deleteAct_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->Delete();
 }

@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include "command.h"
-#include "myview.h"
+//#include "myview.h"
 #include "Dialogs/posdialog.h"
 #include "QRecentFilesMenu.h"
 #include <QMainWindow>
@@ -102,6 +102,25 @@ public slots:
     void test();
 signals:
     void toFont(QFont f);
+private slots:
+    void on_lineAngle_triggered();
+
+    void on_fullViewAct_triggered();
+
+    void on_zoomInAct_triggered();
+
+    void on_zoomOutAct_triggered();
+
+    void on_adjustZoomAct_triggered();
+
+    void on_windowZoomAct_triggered();
+
+    void on_cutAct_triggered();
+
+    void on_copyAct_triggered();
+
+    void on_pasteAct_triggered();
+
 private:
     Ui::MainWindow *ui;
     QString dirPath,filePath;
@@ -131,7 +150,7 @@ private:
 
     QLabel* scale;
     QPushButton *SceneMode, *NormalMode, *Reset, *Empty ;
-    QCheckBox *CatchMode,*FullView;
+    QCheckBox *CatchMode,*DraftMode,*FullView;
     Command* Cmd;
     QToolBar *floatToolBar;
 private:

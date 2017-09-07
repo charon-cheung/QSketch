@@ -2,6 +2,7 @@
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QInputDialog>
+#include <QtMath>
 
 Command::Command(MyScene *scene)
 {
@@ -378,13 +379,35 @@ bool Command::inCatchRange(QPointF src, QPointF des)
     return ok;
 }
 
+qreal Command::getSlope(QGraphicsLineItem* line)
+{
+    QPointF p1 = line->line().p1();
+    QPointF p2 = line->line().p2();
+    qreal slope = (p2.y()-p1.y()) / (p2.x()-p1.x());
+    return slope;
+}
+
+qreal Command::getLinesAngle()
+{
+    if(chosenItems.size()!=2)   return 0;
+    QGraphicsLineItem* Line1 = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItems.at(0));
+    qreal slope1 = getSlope(Line1);
+    QGraphicsLineItem* Line2 = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItems.at(1));
+    qreal slope2 = getSlope(Line2);
+
+    qreal tanV = qAbs( (slope2 - slope1)/(1+slope1*slope2) );
+    qreal angle = qAtan(tanV);
+    qDebug()<<angle<<"  "<<qRadiansToDegrees(angle);
+    return qRadiansToDegrees(angle);
+}
+
 QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
 {
     QString info;
     info = QString("图元类型: %1 \n").arg(type);
     info += QString("图元坐标: (%2 , %3)     \n").arg(pos.x()).arg(pos.y());
     info += QString("图元大小: %4 X %5       \n").arg(size.width()).arg(size.height());
-    info += QString("图元颜色: %6").arg(QVariant(c.toRgb()).toString());
+    info += QString("图元颜色: %7").arg(QVariant(c.toRgb()).toString());
     return info;
 }
 

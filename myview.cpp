@@ -57,7 +57,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
         {
             mode =EDIT;
             showStatus("当前为编辑模式");
-//            this->setDragMode(QGraphicsView::NoDrag);
+            this->setDragMode(QGraphicsView::NoDrag);
             switch (flag)
             {
             case drawCirPt:
@@ -373,8 +373,8 @@ void MyView::keyPressEvent(QKeyEvent *event)
         showStatus("向右平移5个单位");
         break;
     case Qt::Key_T:
-//        Cmd = new Command(this);
-//        Cmd->test();
+        Cmd = new Command(this);
+        Cmd->getLinesAngle();
         break;
     default:
         event->ignore();
@@ -398,6 +398,18 @@ void MyView::setCatch(bool on)
         showStatus("开启捕捉模式");
     else
         showStatus("关闭捕捉模式");
+}
+
+void MyView::setDraftMode(bool on)
+{
+    getScene()->setDraftMode(on);
+    if(on)
+    {
+        this->setDragMode(QGraphicsView::NoDrag);
+        getScene()->setPen(getPen());
+    }
+    else
+        this->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 void MyView::setFullView(bool full)

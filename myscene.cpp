@@ -12,6 +12,8 @@ MyScene::MyScene(QObject *parent):
     min_space = 20;
     space = min_space*5;
     mode = NONE;
+    m_draft = false;
+    m_pressed = false;
 }
 
 MyScene::~MyScene()
@@ -307,6 +309,17 @@ void MyScene::setMode(MyScene::GridMode m)
     this->update();
 }
 
+void MyScene::setDraftMode(bool on)
+{
+    m_draft = on;
+}
+
+void MyScene::setPen(QPen p)
+{
+    pen = p;
+    qDebug()<<pen;
+}
+
 //如果此函数声明，但函数体为空，则场景是白色背景,不会调用 setBackgroundBrush
 void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
@@ -377,4 +390,36 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
     painter->drawLine(rect.left(), 0, rect.right(), 0);
 
     painter->restore();
+}
+
+void MyScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!m_draft)    return;
+    if(event->button()!=Qt::LeftButton)     return;
+
+    m_pressed = true;
+    x = event->scenePos().x();
+    y = event->scenePos().y();
+    this->update();
+    QGraphicsScene::mousePressEvent(event);
+}
+
+void MyScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!m_draft || !m_pressed)    return;
+    tempItem = (QGraphicsItem*)addLine(x,y,event->scenePos().x(),
+                                       event->scenePos().y(),
+                                       pen);
+    x = event->scenePos().x();
+    y = event->scenePos().y();
+    this->update();
+    QGraphicsScene::mouseMoveEvent(event);
+}
+
+void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!m_draft)    return;
+    this->update();
+    m_pressed = false;
+    QGraphicsScene::mouseReleaseEvent(event);
 }

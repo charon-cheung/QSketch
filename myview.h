@@ -36,6 +36,7 @@ public:
     QPointF getScenePos();
     void changeCursor(const QString& shape);
     void changeCursor(Qt::CursorShape shape);
+
 private:
     MyScene* m_scene;
     PosDialog* dlg;
@@ -85,6 +86,7 @@ private:
     bool m_copied, m_movable, m_saved, m_new, m_catch, m_full;
     QTransform m_translate;
     QList<QGraphicsItem*> chosenItems;
+    QGraphicsItem* tempItem;
     // 画笔样式
     Qt::PenStyle PenStyle;
     int PenWidth;
@@ -103,7 +105,6 @@ private:
     Qt::PenStyle getPenStyle();
     QColor getColor();
 
-
     QString inputMultiText(bool multi);
     void selectAll(bool state);
 
@@ -115,6 +116,7 @@ public slots:
     void DrawTexts();
 
     void setCatch(bool on);
+    void setDraftMode(bool on);
     void setFullView(bool full);
     QFont getFont();
     void ShowContextMenu();  //加右键菜单

@@ -6,7 +6,8 @@
 #include "Items/crosspt.h"
 #include "Items/ring.h"
 #include <QDataStream>
-
+#include <QGraphicsSceneMouseEvent>
+//#include <myview.h>
 
 class MyView;     //需要前置声明
 class MyScene : public QGraphicsScene
@@ -39,21 +40,28 @@ public:
     void Load(QDataStream& s);
     void Import(QDataStream& s,int count);
     void setMode(GridMode m);
+    void setDraftMode(bool on);
+    void setPen(QPen p);
 
 private:
     int space;
     int min_space;
-
+    QPen pen;
     QGraphicsLineItem  *AxisX, *AxisY;
     QGraphicsPolygonItem *ArrowX, *ArrowY;
     QGraphicsEllipseItem *Origin;
     QGraphicsSimpleTextItem* X, *Y;
-
+    bool m_draft,m_pressed;
+    qreal x,y;
+    QGraphicsItem* tempItem;
 private:
+
 
 protected:
     virtual void drawBackground(QPainter * painter, const QRectF & rect);
-
+    void mousePressEvent(QGraphicsSceneMouseEvent  *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // MYSCENE_H

@@ -43,7 +43,8 @@ public slots:
     QList<QPointF> getDividePts();
     void CatchPt();
     bool inCatchRange(QPointF src, QPointF des);
-
+    qreal getSlope(QGraphicsLineItem* line);
+    qreal getLinesAngle();
 private:
     MyView* m_view;
     MyScene* m_scene;
