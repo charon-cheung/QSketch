@@ -3,6 +3,9 @@
 #include <QStatusBar>
 #include <QInputDialog>
 #include <QtMath>
+#include <QApplication>
+#include <QFileDialog>
+#include <QGraphicsProxyWidget>
 
 Command::Command(MyScene *scene)
 {
@@ -419,6 +422,24 @@ void Command::SmartZoom()
 //    qDebug()<<m_scene->itemsBoundingRect();
 //    m_scene->items(Qt::AscendingOrder); 按绘画顺序排列
     m_view->fitInView(m_scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+}
+
+void Command::InsertPix()
+{
+    QString fileName=QFileDialog::getOpenFileName(0,"打开图片",QApplication::applicationDirPath(),
+                                                  QStringLiteral("所有文件(*.*);;PNG文件(*.png);;JPG文件(*.jpg);;JPEG文件(*.jpeg);;BMP文件(*.bmp);;") );
+    if(fileName.isEmpty())      return;
+    QPixmap pix(fileName);
+    QGraphicsPixmapItem* pixItem = m_scene->addPixmap(pix);
+    pixItem->setFlag(QGraphicsItem::ItemIsSelectable);
+    pixItem->setTransform(QTransform::fromScale(1,-1));
+}
+
+void Command::InsertWidget(QWidget* w)
+{
+    QGraphicsProxyWidget* widget = m_scene->addWidget(w);
+    widget->setTransform(QTransform::fromScale(1,-1));
+    widget->setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
 QList<QPointF> Command::getDividePts()

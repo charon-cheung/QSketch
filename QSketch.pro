@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport quick
+QT       += core gui printsupport svg
 QMAKE_CXXFLAGS += -Wno-unused-variable -Wno-unused-parameter
 QMAKE_CFLAGS_WARN_OFF += -Wreturn-type
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -13,7 +13,7 @@ CONFIG += c++11     # 有的编译器不添加会在lambda语法上报错
 TARGET = QSketch
 TEMPLATE = app
 
-RC_ICONS = cube.ico
+RC_ICONS = Draw.ico
 
 include (Items/Items.pri)
 include (Dialogs/Dialogs.pri)

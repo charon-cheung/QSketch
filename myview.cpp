@@ -386,8 +386,8 @@ void MyView::keyPressEvent(QKeyEvent *event)
         showStatus("向右平移5个单位");
         break;
     case Qt::Key_T:
-//        Cmd = new Command(this);
-//        Cmd->test();
+        Cmd = new Command(this);
+        Cmd->InsertPix();
         break;
     default:
         event->ignore();
@@ -922,7 +922,7 @@ void MyView::InitView()
     //锚点以鼠标为准,放缩时效果跟网络地图一样
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setMatrix(QMatrix(1,0,0,-1,0,0));     // x,y轴比例为1:1和1:-1
-    qDebug()<<"viewport:"<<this->viewport()->rect();
+//    qDebug()<<"viewport:"<<this->viewport()->rect();
 //    qDebug()<<this->transform();
 //    qDebug()<<matrix().m11() << matrix().m22();
 }

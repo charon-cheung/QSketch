@@ -42,11 +42,14 @@ public slots:
     QString getItemInfo(QString type, QPointF pos, QSizeF size, QColor c);
     void SmartZoom();
 
+    void InsertPix();
+    void InsertWidget(QWidget* w);
     QList<QPointF> getDividePts();
     void CatchPt();
     bool inCatchRange(QPointF src, QPointF des);
     qreal getSlope(QGraphicsLineItem* line);
     qreal getLinesAngle();
+
 private:
     MyView* m_view;
     MyScene* m_scene;

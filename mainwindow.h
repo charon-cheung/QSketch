@@ -7,7 +7,6 @@
 #include "QRecentFilesMenu.h"
 #include <QMainWindow>
 #include <QDockWidget>
-#include <QQuickView>
 #include <QLabel>
 #include <QCheckBox>
 
@@ -51,8 +50,6 @@ public slots:
     void on_action_Exit_triggered();
 
     void on_startBtn_clicked();
-
-    void on_action_Pic_triggered();
 
     void on_action_Open_triggered();
 
@@ -120,6 +117,14 @@ private slots:
     void on_copyAct_triggered();
 
     void on_pasteAct_triggered();
+
+    void on_insertPix_triggered();
+
+    void on_insertWidget_triggered();
+
+    void on_SVG_triggered();
+
+    void on_Image_triggered();
 
 private:
     Ui::MainWindow *ui;

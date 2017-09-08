@@ -569,9 +569,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
       <iconset resource="res.qrc">
        <normaloff>:/Icon/Icon/save_as.png</normaloff>:/Icon/Icon/save_as.png</iconset>
      </property>
-     <addaction name="action_Pic"/>
+     <addaction name="Image"/>
      <addaction name="action_PDF"/>
-     <addaction name="actionSVG"/>
+     <addaction name="SVG"/>
     </widget>
     <addaction name="action_New"/>
     <addaction name="action_Open"/>
@@ -636,8 +636,10 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
-     <string>绘图</string>
+     <string> 插入</string>
     </property>
+    <addaction name="insertPix"/>
+    <addaction name="insertWidget"/>
    </widget>
    <addaction name="openMenu"/>
    <addaction name="menu"/>
@@ -845,7 +847,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <string>退出</string>
    </property>
   </action>
-  <action name="action_Pic">
+  <action name="Image">
    <property name="icon">
     <iconset>
      <normalon>:/Icon/Icon/picture.png</normalon>
@@ -865,7 +867,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <string>PDF文件</string>
    </property>
   </action>
-  <action name="actionSVG">
+  <action name="SVG">
    <property name="icon">
     <iconset>
      <normalon>:/Icon/Icon/svg.png</normalon>
@@ -1099,6 +1101,16 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
   <action name="windowZoom">
    <property name="text">
     <string>窗口缩放</string>
+   </property>
+  </action>
+  <action name="insertPix">
+   <property name="text">
+    <string>插入图片</string>
+   </property>
+  </action>
+  <action name="insertWidget">
+   <property name="text">
+    <string>插入控件</string>
    </property>
   </action>
  </widget>

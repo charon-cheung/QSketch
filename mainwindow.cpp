@@ -14,6 +14,7 @@
 #include <QColorDialog>
 #include <QFontDialog>
 #include <QGridLayout>
+#include <QSvgGenerator>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -118,7 +119,7 @@ void MainWindow::showScale(QString s)
 void MainWindow::InitUi()
 {
     this->setWindowTitle("QSketch");
-    this->setWindowIcon(QIcon(":/Icon/Icon/cube.png"));
+    this->setWindowIcon(QIcon(":/Icon/Icon/Draw.png"));
 
     ui->tabView->setTabsClosable(true);
     ui->tabView->setCurrentIndex(0);
@@ -513,22 +514,6 @@ void MainWindow::on_startBtn_clicked()
     }
 }
 
-void MainWindow::on_action_Pic_triggered()
-{
-    if(!getCurrentView())   return;
-    QImage image(getCurrentView()->size(),QImage::Format_RGB32);
-    QPainter painter(&image);
-    getCurrentView()->getScene()->render(&painter);     //关键函数
-
-//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
-    QImage mirroredImage = image.mirrored(false, true);
-    QString path = QApplication::applicationDirPath();
-    QDateTime time = QDateTime::currentDateTime();
-    QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
-    QString file = path+ "/" +str+ ".png";
-    mirroredImage.save(file);
-}
-
 void MainWindow::on_action_Open_triggered()
 {
     on_Open_triggered();
@@ -792,4 +777,55 @@ void MainWindow::on_deleteAct_triggered()
 {
     if(!getCurrentView())   return;
     getCurrentView()->Delete();
+}
+
+void MainWindow::on_insertPix_triggered()
+{
+    if(!getCurrentView())   return;
+    Cmd = new Command(getCurrentView());
+    Cmd->InsertPix();
+}
+
+void MainWindow::on_insertWidget_triggered()
+{
+    if(!getCurrentView())   return;
+    //要插入的widget不能有parent,否则不成功
+    QWidget* w = new QWidget();
+    w->resize(200,140);
+    Cmd = new Command(getCurrentView());
+    Cmd->InsertWidget(w);
+}
+
+void MainWindow::on_SVG_triggered()
+{
+    if(!getCurrentView())   return;
+    QString path = QApplication::applicationDirPath();
+    QString file = path+ "/"+ getCurrentTabName()+".svg";
+
+    QSvgGenerator svgGen;
+    svgGen.setFileName( file );
+    svgGen.setSize(QSize(1200, 800));
+    svgGen.setViewBox(QRect(-600,400, 1200, 800));
+    svgGen.setTitle(tr("SVG Drawing"));
+    svgGen.setDescription(tr("An SVG drawing created by QSvgGenerator"));
+
+    QPainter painter( &svgGen );
+    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    getCurrentView()->getScene()->render( &painter );
+}
+
+void MainWindow::on_Image_triggered()
+{
+    if(!getCurrentView())   return;
+    QImage image(getCurrentView()->size(),QImage::Format_RGB32);
+    QPainter painter(&image);
+    getCurrentView()->getScene()->render(&painter);     //关键函数
+
+//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
+    QImage mirroredImage = image.mirrored(false, true);
+    QString path = QApplication::applicationDirPath();
+    QDateTime time = QDateTime::currentDateTime();
+    QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
+    QString file = path+ "/" +str+ ".png";
+    mirroredImage.save(file);
 }

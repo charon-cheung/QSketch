@@ -10,7 +10,7 @@ MyScene::MyScene(QObject *parent):
     setBackgroundBrush(QBrush(QColor(33,40,48)));
     InitScene();
     min_space = 20;
-    space = min_space*5;
+    space = min_space * 5;
     mode = NONE;
     m_draft = false;
     m_pressed = false;
@@ -93,7 +93,7 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
         }
         QString className;
 
-        if(item->type()==3)
+        if(item->type()==QGraphicsRectItem::Type)
         {
             className = "QGraphicsRectItem";
             QGraphicsRectItem* rectangle = qgraphicsitem_cast<QGraphicsRectItem*>(item);
@@ -109,7 +109,7 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             s<< int(rectangle->pen().style());  //强制转换Qt::PenStyle
             s<< rectangle->pen().width();
         }
-        else if(item->type()==4)
+        else if(item->type()==QGraphicsEllipseItem::Type)
         {
             className = "QGraphicsEllipseItem";
             QGraphicsEllipseItem* rectangle = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
@@ -167,7 +167,7 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             s<< int(text->pen().style());  //强制转换Qt::PenStyle
             s<< text->pen().width();
         }
-        else if(item->type()==6)
+        else if(item->type()==QGraphicsLineItem::Type)
         {
             className = "QGraphicsLineItem";
             QGraphicsLineItem* Line = qgraphicsitem_cast<QGraphicsLineItem*>(item);
