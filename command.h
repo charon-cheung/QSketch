@@ -5,6 +5,7 @@
 #include "mainwindow.h"
 #include "Dialogs/brushdlg.h"
 #include "Dialogs/selectdlg.h"
+#include <QVector>
 
 class MainWindow;
 class Command
@@ -39,6 +40,7 @@ public slots:
     void SetSymmetry(Qt::Axis axis);
     void ShowItemInfo();
     QString getItemInfo(QString type, QPointF pos, QSizeF size, QColor c);
+    void SmartZoom();
 
     QList<QPointF> getDividePts();
     void CatchPt();
@@ -51,7 +53,8 @@ private:
     QList<QGraphicsItem*> chosenItems;
     QTransform m_translate;
     BrushDlg* brush_dlg;
-    SelectDlg* select_dlg;    
+    SelectDlg* select_dlg;
+
 };
 
 #endif // COMMAND_H

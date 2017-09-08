@@ -631,8 +631,8 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <addaction name="fullViewAct"/>
     <addaction name="zoomInAct"/>
     <addaction name="zoomOutAct"/>
-    <addaction name="adjustZoomAct"/>
-    <addaction name="windowZoomAct"/>
+    <addaction name="smartZoomAct"/>
+    <addaction name="windowZoom"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
@@ -1086,19 +1086,19 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <string>缩小</string>
    </property>
   </action>
-  <action name="adjustZoomAct">
+  <action name="smartZoomAct">
    <property name="text">
     <string>自适应大小</string>
-   </property>
-  </action>
-  <action name="windowZoomAct">
-   <property name="text">
-    <string>窗口缩放</string>
    </property>
   </action>
   <action name="action">
    <property name="text">
     <string>选择鼠标</string>
+   </property>
+  </action>
+  <action name="windowZoom">
+   <property name="text">
+    <string>窗口缩放</string>
    </property>
   </action>
  </widget>

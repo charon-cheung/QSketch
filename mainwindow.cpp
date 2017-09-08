@@ -185,6 +185,12 @@ void MainWindow::InitToolBar()
     NormalMode->setIcon(QIcon(":/Icon/Icon/normal.png"));
     NormalMode->resize(36,36);
 
+    ZoomMode = new QPushButton(this);
+    ZoomMode->setFlat(true);
+    ZoomMode->setIconSize(QSize(32,32));
+    ZoomMode->setIcon(QIcon(":/Icon/Icon/area.png"));
+    ZoomMode->resize(32,32);
+
     Reset = new QPushButton(this);
     Reset->setFlat(true);
     Reset->setIconSize(QSize(36,36));
@@ -199,6 +205,7 @@ void MainWindow::InitToolBar()
 
     floatToolBar = new QToolBar();
     floatToolBar->addWidget(NormalMode);
+    floatToolBar->addWidget(ZoomMode);
     floatToolBar->addWidget(Reset);
     floatToolBar->addWidget(Empty);
     floatToolBar->setOrientation(Qt::Vertical);
@@ -260,7 +267,8 @@ void MainWindow::InitConnects(MyView* view)
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
     connect(CatchMode, SIGNAL(toggled(bool)), view, SLOT(setCatch(bool)) );
     connect(DraftMode, SIGNAL(toggled(bool)), view, SLOT(setDraftMode(bool)) );
-    connect(NormalMode, &QPushButton::clicked, view, &MyView::setNormal);
+    connect(NormalMode, &QPushButton::clicked, view, &MyView::setNormalMode);
+    connect(ZoomMode, SIGNAL(clicked(bool)), this, SLOT(on_windowZoom_triggered()) );
     connect(Reset, &QPushButton::clicked, view, &MyView::Reset);
     connect(Empty, &QPushButton::clicked, view, &MyView::Redraw);
 }
@@ -407,7 +415,7 @@ void MainWindow::on_Save_triggered()
 {
     int index = ui->tabView->currentIndex();
     QString tabName = ui->tabView->tabText(index);
-    if(tabName=="开始")   return;
+    if(!getCurrentView())   return;
 
     QDir d(dirPath+"/Files");
     //是否需要判断是新建的文件还是打开已有的文件?
@@ -419,7 +427,7 @@ void MainWindow::on_Save_triggered()
     }
 
     QDataStream ds(&f);
-    MyView* view = qobject_cast<MyView*>(ui->tabView->currentWidget());
+    MyView* view = getCurrentView();
     view->getScene()->Save(ds);
     f.close();
     view->setSaved(true);
@@ -493,7 +501,6 @@ void MainWindow::on_startBtn_clicked()
     else
     {
         newView = new MyView(this);
-        newView->setToolTip("第一层");
         newView->setNew(true);
         newView->setFocus();    //获得焦点
 //        newView->setMatrix(QMatrix(1,0,0,-1,0,0));
@@ -508,8 +515,7 @@ void MainWindow::on_startBtn_clicked()
 
 void MainWindow::on_action_Pic_triggered()
 {
-    if(!getCurrentView())
-        return;
+    if(!getCurrentView())   return;
     QImage image(getCurrentView()->size(),QImage::Format_RGB32);
     QPainter painter(&image);
     getCurrentView()->getScene()->render(&painter);     //关键函数
@@ -576,6 +582,7 @@ void MainWindow::on_FontPicker_clicked()
 
 void MainWindow::on_translateAct_triggered()
 {
+    if(!getCurrentView())   return;
     dlg = new PosDialog(this);
     dlg->showPt();
     if(dlg->exec() != QDialog::Accepted)    return;
@@ -585,6 +592,7 @@ void MainWindow::on_translateAct_triggered()
 
 void MainWindow::on_rotateAct_triggered()
 {
+    if(!getCurrentView())   return;
     dlg = new PosDialog(this);
     dlg->showPtAngle();
     if(dlg->exec() != QDialog::Accepted)    return;
@@ -595,6 +603,7 @@ void MainWindow::on_rotateAct_triggered()
 
 void MainWindow::on_changeStyleAct_triggered()
 {
+    if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     Cmd->changeStyle();
 }
@@ -612,30 +621,35 @@ void MainWindow::on_ResetStyle_clicked()
 
 void MainWindow::on_movableAct_triggered()
 {
+    if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     Cmd->SetMovable(true);
 }
 
 void MainWindow::on_brushAct_triggered()
 {
+    if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     Cmd->FillBrush();
 }
 
 void MainWindow::on_zoomIn_triggered()
 {
+    if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     Cmd->Zoom(true);
 }
 
 void MainWindow::on_zoomOut_triggered()
 {
+    if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     Cmd->Zoom(false);
 }
 
 void MainWindow::on_infoAct_triggered()
 {
+    if(!getCurrentView())   return;
     getCurrentView()->showItemInfo();
 }
 
@@ -664,18 +678,21 @@ void MainWindow::on_action_PDF_triggered()
 
 void MainWindow::on_actionX_triggered()
 {
+    if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     Cmd->SetSymmetry(Qt::XAxis);
 }
 
 void MainWindow::on_actionY_triggered()
 {
+    if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     Cmd->SetSymmetry(Qt::YAxis);
 }
 
 void MainWindow::SwitchSceneMode()
 {
+    if(!getCurrentView())   return;
     if(sender()->objectName()=="showGridAct")
         //不要写成MyScene::GridMode::GRID,有的编译器报错
         getCurrentView()->getScene()->setMode(MyScene::GRID);
@@ -709,6 +726,7 @@ void MainWindow::showFullView(bool full)
 
 void MainWindow::on_lineAngle_triggered()
 {
+    if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     qreal angle = Cmd->getLinesAngle();
     QString a = QString::number(angle,'f',2);
@@ -722,27 +740,33 @@ void MainWindow::on_lineAngle_triggered()
 
 void MainWindow::on_fullViewAct_triggered()
 {
+    if(!getCurrentView())   return;
     showFullView(true);
 }
 
 void MainWindow::on_zoomInAct_triggered()
 {
+    if(!getCurrentView())   return;
     this->on_zoomIn_triggered();
 }
 
 void MainWindow::on_zoomOutAct_triggered()
 {
+    if(!getCurrentView())   return;
     this->on_zoomOut_triggered();
 }
 
-void MainWindow::on_adjustZoomAct_triggered()
+void MainWindow::on_smartZoomAct_triggered()
 {
-
+    if(!getCurrentView())   return;
+    Cmd = new Command(getCurrentView());
+    Cmd->SmartZoom();
 }
 
-void MainWindow::on_windowZoomAct_triggered()
+void MainWindow::on_windowZoom_triggered()
 {
-
+    if(!getCurrentView())   return;
+    getCurrentView()->setZoomMode(true);
 }
 
 void MainWindow::on_cutAct_triggered()

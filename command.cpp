@@ -19,8 +19,9 @@ Command::Command(MyView *view)
 
 MyScene *Command::getScene()
 {
-    MyScene* scene = qobject_cast<MyScene*>(m_view->scene());
-    return scene;
+    //少做转型的又一例子
+//    MyScene* scene = qobject_cast<MyScene*>(m_view->scene());
+    return m_view->getScene();;
 }
 
 void Command::Delete()
@@ -117,14 +118,20 @@ void Command::FillBrush()
     brush.setStyle(style);
     brush.setColor(color);
 
-    foreach(QGraphicsItem* item, chosenItems)
-    {
+//    foreach(QGraphicsItem* item, chosenItems)
+//    {
+        if(chosenItems.size()!=1)   return;
+        if(chosenItems.at(0)->type()==QGraphicsLineItem::Type)   return;
+        QAbstractGraphicsShapeItem* shape = qgraphicsitem_cast<QGraphicsRectItem*>(chosenItems.at(0));
+        shape->setBrush(brush);
+#if 0
         switch(item->type())
         {
             case QGraphicsRectItem::Type:
             {
-                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-                R->setBrush(brush);
+                RectP.data()->setBrush(brush);
+//                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+//                R->setBrush(brush);
                 break;      // 低级错误,经常忘了加 break
             }
             case QGraphicsEllipseItem::Type:
@@ -134,7 +141,8 @@ void Command::FillBrush()
                 break;
             }
         }
-    }
+#endif
+//    }
 }
 
 void Command::SetMovable(bool state)
@@ -157,46 +165,40 @@ void Command::SetMovable(bool state)
 
 void Command::Stretch()
 {
-    foreach(QGraphicsItem* item, chosenItems)
+    if(chosenItems.size()!=1)   return;
+    if(chosenItems.at(0)->type()!=QGraphicsLineItem::Type)   return;
+
+    select_dlg = new SelectDlg();
+    if(select_dlg->exec()!=QDialog::Accepted)   return;
+    qreal len = select_dlg->getLength();
+    int direction = select_dlg->getDirection();
+
+    QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItems.at(0));
+    qreal angle = L->line().angle();
+    QPointF p1 = L->line().p1();
+    QPointF p2 = L->line().p2();
+
+    QLineF line;
+    line.setLength(len);
+
+    if(direction== SelectDlg::Direction::start)
     {
-        switch(item->type())
-        {
-        case QGraphicsLineItem::Type:
-        {
-            select_dlg = new SelectDlg();
-            if(select_dlg->exec()!=QDialog::Accepted)   return;
-            qreal len = select_dlg->getLength();
-            int direction = select_dlg->getDirection();
-
-            QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(item);
-            qreal angle = L->line().angle();
-            QPointF p1 = L->line().p1();
-            QPointF p2 = L->line().p2();
-
-            QLineF line;
-            line.setLength(len);
-
-            if(direction== SelectDlg::Direction::start)
-            {
-                line.setP1(p1);
-                line.setAngle(180+angle);
-            }
-            else if(direction== SelectDlg::Direction::end)
-            {
-                line.setP1(p2);
-                line.setAngle(360+angle);
-            }
-            m_scene->addLine(line,QPen(Qt::white))->setFlag(QGraphicsItem::ItemIsSelectable);
-            break;
-        }
-        }
+        line.setP1(p1);
+        line.setAngle(180+angle);
     }
+    else if(direction== SelectDlg::Direction::end)
+    {
+        line.setP1(p2);
+        line.setAngle(360+angle);
+    }
+    m_scene->addLine(line,QPen(Qt::white))->setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
 void Command::changeStyle()
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
+        if(item->type()==QGraphicsLineItem::Type)    return;
         QAbstractGraphicsShapeItem* shape = qgraphicsitem_cast<QGraphicsRectItem*>(item);
         shape->setPen(m_view->getPen());
         shape->setBrush(m_view->getBrush());
@@ -411,6 +413,14 @@ QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
     return info;
 }
 
+void Command::SmartZoom()
+{
+    //有item的范围Rect的大小,之前因为画坐标轴,所以范围几乎与sceneRect相同
+//    qDebug()<<m_scene->itemsBoundingRect();
+//    m_scene->items(Qt::AscendingOrder); 按绘画顺序排列
+    m_view->fitInView(m_scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+}
+
 QList<QPointF> Command::getDividePts()
 {
     QList<QPointF> list;
@@ -434,8 +444,6 @@ QList<QPointF> Command::getDividePts()
     QPointF *Pt = new QPointF[n];
     for(int i=1;i<n;i++)
     {
-//        poly.at(i).setX(p1.x()+i*(p2.x()-p1.x())/n);
-//        poly.at(i).setY(p1.y()+i*(p2.y()-p1.y())/n);
         Pt[i].setX(p1.x()+i*(p2.x()-p1.x())/n);
         Pt[i].setY(p1.y()+i*(p2.y()-p1.y())/n);
         list<<Pt[i];

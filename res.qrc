@@ -56,5 +56,6 @@
         <file>Icon/mirrorX.png</file>
         <file>Icon/mirrorY.png</file>
         <file>Icon/normal.png</file>
+        <file>Icon/area.png</file>
     </qresource>
 </RCC>

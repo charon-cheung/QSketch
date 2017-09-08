@@ -48,7 +48,11 @@ void MyView::mousePressEvent(QMouseEvent *event)
     case Qt::LeftButton:
         // 窗口坐标转为场景坐标
         StartPt = this->mapToScene(event->pos());
-        if(flag == drawNone)
+        if(flag == dragZoom)
+        {
+            mode = ZOOM;
+        }
+        else if(flag == drawNone)
         {
             mode = NORMAL;
             showStatus("当前为普通模式");
@@ -134,6 +138,10 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     case NORMAL:
     {
         break;  // 需要处理QGraphicsView::mouseMoveEvent
+    }
+    case ZOOM:
+    {
+        break;
     }
     case DRAG:
     {
@@ -236,6 +244,7 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
 
 void MyView::mouseReleaseEvent(QMouseEvent *event)
 {
+    QPointF ReleasPt = this->mapToScene(event->pos());
     switch(event->button())
     {
     case Qt::MidButton:
@@ -245,7 +254,11 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         showStatus("当前为普通模式");
         break;
     case Qt::LeftButton:
-        if(mode==EDIT)
+        if(mode==ZOOM)
+        {   //窗口缩放函数,最后的比例参数选择很重要
+            this->fitInView( QRectF(StartPt,ReleasPt), Qt::KeepAspectRatio);
+        }
+        else if(mode==EDIT)
         {
             if(flag == drawLine)
             {
@@ -306,7 +319,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
     switch(event->key())
     {
     case Qt::Key_Space:
-        this->setNormal();
+        this->setNormalMode();
         this->selectAll(false);
         break;
     case Qt::Key_Home:
@@ -373,8 +386,8 @@ void MyView::keyPressEvent(QKeyEvent *event)
         showStatus("向右平移5个单位");
         break;
     case Qt::Key_T:
-        Cmd = new Command(this);
-        Cmd->getLinesAngle();
+//        Cmd = new Command(this);
+//        Cmd->test();
         break;
     default:
         event->ignore();
@@ -398,18 +411,6 @@ void MyView::setCatch(bool on)
         showStatus("开启捕捉模式");
     else
         showStatus("关闭捕捉模式");
-}
-
-void MyView::setDraftMode(bool on)
-{
-    getScene()->setDraftMode(on);
-    if(on)
-    {
-        this->setDragMode(QGraphicsView::NoDrag);
-        getScene()->setPen(getPen());
-    }
-    else
-        this->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 void MyView::setFullView(bool full)
@@ -512,7 +513,7 @@ void MyView::DrawLine()
         m_scene->addItem(line);
 //        m_scene->addLine(QLineF(list.at(0), list.at(1)),getPen())->
 //                setFlag(QGraphicsItem::ItemIsSelectable);
-        setNormal();
+        setNormalMode();
     }
     else if(sender()->objectName() == "actLine_3")
     {
@@ -546,7 +547,7 @@ void MyView::DrawLine()
         m_scene->addItem(L);
 //        m_scene->addLine(line, getPen())->
 //                setFlag(QGraphicsItem::ItemIsSelectable);
-        setNormal();
+        setNormalMode();
     }
 }
 
@@ -641,7 +642,7 @@ void MyView::ShowContextMenu()
     Paste->setIcon(QIcon(":/Icon/Icon/paste.png"));
     Info->setIcon(QIcon(":/Icon/Icon/info.png"));
 
-    connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormal()) );
+    connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormalMode()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Delete, SIGNAL(triggered(bool)), this, SLOT(Delete()) );
@@ -654,7 +655,25 @@ void MyView::ShowContextMenu()
     m.exec(QCursor::pos());
 }
 
-void MyView::setNormal()
+void MyView::setZoomMode(bool on)
+{
+    if(on)
+        flag = dragZoom;
+}
+
+void MyView::setDraftMode(bool on)
+{
+    getScene()->setDraftMode(on);
+    if(on)
+    {
+        this->setDragMode(QGraphicsView::NoDrag);
+        getScene()->setPen(getPen());
+    }
+    else
+        this->setDragMode(QGraphicsView::RubberBandDrag);
+}
+
+void MyView::setNormalMode()
 {
     mode = NORMAL;
     flag = drawNone;
@@ -903,6 +922,7 @@ void MyView::InitView()
     //锚点以鼠标为准,放缩时效果跟网络地图一样
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setMatrix(QMatrix(1,0,0,-1,0,0));     // x,y轴比例为1:1和1:-1
+    qDebug()<<"viewport:"<<this->viewport()->rect();
 //    qDebug()<<this->transform();
 //    qDebug()<<matrix().m11() << matrix().m22();
 }

@@ -43,6 +43,7 @@ void MyScene::InitData()
 {
     // 给数据,用于跟添加的图元区分
     Origin->setData(0,"origin");
+    return;
     AxisX->setData(0,"x");
     AxisY->setData(0,"y");
     ArrowX->setData(0,"arrowX");
@@ -54,7 +55,7 @@ void MyScene::InitShape()
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
                                QBrush(QColor(122,103,238), Qt::SolidPattern) );
     Origin->setToolTip("原点");
-
+    return;
     AxisX = this->addLine(QLineF(QPointF(-width/2+1,0), QPointF(width/2-1,0)), QPen(QColor(139,54,38)));
     AxisY = this->addLine(QLineF(QPointF(0,-height/2+1),QPointF(0,height/2-1)), QPen(QColor(139,54,38)));
 
@@ -69,7 +70,7 @@ void MyScene::InitScene()
 {
     InitShape();
     InitData();
-    InitText();
+//    InitText();
 }
 
 void MyScene::Save(QDataStream &s)
@@ -412,6 +413,7 @@ void MyScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                                        pen);
     x = event->scenePos().x();
     y = event->scenePos().y();
+
     this->update();
     QGraphicsScene::mouseMoveEvent(event);
 }

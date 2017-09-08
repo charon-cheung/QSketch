@@ -48,7 +48,6 @@ private:
         drawCirPt = 0x1,
         drawCross = 0x2,
         drawPtXY = 0x4,
-        drawDividePt = 0x1000,
         drawLine = 0x8,
         drawLineXY = 0x10,
         drawLineAH = 0x20,
@@ -57,7 +56,9 @@ private:
         drawElli = 0x100,
         drawElliXY = 0x200,
         drawRing = 0x400,
-        drawText = 0x800
+        drawText = 0x800,
+        drawDividePt = 0x1000,
+        dragZoom = 0x1001
     };
     DrawFlag flag;
     bool m_drawMulti;
@@ -72,13 +73,14 @@ private:
     QPointF end;
     QPointF mouseMovePos;
 
-    enum AppMode
+    enum MouseMode
     {
         NORMAL,
         DRAG,
-        EDIT
+        EDIT,
+        ZOOM
     };
-    AppMode mode;
+    MouseMode mode;
 
     QPointF dragBegin;
     QGraphicsItem *viewCenter;
@@ -116,12 +118,14 @@ public slots:
     void DrawTexts();
 
     void setCatch(bool on);
-    void setDraftMode(bool on);
     void setFullView(bool full);
     QFont getFont();
     void ShowContextMenu();  //加右键菜单
 
-    void setNormal();
+    void setZoomMode(bool on);
+    void setDraftMode(bool on);
+    void setNormalMode();
+
     void Locate();      //重置原点
     void Reset();       //重置放缩倍数
     void Zoom(bool in);

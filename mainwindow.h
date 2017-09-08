@@ -111,9 +111,9 @@ private slots:
 
     void on_zoomOutAct_triggered();
 
-    void on_adjustZoomAct_triggered();
+    void on_smartZoomAct_triggered();
 
-    void on_windowZoomAct_triggered();
+    void on_windowZoom_triggered();
 
     void on_cutAct_triggered();
 
@@ -149,7 +149,7 @@ private:
     QFont TextFont;
 
     QLabel* scale;
-    QPushButton *SceneMode, *NormalMode, *Reset, *Empty ;
+    QPushButton *SceneMode, *NormalMode, *ZoomMode, *Reset, *Empty ;
     QCheckBox *CatchMode,*DraftMode,*FullView;
     Command* Cmd;
     QToolBar *floatToolBar;
