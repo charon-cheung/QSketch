@@ -44,11 +44,12 @@ void MyScene::InitData()
 {
     // 给数据,用于跟添加的图元区分
     Origin->setData(0,"origin");
-    return;
-    AxisX->setData(0,"x");
-    AxisY->setData(0,"y");
+    AxisX->setData(0,"AxisX");
+    AxisY->setData(0,"AxisY");
     ArrowX->setData(0,"arrowX");
     ArrowY->setData(0,"arrowY");
+    X->setData(0,"X");
+    Y->setData(0,"Y");
 }
 
 void MyScene::InitShape()
@@ -56,7 +57,6 @@ void MyScene::InitShape()
     Origin = this->addEllipse( -3, -3, 2*3, 2*3, QPen(QColor(122,103,238)),
                                QBrush(QColor(122,103,238), Qt::SolidPattern) );
     Origin->setToolTip("原点");
-    return;
     AxisX = this->addLine(QLineF(QPointF(-width/2+1,0), QPointF(width/2-1,0)), QPen(QColor(139,54,38)));
     AxisY = this->addLine(QLineF(QPointF(0,-height/2+1),QPointF(0,height/2-1)), QPen(QColor(139,54,38)));
 
@@ -70,8 +70,8 @@ void MyScene::InitShape()
 void MyScene::InitScene()
 {
     InitShape();
+    InitText();
     InitData();
-//    InitText();
 }
 
 void MyScene::Save(QDataStream &s)
@@ -320,7 +320,6 @@ void MyScene::setDraftMode(bool on)
 void MyScene::selectPen(QPen p)
 {
     pen = p;
-    qDebug()<<pen;
 }
 
 //如果此函数声明，但函数体为空，则场景是白色背景,不会调用 setBackgroundBrush
@@ -334,8 +333,7 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
     newRect.setTopLeft(QPointF(floor(x/space)*space,
                                floor(y/space)*space) );
 
-    QPolygonF whitePoints, greenPoints;
-
+    QPolygonF greenPoints;
     //调用构造函数里的 setBackgroundBrush
     painter->fillRect(newRect, backgroundBrush());
 
@@ -426,4 +424,15 @@ void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     this->update();
     m_pressed = false;
     QGraphicsScene::mouseReleaseEvent(event);
+}
+// 改写了QGraphicsScene::itemsBoundingRect()的源码
+QRectF MyScene::itemsBoundingRect() const
+{
+    QRectF boundingRect;
+    for (QGraphicsItem *item : this->items())
+    {
+        if(item->data(0).toString().isEmpty())
+        boundingRect |= item->sceneBoundingRect();
+    }
+    return boundingRect;
 }

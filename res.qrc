@@ -40,8 +40,6 @@
         <file>Icon/paste.png</file>
         <file>Icon/info.png</file>
         <file>Icon/cut.png</file>
-        <file>Icon/redraw.png</file>
-        <file>Icon/cube.png</file>
         <file>Icon/rotate.png</file>
         <file>Icon/start.png</file>
         <file>Icon/style.png</file>
@@ -56,14 +54,17 @@
         <file>Icon/mirrorX.png</file>
         <file>Icon/mirrorY.png</file>
         <file>Icon/normal.png</file>
-        <file>Icon/area.png</file>
         <file>Icon/Draw.png</file>
         <file>Icon/full.png</file>
         <file>Icon/grid.png</file>
         <file>Icon/widget.png</file>
-        <file>Icon/adjust.png</file>
-        <file>Icon/angle.png</file>
         <file>Icon/about.png</file>
         <file>Icon/help.png</file>
+        <file>Icon/empty.png</file>
+        <file>Icon/smartzoom.png</file>
+        <file>Icon/areazoom.png</file>
+        <file>Icon/stretch.png</file>
+        <file>Icon/angle.png</file>
+        <file>Icon/undo.png</file>
     </qresource>
 </RCC>

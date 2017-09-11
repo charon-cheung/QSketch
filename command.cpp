@@ -31,11 +31,7 @@ void Command::Delete()
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-        if(!item)
-        {
-            QMessageBox::warning(0,"删除失败","图元不存在或不完整");
-            return;
-        }
+        if(!item)   return;
         m_scene->removeItem(item);  //删除item及其子item
     }
 }
@@ -44,7 +40,6 @@ void Command::Rotate(QPointF pt, float angle)
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-        qDebug()<<"旋转前的坐标:"<<item->scenePos();
 //        绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
 //        item->setTransformOriginPoint(item->mapFromScene(0,0));
         item->setTransformOriginPoint(item->mapFromScene(pt));
@@ -104,9 +99,7 @@ void Command::SelectAll(bool state)
     {
         //去掉场景初始化的5个图元
         if(item->data(0).isNull())
-        {
             item->setSelected(state);
-        }
     }
 }
 
@@ -131,7 +124,7 @@ void Command::FillBrush()
             {
                 QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
                 R->setBrush(brush);
-                break;      // 低级错误,经常忘了加 break
+                break;
             }
             case QGraphicsEllipseItem::Type:
             {
@@ -139,6 +132,8 @@ void Command::FillBrush()
                 E->setBrush(brush);
                 break;
             }
+        default:
+            break;
         }
     }
 }
@@ -203,7 +198,7 @@ void Command::changeStyle()
                 QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
                 R->setPen(m_view->getPen());
                 R->setBrush(m_view->getBrush());
-                break;      // 低级错误,经常忘了加 break
+                break;
             }
             case QGraphicsEllipseItem::Type:
             {
@@ -212,6 +207,8 @@ void Command::changeStyle()
                 E->setBrush(m_view->getBrush());
                 break;
             }
+        default:
+            break;
         }
     }
 }
@@ -257,7 +254,6 @@ void Command::ShowItemInfo()
             QGraphicsEllipseItem* Ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
             type = "椭圆";
             pos = Ell->rect().center();
-            qDebug()<<"坐标:"<<Ell->scenePos();
             size = Ell->rect().size();
             color = Ell->pen().color();
             info = getItemInfo(type, pos, size, color);
@@ -464,7 +460,7 @@ QList<QPointF> Command::getDividePts()
     QList<QPointF> list;
     if(chosenItems.size()!=1)
     {
-       QMessageBox::warning(0,"出错了!","请先选择直线");
+       QMessageBox::warning(0,"出错了!","只能选择一条直线");
        list.clear();
        return list;
     }

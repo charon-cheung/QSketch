@@ -86,6 +86,8 @@ public slots:
 
     void on_infoAct_triggered();
 
+    void on_StretchAct_triggered();
+
     void on_action_PDF_triggered();
 
     void on_actionX_triggered();
@@ -97,7 +99,6 @@ public slots:
     void showFullView(bool full);
     void InitWorkWidgets(bool on);
 
-    void test();
 signals:
     void toFont(QFont f);
 private slots:
@@ -111,7 +112,7 @@ private slots:
 
     void on_smartZoomAct_triggered();
 
-    void on_windowZoom_triggered();
+    void on_areaZoom_triggered();
 
     void on_cutAct_triggered();
 
@@ -159,7 +160,7 @@ private:
     QFont TextFont;
 
     QLabel* scale;
-    QPushButton *SceneMode, *NormalMode, *ZoomMode, *Reset, *Empty ;
+    QPushButton *SceneMode, *Normal, *AreaZoom, *SmartZoom, *Reset, *Empty ;
     QCheckBox *CatchMode,*DraftMode;
     Command* Cmd;
     QToolBar *floatToolBar;
@@ -167,6 +168,7 @@ private:
     void InitUi();
     void InitActions();
     void InitStatusBar();
+    void InitToolWidget(QPushButton* btn);
     void InitToolBar();
     void InitMenus();
     void InitConnects(MyView* view);

@@ -100,7 +100,6 @@ private:
     QFont TextFont;
     QPointF p2;
 private:
-    inline void test();
     void InitView();
     void InitParameters();
     void InitViewRect();
@@ -134,7 +133,7 @@ public slots:
     void Copy();
     void Paste();
     void Delete();
-    void Redraw();
+    void Empty();
     void Translate(int direction);
     void Translate(QPointF pt);
     void showItemInfo();

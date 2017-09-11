@@ -43,6 +43,7 @@ public:
     void setMode(GridMode m);
     void setDraftMode(bool on);
     void selectPen(QPen p);
+    QRectF itemsBoundingRect() const;
 
 private:
     int space;

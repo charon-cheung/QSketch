@@ -201,41 +201,48 @@ void MainWindow::InitStatusBar()
     ui->statusBar->showMessage("初始化完成");
 }
 
+void MainWindow::InitToolWidget(QPushButton* btn)
+{
+    btn->setFlat(true);
+    btn->setIconSize(QSize(32,32));
+    QString iconPath = tr(":/Icon/Icon/%1.png").arg(btn->objectName());
+    btn->setIcon(QIcon(iconPath));
+    btn->resize(32,32);
+}
+
 void MainWindow::InitToolBar()
 {
-    NormalMode = new QPushButton(this);
-    NormalMode->setFlat(true);
-    NormalMode->setIconSize(QSize(36,36));
-    NormalMode->setIcon(QIcon(":/Icon/Icon/normal.png"));
-    NormalMode->resize(36,36);
+    Normal = new QPushButton(this);
+    Normal->setObjectName("normal");
+    InitToolWidget(Normal);
 
-    ZoomMode = new QPushButton(this);
-    ZoomMode->setFlat(true);
-    ZoomMode->setIconSize(QSize(32,32));
-    ZoomMode->setIcon(QIcon(":/Icon/Icon/area.png"));
-    ZoomMode->resize(32,32);
+    AreaZoom = new QPushButton(this);
+    AreaZoom->setObjectName("areazoom");
+    InitToolWidget(AreaZoom);
+
+    SmartZoom = new QPushButton(this);
+    SmartZoom->setObjectName("smartzoom");
+    InitToolWidget(SmartZoom);
 
     Reset = new QPushButton(this);
-    Reset->setFlat(true);
-    Reset->setIconSize(QSize(36,36));
-    Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
-    Reset->resize(36,36);
+    Reset->setObjectName("reset");
+    InitToolWidget(Reset);
 
     Empty = new QPushButton(this);
-    Empty->setFlat(true);
-    Empty->setIconSize(QSize(36,36));
-    Empty->setIcon(QIcon(":/Icon/Icon/redraw.png"));
-    Empty->resize(36,36);
+    Empty->setObjectName("empty");
+    InitToolWidget(Empty);
 
     floatToolBar = new QToolBar();
-    floatToolBar->addWidget(NormalMode);
-    floatToolBar->addWidget(ZoomMode);
+    //唯一直接改变widget间距的方法,也可以用添加布局的方式
+    floatToolBar->setStyleSheet("QToolBar{spacing: 10px;} ");
+    floatToolBar->addWidget(Normal);
+    floatToolBar->addWidget(AreaZoom);
+    floatToolBar->addWidget(SmartZoom);
     floatToolBar->addWidget(Reset);
     floatToolBar->addWidget(Empty);
     floatToolBar->setOrientation(Qt::Vertical);
-    floatToolBar->setAllowedAreas(Qt::LeftToolBarArea|Qt::RightToolBarArea);
+    floatToolBar->setAllowedAreas(Qt::LeftToolBarArea | Qt::RightToolBarArea | Qt::TopToolBarArea);
     addToolBar(floatToolBar);
-    connect(floatToolBar,SIGNAL(topLevelChanged(bool)),this,SLOT(test()) );
 }
 
 void MainWindow::InitMenus()
@@ -291,10 +298,13 @@ void MainWindow::InitConnects(MyView* view)
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
     connect(CatchMode, SIGNAL(toggled(bool)), view, SLOT(setCatch(bool)) );
     connect(DraftMode, SIGNAL(toggled(bool)), view, SLOT(setDraftMode(bool)) );
-    connect(NormalMode, &QPushButton::clicked, view, &MyView::setNormalMode);
-    connect(ZoomMode, SIGNAL(clicked(bool)), this, SLOT(on_windowZoom_triggered()) );
+    connect(Normal, &QPushButton::clicked, view, &MyView::setNormalMode);
+    connect(AreaZoom, SIGNAL(clicked(bool)), this, SLOT(on_areaZoom_triggered()) );
+    connect(SmartZoom, SIGNAL(clicked(bool)), this, SLOT(on_smartZoomAct_triggered()) );
     connect(Reset, &QPushButton::clicked, view, &MyView::Reset);
-    connect(Empty, &QPushButton::clicked, view, &MyView::Redraw);
+    connect(Empty, &QPushButton::clicked, view, &MyView::Empty);
+    connect(ui->insertPix_2, SIGNAL(clicked(bool)), this, SLOT(on_insertPix_triggered()) );
+    connect(ui->insertWidget_2, SIGNAL(clicked(bool)), this, SLOT(on_insertWidget_triggered()) );
 }
 
 void MainWindow::InitDir()
@@ -364,12 +374,6 @@ QString MainWindow::getCurrentTabName()
     QString name = ui->tabView->tabText(ui->tabView->currentIndex());
     name.remove(".gph");
     return name;
-}
-
-void MainWindow::test()
-{
-    qDebug()<<"test"<<qrand()%100;
-    floatToolBar->setOrientation(Qt::Vertical);
 }
 
 void MainWindow::on_NewView_triggered()
@@ -665,6 +669,13 @@ void MainWindow::on_infoAct_triggered()
     getCurrentView()->showItemInfo();
 }
 
+void MainWindow::on_StretchAct_triggered()
+{
+    if(!getCurrentView())   return;
+    Cmd = new Command(getCurrentView());
+    Cmd->Stretch();
+}
+
 void MainWindow::on_action_PDF_triggered()
 {
     if(!getCurrentView())   return;
@@ -764,7 +775,7 @@ void MainWindow::on_smartZoomAct_triggered()
     Cmd->SmartZoom();
 }
 
-void MainWindow::on_windowZoom_triggered()
+void MainWindow::on_areaZoom_triggered()
 {
     if(!getCurrentView())   return;
     getCurrentView()->setZoomMode(true);

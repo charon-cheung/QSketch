@@ -631,7 +631,7 @@ void MyView::ShowContextMenu()
     QAction *Locate = m.addAction("定位到原点");
     QAction *Reset = m.addAction("重置视图");
     QAction *Delete = m.addAction("删除");
-    QAction *Redraw = m.addAction("清空重画");
+    QAction *Empty = m.addAction("清空重画");
     QAction *Cut = m.addAction("剪切");
     QAction *Copy = m.addAction("复制");
     QAction *Paste = m.addAction("黏贴");
@@ -641,7 +641,7 @@ void MyView::ShowContextMenu()
     Locate->setIcon(QIcon(":/Icon/Icon/locate.png"));
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
-    Redraw->setIcon(QIcon(":/Icon/Icon/redraw.png"));
+    Empty->setIcon(QIcon(":/Icon/Icon/empty.png"));
     Cut->setIcon(QIcon(":/Icon/Icon/cut.png"));
     Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
     Paste->setIcon(QIcon(":/Icon/Icon/paste.png"));
@@ -654,7 +654,7 @@ void MyView::ShowContextMenu()
     connect(Cut,&QAction::triggered, [this]{this->Copy(); this->Delete();} );
     connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
     connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
-    connect(Redraw,SIGNAL(triggered(bool)), this, SLOT(Redraw()) );
+    connect(Empty,SIGNAL(triggered(bool)), this, SLOT(Empty()) );
     connect(Info, SIGNAL(triggered(bool)), this, SLOT(showItemInfo()) );
 
     m.exec(QCursor::pos());
@@ -835,7 +835,7 @@ void MyView::Delete()
     Cmd->Delete();
 }
 
-void MyView::Redraw()
+void MyView::Empty()
 {
     m_scene->clear();
     m_scene->InitScene();
@@ -914,11 +914,6 @@ QString MyView::inputMultiText(bool multi)
     if (ok && !text.isEmpty())
         ok = true;
     return text;
-}
-
-void MyView::test()
-{
-    qDebug()<<"test:"<<qrand()%80;
 }
 
 void MyView::InitView()
