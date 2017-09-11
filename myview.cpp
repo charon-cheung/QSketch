@@ -34,6 +34,11 @@ MyScene* MyView::getScene()
     return m_scene;
 }
 
+MainWindow *MyView::getMainWindow()
+{
+    return m_main;
+}
+
 void MyView::mousePressEvent(QMouseEvent *event)
 {
     switch(event->button())
@@ -667,10 +672,14 @@ void MyView::setDraftMode(bool on)
     if(on)
     {
         this->setDragMode(QGraphicsView::NoDrag);
-        getScene()->setPen(getPen());
+        m_main->DraftStatusBar(true);
+        getScene()->selectPen(getPen());
     }
     else
+    {
+        m_main->DraftStatusBar(false);
         this->setDragMode(QGraphicsView::RubberBandDrag);
+    }
 }
 
 void MyView::setNormalMode()

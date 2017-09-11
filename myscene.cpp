@@ -14,6 +14,7 @@ MyScene::MyScene(QObject *parent):
     mode = NONE;
     m_draft = false;
     m_pressed = false;
+
 }
 
 MyScene::~MyScene()
@@ -313,9 +314,10 @@ void MyScene::setMode(MyScene::GridMode m)
 void MyScene::setDraftMode(bool on)
 {
     m_draft = on;
+    view = qobject_cast<MyView*>(this->views().at(0));
 }
 
-void MyScene::setPen(QPen p)
+void MyScene::selectPen(QPen p)
 {
     pen = p;
     qDebug()<<pen;
@@ -410,7 +412,7 @@ void MyScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if(!m_draft || !m_pressed)    return;
     tempItem = (QGraphicsItem*)addLine(x,y,event->scenePos().x(),
                                        event->scenePos().y(),
-                                       pen);
+                                       view->getPen());
     x = event->scenePos().x();
     y = event->scenePos().y();
 

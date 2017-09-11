@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include "command.h"
-//#include "myview.h"
 #include "Dialogs/posdialog.h"
 #include "QRecentFilesMenu.h"
 #include <QMainWindow>
@@ -30,7 +29,7 @@ public:
     QFont  getFont();
     QFont btnFont(int size);
     void showScale(QString s);
-
+    void DraftStatusBar(bool on);
 public slots:
 
     void on_Open_triggered();
@@ -96,6 +95,8 @@ public slots:
     void SwitchSceneMode();
 
     void showFullView(bool full);
+    void InitWorkWidgets(bool on);
+
     void test();
 signals:
     void toFont(QFont f);
@@ -104,9 +105,9 @@ private slots:
 
     void on_fullViewAct_triggered();
 
-    void on_zoomInAct_triggered();
+    void on_zoomInView_triggered();
 
-    void on_zoomOutAct_triggered();
+    void on_zoomOutView_triggered();
 
     void on_smartZoomAct_triggered();
 
@@ -125,6 +126,10 @@ private slots:
     void on_SVG_triggered();
 
     void on_Image_triggered();
+
+    void on_About_triggered();
+
+    void on_Help_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -155,7 +160,7 @@ private:
 
     QLabel* scale;
     QPushButton *SceneMode, *NormalMode, *ZoomMode, *Reset, *Empty ;
-    QCheckBox *CatchMode,*DraftMode,*FullView;
+    QCheckBox *CatchMode,*DraftMode;
     Command* Cmd;
     QToolBar *floatToolBar;
 private:

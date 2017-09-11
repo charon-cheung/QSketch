@@ -10,11 +10,11 @@ PosDialog::PosDialog(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle("请输入点的坐标");
     this->setWindowIcon(QIcon(":/Icon/Icon/input.png"));
-    X = new QDoubleValidator(-MyScene::width/2, MyScene::width/2, 2,this);
+    X = new QDoubleValidator(-600, 600, 2,this);
     ui->pt1_x->setValidator(X);
     ui->pt2_x->setValidator(X);
 
-    Y = new QDoubleValidator(-MyScene::height/2, MyScene::height/2, 2,this);
+    Y = new QDoubleValidator(-400, 400, 2,this);
     ui->pt1_y->setValidator(Y);
     ui->pt2_y->setValidator(Y);
 

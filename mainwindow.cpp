@@ -116,6 +116,28 @@ void MainWindow::showScale(QString s)
     scale->setText(s);
 }
 
+void MainWindow::DraftStatusBar(bool on)
+{
+    CatchMode->setDisabled(on);
+    SceneMode->setDisabled(on);
+    scale->setDisabled(on);
+    if(on)
+        ui->statusBar->showMessage("当前为草图模式");
+    else
+        ui->statusBar->showMessage("退出草图模式");
+}
+
+void MainWindow::InitWorkWidgets(bool on)
+{
+    CatchMode->setVisible(on);
+    SceneMode->setVisible(on);
+    DraftMode->setVisible(on);
+    scale->setVisible(on);
+    ui->tabWidget->setVisible(on);
+    ui->mainToolBar->setVisible(on);
+    floatToolBar->setVisible(on);
+}
+
 void MainWindow::InitUi()
 {
     this->setWindowTitle("QSketch");
@@ -135,6 +157,7 @@ void MainWindow::InitUi()
 
     InitStatusBar();
     InitToolBar();
+    InitWorkWidgets(false);
 }
 
 void MainWindow::InitActions()
@@ -160,7 +183,7 @@ void MainWindow::InitStatusBar()
 
     SceneMode = new QPushButton(this);
     SceneMode->setFont(btnFont(14));
-    SceneMode->setText("场景模式");
+    SceneMode->setText(" 场景模式");
     SceneMode->setMenu(modes);
     ui->statusBar->addPermanentWidget(SceneMode);
 
@@ -371,6 +394,7 @@ void MainWindow::on_NewView_triggered()
     ui->tabView->setCurrentWidget(newView);
 
     InitConnects(newView);
+    InitWorkWidgets(true);
 }
 
 void MainWindow::on_Open_triggered()
@@ -409,6 +433,7 @@ void MainWindow::on_Open_triggered()
     watcher->addPath(dirPath+"/Files/"+fullName);
 //    先修改再保存，才能知道有没有修改
 //    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
+    InitWorkWidgets(true);
     ui->statusBar->showMessage("加载文件完成");
 }
 
@@ -484,6 +509,7 @@ void MainWindow::on_action_All_triggered()
     int count=ui->tabView->count();
     for(int i=count-1;i>0;i--)
         on_tabView_tabCloseRequested(i);
+    InitWorkWidgets(false);
 }
 
 void MainWindow::on_action_Exit_triggered()
@@ -512,6 +538,7 @@ void MainWindow::on_startBtn_clicked()
 
         InitConnects(newView);
     }
+    InitWorkWidgets(true);
 }
 
 void MainWindow::on_action_Open_triggered()
@@ -715,6 +742,7 @@ void MainWindow::on_lineAngle_triggered()
     Cmd = new Command(getCurrentView());
     qreal angle = Cmd->getLinesAngle();
     QString a = QString::number(angle,'f',2);
+    if(angle==360)  return;
     if(angle==0)
         QMessageBox::information(0,"直线夹角",QString("两直线平行"));
     else if(angle==90)
@@ -727,18 +755,6 @@ void MainWindow::on_fullViewAct_triggered()
 {
     if(!getCurrentView())   return;
     showFullView(true);
-}
-
-void MainWindow::on_zoomInAct_triggered()
-{
-    if(!getCurrentView())   return;
-    this->on_zoomIn_triggered();
-}
-
-void MainWindow::on_zoomOutAct_triggered()
-{
-    if(!getCurrentView())   return;
-    this->on_zoomOut_triggered();
 }
 
 void MainWindow::on_smartZoomAct_triggered()
@@ -828,4 +844,32 @@ void MainWindow::on_Image_triggered()
     QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
     QString file = path+ "/" +str+ ".png";
     mirroredImage.save(file);
+}
+
+void MainWindow::on_zoomInView_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->scale(1.41421, 1.41421);
+    getCurrentView()->updateCenterRect();
+    QString t = "当前比例为 "+QString::number(getCurrentView()->matrix().m11(),'f',2)+":1 ";
+    showScale(t);   //状态栏显示当前比例
+}
+
+void MainWindow::on_zoomOutView_triggered()
+{
+    if(!getCurrentView())   return;
+    getCurrentView()->scale(0.70711, 0.70711);
+    getCurrentView()->updateCenterRect();
+    QString t = "当前比例为 "+QString::number(getCurrentView()->matrix().m11(),'f',2)+":1 ";
+    showScale(t);   //状态栏显示当前比例
+}
+
+void MainWindow::on_About_triggered()
+{
+    QMessageBox::about(0,"QSketch 1.0","QSketch是我自己开发的一个简易绘图工具");
+}
+
+void MainWindow::on_Help_triggered()
+{
+     QDesktopServices::openUrl(QUrl("https://github.com/rjosodtssp/QSketch/blob/master/README.md", QUrl::TolerantMode));
 }

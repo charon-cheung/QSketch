@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QGraphicsSimpleTextItem>
 #include "Dialogs/posdialog.h"
+#include <myscene.h>
 #include "mainwindow.h"
 #include "command.h"
 
@@ -19,6 +20,7 @@ public:
     ~MyView();
 
     MyScene* getScene();
+    MainWindow* getMainWindow();
     void updateCenterRect();
     void setSaved(bool flag);
     bool IsSaved();

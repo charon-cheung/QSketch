@@ -7,6 +7,8 @@
 #include "Dialogs/selectdlg.h"
 #include <QVector>
 
+class MyView;
+class MyScene;
 class MainWindow;
 class Command
 {

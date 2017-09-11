@@ -58,5 +58,12 @@
         <file>Icon/normal.png</file>
         <file>Icon/area.png</file>
         <file>Icon/Draw.png</file>
+        <file>Icon/full.png</file>
+        <file>Icon/grid.png</file>
+        <file>Icon/widget.png</file>
+        <file>Icon/adjust.png</file>
+        <file>Icon/angle.png</file>
+        <file>Icon/about.png</file>
+        <file>Icon/help.png</file>
     </qresource>
 </RCC>

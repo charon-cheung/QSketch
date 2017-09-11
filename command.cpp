@@ -91,6 +91,8 @@ void Command::Zoom(bool in)
             item->setScale(1.414*factor);
         else
             item->setScale(0.707*factor);
+
+        m_view->showStatus("所选图元的当前比例: "+QString::number(item->scale()));
     }
 }
 
@@ -121,20 +123,14 @@ void Command::FillBrush()
     brush.setStyle(style);
     brush.setColor(color);
 
-//    foreach(QGraphicsItem* item, chosenItems)
-//    {
-        if(chosenItems.size()!=1)   return;
-        if(chosenItems.at(0)->type()==QGraphicsLineItem::Type)   return;
-        QAbstractGraphicsShapeItem* shape = qgraphicsitem_cast<QGraphicsRectItem*>(chosenItems.at(0));
-        shape->setBrush(brush);
-#if 0
+    foreach(QGraphicsItem* item, chosenItems)
+    {
         switch(item->type())
         {
             case QGraphicsRectItem::Type:
             {
-                RectP.data()->setBrush(brush);
-//                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-//                R->setBrush(brush);
+                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+                R->setBrush(brush);
                 break;      // 低级错误,经常忘了加 break
             }
             case QGraphicsEllipseItem::Type:
@@ -144,8 +140,7 @@ void Command::FillBrush()
                 break;
             }
         }
-#endif
-//    }
+    }
 }
 
 void Command::SetMovable(bool state)
@@ -201,10 +196,23 @@ void Command::changeStyle()
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-        if(item->type()==QGraphicsLineItem::Type)    return;
-        QAbstractGraphicsShapeItem* shape = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-        shape->setPen(m_view->getPen());
-        shape->setBrush(m_view->getBrush());
+        switch(item->type())
+        {
+            case QGraphicsRectItem::Type:
+            {
+                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+                R->setPen(m_view->getPen());
+                R->setBrush(m_view->getBrush());
+                break;      // 低级错误,经常忘了加 break
+            }
+            case QGraphicsEllipseItem::Type:
+            {
+                QGraphicsEllipseItem* E = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+                E->setPen(m_view->getPen());
+                E->setBrush(m_view->getBrush());
+                break;
+            }
+        }
     }
 }
 
@@ -394,7 +402,16 @@ qreal Command::getSlope(QGraphicsLineItem* line)
 
 qreal Command::getLinesAngle()
 {
-    if(chosenItems.size()!=2)   return 0;
+    if(chosenItems.size()!=2)
+    {
+        QMessageBox::warning(0,"出错了","没有选择两个图元!");
+        return 360;
+    }
+    if(chosenItems.at(0)->type()!=QGraphicsLineItem::Type  || chosenItems.at(1)->type()!=QGraphicsLineItem::Type)
+    {
+        QMessageBox::warning(0,"出错了","所选图元有的不是直线!");
+        return 360;
+    }
     QGraphicsLineItem* Line1 = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItems.at(0));
     qreal slope1 = getSlope(Line1);
     QGraphicsLineItem* Line2 = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItems.at(1));

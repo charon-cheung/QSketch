@@ -10,15 +10,9 @@ Clock::Clock(QWidget *parent)
     Ox = 100; Oy = 100;
     upX = 100; upY = 5;
     first = true;
+
     // 背景透明, 妨碍了图片的加载
     setStyleSheet("Clock{ background-color:rgba(0,0,0,0%);}  ");
-//    this->setAutoFillBackground(true);
-//    QPixmap pixmap;
-//    pixmap.load("D:/QSketch/Shape/clock.png");
-//    QPalette palette;
-//    palette.setBrush(QPalette::Background,QBrush(pixmap));
-//    this->setPalette(palette);
-
     initTime();
     startTimer(1000);
 }

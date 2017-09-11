@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QDoubleValidator>
-#include <myscene.h>
 
 namespace Ui {
 class PosDialog;

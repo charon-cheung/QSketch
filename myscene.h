@@ -7,7 +7,7 @@
 #include "Items/ring.h"
 #include <QDataStream>
 #include <QGraphicsSceneMouseEvent>
-//#include <myview.h>
+#include <myview.h>
 
 class MyView;     //需要前置声明
 class MyScene : public QGraphicsScene
@@ -30,6 +30,7 @@ public:
 public:
     explicit MyScene(QObject *parent = Q_NULLPTR);
     virtual ~MyScene();
+
     void InitText();
     void InitData();
     void InitShape();
@@ -41,7 +42,7 @@ public:
     void Import(QDataStream& s,int count);
     void setMode(GridMode m);
     void setDraftMode(bool on);
-    void setPen(QPen p);
+    void selectPen(QPen p);
 
 private:
     int space;
@@ -54,6 +55,7 @@ private:
     bool m_draft,m_pressed;
     qreal x,y;
     QGraphicsItem* tempItem;
+    MyView* view;
 private:
 
 
