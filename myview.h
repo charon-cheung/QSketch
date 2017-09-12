@@ -109,7 +109,6 @@ private:
     QColor getColor();
 
     QString inputMultiText(bool multi);
-    void selectAll(bool state);
 
 public slots:
     void DrawPt();
@@ -129,20 +128,17 @@ public slots:
 
     void Locate();      //重置原点
     void Reset();       //重置放缩倍数
-    void Zoom(bool in);
     void Copy();
     void Paste();
     void Delete();
     void Empty();
     void Translate(int direction);
-    void Translate(QPointF pt);
     void showItemInfo();
 
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent *event);
 };

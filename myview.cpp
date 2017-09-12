@@ -120,7 +120,6 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 Text->setFlag(QGraphicsItem::ItemIsSelectable);
                 Text->setPos(StartPt);
                 Text->setTransform(QTransform::fromScale(1,-1));
-//                qDebug()<<Text->transform().m11()<<"  "<<Text->transform().m22();  //对应 1和 -1
                 Text->setPen(getPen());
                 break;
             }
@@ -278,7 +277,8 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
                 ElliCount++;
             }
             mode = NORMAL;     // 不加就报错,会多产生moveEvent,为什么
-            this->setDragMode(QGraphicsView::RubberBandDrag);        }
+            this->setDragMode(QGraphicsView::RubberBandDrag);
+        }
     default:
         event->ignore();
         break;
@@ -315,7 +315,8 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->Paste();
     else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_A)
     {
-        this->selectAll(true);
+        Cmd = new Command(m_scene);
+        Cmd->SelectAll(true);
         showStatus("已经选择所有的图元");
     }
     else if( event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_Return )
@@ -325,7 +326,6 @@ void MyView::keyPressEvent(QKeyEvent *event)
     {
     case Qt::Key_Space:
         this->setNormalMode();
-        this->selectAll(false);
         break;
     case Qt::Key_Home:
         this->Locate();
@@ -340,10 +340,12 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->updateCenterRect();
         break;
     case Qt::Key_PageUp:
-        this->Zoom(true);
+        Cmd = new Command(m_scene);
+        Cmd->Zoom(true);
         break;
     case Qt::Key_PageDown:
-        this->Zoom(false);
+        Cmd = new Command(m_scene);
+        Cmd->Zoom(false);
         break;
     case Qt::Key_M :
         Cmd = new Command(this);
@@ -396,6 +398,7 @@ void MyView::keyPressEvent(QKeyEvent *event)
         break;
     default:
         event->ignore();
+        break;
     }
 }
 
@@ -708,12 +711,6 @@ void MyView::Reset()
     showStatus("重置");
 }
 
-void MyView::Zoom(bool in)
-{
-    Cmd = new Command(m_scene);
-    Cmd->Zoom(in);
-}
-
 void MyView::Copy()
 {
     QByteArray ba;
@@ -848,12 +845,6 @@ void MyView::Translate(int direction)
     Cmd->Translate(direction);
 }
 
-void MyView::Translate(QPointF pt)
-{
-    Cmd = new Command(m_scene);
-    Cmd->Translate(pt);
-}
-
 void MyView::updateCenterRect()
 {
     QRect viewRect = this->viewport()->rect();
@@ -886,14 +877,8 @@ QPointF MyView::getScenePos()
     QPoint viewPos = this->mapFromGlobal(cursorPos);
     QPointF scenePos = this->mapToScene(viewPos);
     return scenePos;
-//    qDebug()<<cursorPos<<viewPos<<scenePos;
 }
 
-void MyView::selectAll(bool state)
-{
-    Cmd = new Command(m_scene);
-    Cmd->SelectAll(state);
-}
 // 可以与之前的方式做对比
 void MyView::showStatus(QString msg)
 {
@@ -906,10 +891,10 @@ QString MyView::inputMultiText(bool multi)
     bool ok;
     QString text;
     if(multi)
-        text = QInputDialog::getMultiLineText(0, tr("请输入文本"),"",
+        text = QInputDialog::getMultiLineText(0, tr("请输入多行文本"),"",
                                               "第一行\n第二行", &ok);
     else
-        text = QInputDialog::getText(0, tr("请输入文本"),"",
+        text = QInputDialog::getText(0, tr("请输入单行文本"),"",
                                      QLineEdit::Normal,"text",&ok);
     if (ok && !text.isEmpty())
         ok = true;
@@ -926,7 +911,6 @@ void MyView::InitView()
     //锚点以鼠标为准,放缩时效果跟网络地图一样
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setMatrix(QMatrix(1,0,0,-1,0,0));     // x,y轴比例为1:1和1:-1
-//    qDebug()<<"viewport:"<<this->viewport()->rect();
 //    qDebug()<<this->transform();
 //    qDebug()<<matrix().m11() << matrix().m22();
 }
@@ -950,11 +934,9 @@ void MyView::InitParameters()
 void MyView::InitViewRect()
 {
     //随着鼠标点击，场景总出现几个矩形，暂时去掉
-    QRect viewport_rect(0, 0, this->viewport()->width(),
-                        this->viewport()->height() );       //98 X 28
+    QRect viewport_rect(0, 0, viewport()->width(), viewport()->height() );       //98 X 28
     QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
     viewCenter = new QGraphicsRectItem(visible_scene_rect);
-//    m_scene->addItem(viewCenter);
     this->viewport()->update();
 }
 

@@ -44,7 +44,6 @@ void Command::Rotate(QPointF pt, float angle)
 //        item->setTransformOriginPoint(item->mapFromScene(0,0));
         item->setTransformOriginPoint(item->mapFromScene(pt));
         item->setRotation(angle);
-        qDebug()<<"旋转后的坐标:"<<item->scenePos();
     }
 }
 
@@ -97,7 +96,7 @@ void Command::SelectAll(bool state)
                        Qt::IntersectsItemShape,Qt::AscendingOrder);
     foreach (QGraphicsItem* item, all)
     {
-        //去掉场景初始化的5个图元
+        //去掉场景初始化的7个图元
         if(item->data(0).isNull())
             item->setSelected(state);
     }
@@ -146,12 +145,12 @@ void Command::SetMovable(bool state)
         if(item->flags()==( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable ))
         {
             m_view->SetMoveFlag(true);
-            m_view->showStatus("当前所选图元已经可拖动");
+            m_view->showStatus("当前图元已经可拖动");
         }
         else
         {
             m_view->SetMoveFlag(false);
-            m_view->showStatus("当前所选图元无法再拖动");
+            m_view->showStatus("当前图元无法再拖动");
         }
     }
 }
@@ -342,7 +341,7 @@ void Command::CatchPt()
         QPointF tl = R->rect().bottomLeft();
         QPointF tr = R->rect().bottomRight();
         QPointF center = R->rect().center();
-        qDebug()<<tl<<tr<<bl<<br<<center;
+
         //始终不能捕捉五个点,最多捕捉同一对角线的三个点
         if(inCatchRange(m_view->getScenePos(),tl))
             m_view->catchPt(tl);
@@ -415,7 +414,6 @@ qreal Command::getLinesAngle()
 
     qreal tanV = qAbs( (slope2 - slope1)/(1+slope1*slope2) );
     qreal angle = qAtan(tanV);
-    qDebug()<<angle<<"  "<<qRadiansToDegrees(angle);
     return qRadiansToDegrees(angle);
 }
 

@@ -46,8 +46,10 @@ public:
     QRectF itemsBoundingRect() const;
 
 private:
-    int space;
-    int min_space;
+    enum{
+        min_space = 20,
+        space = min_space*5
+    };
     QPen pen;
     QGraphicsLineItem  *AxisX, *AxisY;
     QGraphicsPolygonItem *ArrowX, *ArrowY;

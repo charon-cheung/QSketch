@@ -3,11 +3,12 @@
 
 #include <QDialog>
 #include <QDoubleValidator>
-
+#include "myscene.h"
 namespace Ui {
 class PosDialog;
 }
 
+class MyScene;
 class PosDialog : public QDialog
 {
     Q_OBJECT

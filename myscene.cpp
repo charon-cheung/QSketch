@@ -9,12 +9,10 @@ MyScene::MyScene(QObject *parent):
     setSceneRect(-width/2,-height/2,width,height); //场景坐标系,超出view大小加滑条
     setBackgroundBrush(QBrush(QColor(33,40,48)));
     InitScene();
-    min_space = 20;
-    space = min_space * 5;
+
     mode = NONE;
     m_draft = false;
     m_pressed = false;
-
 }
 
 MyScene::~MyScene()
@@ -30,7 +28,7 @@ void MyScene::InitText()
 
     X = this->addSimpleText("X轴",font);
     X->setPos(120,-5);
-    //    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());   //总是Pos的2倍
+//    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());   //总是Pos的2倍
     X->setTransform(QTransform::fromScale(1,-1));
     X->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
 
@@ -43,11 +41,11 @@ void MyScene::InitText()
 void MyScene::InitData()
 {
     // 给数据,用于跟添加的图元区分
-    Origin->setData(0,"origin");
+    Origin->setData(0,"Origin");
     AxisX->setData(0,"AxisX");
     AxisY->setData(0,"AxisY");
-    ArrowX->setData(0,"arrowX");
-    ArrowY->setData(0,"arrowY");
+    ArrowX->setData(0,"ArrowX");
+    ArrowY->setData(0,"ArrowY");
     X->setData(0,"X");
     Y->setData(0,"Y");
 }
@@ -425,7 +423,8 @@ void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     m_pressed = false;
     QGraphicsScene::mouseReleaseEvent(event);
 }
-// 改写了QGraphicsScene::itemsBoundingRect()的源码
+
+// 改写和覆盖了QGraphicsScene::itemsBoundingRect()的源码
 QRectF MyScene::itemsBoundingRect() const
 {
     QRectF boundingRect;

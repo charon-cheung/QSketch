@@ -46,19 +46,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    myview.cpp \
-    myscene.cpp \
-    QRecentFilesMenu.cpp \
-    command.cpp \
-    clock.cpp \
+        myview.cpp \
+        myscene.cpp \
+        QRecentFilesMenu.cpp \
+        command.cpp \
+        clock.cpp \
 
 HEADERS += \
         mainwindow.h \
-    myview.h \
-    myscene.h \
-    QRecentFilesMenu.h \
-    command.h \
-    clock.h \
+        myview.h \
+        myscene.h \
+        QRecentFilesMenu.h \
+        command.h \
+        clock.h \
 
 FORMS += \
         mainwindow.ui \

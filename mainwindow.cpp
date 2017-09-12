@@ -22,9 +22,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     InitUi();
-    InitActions();
-    InitMenus();
-    InitDir();
+    CreateActions();
+    CreateMenus();
+    CreateDir();
 //    ui->centralWidget->setMouseTracking(true);
 //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
 }
@@ -136,6 +136,16 @@ void MainWindow::InitWorkWidgets(bool on)
     ui->tabWidget->setVisible(on);
     ui->mainToolBar->setVisible(on);
     floatToolBar->setVisible(on);
+
+    ui->action_Save->setEnabled(on);
+    ui->menu_SaveAs->setEnabled(on);
+    ui->action_Publish->setEnabled(on);
+    ui->action_Print->setEnabled(on);
+
+    ui->cmdMenu->setEnabled(on);
+    ui->editMenu->setEnabled(on);
+    ui->viewMenu->setEnabled(on);
+    ui->insertMenu->setEnabled(on);
 }
 
 void MainWindow::InitUi()
@@ -155,12 +165,13 @@ void MainWindow::InitUi()
     PenWidths<< QString::number(1) << QString::number(2) << QString::number(3) << QString::number(4) << QString::number(5);
     ui->PenWidth->insertItems(0,PenWidths);
 
-    InitStatusBar();
-    InitToolBar();
+    CreateStatusBar();
+    CreateToolBar();
     InitWorkWidgets(false);
+//    CreateCorner();
 }
 
-void MainWindow::InitActions()
+void MainWindow::CreateActions()
 {
     ui->mainToolBar->addAction(ui->NewView);
     ui->mainToolBar->addAction(ui->Open);
@@ -169,7 +180,7 @@ void MainWindow::InitActions()
     ui->mainToolBar->addSeparator();
 }
 
-void MainWindow::InitStatusBar()
+void MainWindow::CreateStatusBar()
 {
     //无法设置QLabel QPushButton的大小,暂时通过设置字体来控制
     scale = new QLabel(this);
@@ -201,7 +212,7 @@ void MainWindow::InitStatusBar()
     ui->statusBar->showMessage("初始化完成");
 }
 
-void MainWindow::InitToolWidget(QPushButton* btn)
+void MainWindow::CreateToolWidget(QPushButton* btn)
 {
     btn->setFlat(true);
     btn->setIconSize(QSize(32,32));
@@ -210,27 +221,27 @@ void MainWindow::InitToolWidget(QPushButton* btn)
     btn->resize(32,32);
 }
 
-void MainWindow::InitToolBar()
+void MainWindow::CreateToolBar()
 {
     Normal = new QPushButton(this);
     Normal->setObjectName("normal");
-    InitToolWidget(Normal);
+    CreateToolWidget(Normal);
 
     AreaZoom = new QPushButton(this);
     AreaZoom->setObjectName("areazoom");
-    InitToolWidget(AreaZoom);
+    CreateToolWidget(AreaZoom);
 
     SmartZoom = new QPushButton(this);
     SmartZoom->setObjectName("smartzoom");
-    InitToolWidget(SmartZoom);
+    CreateToolWidget(SmartZoom);
 
     Reset = new QPushButton(this);
     Reset->setObjectName("reset");
-    InitToolWidget(Reset);
+    CreateToolWidget(Reset);
 
     Empty = new QPushButton(this);
     Empty->setObjectName("empty");
-    InitToolWidget(Empty);
+    CreateToolWidget(Empty);
 
     floatToolBar = new QToolBar();
     //唯一直接改变widget间距的方法,也可以用添加布局的方式
@@ -245,14 +256,14 @@ void MainWindow::InitToolBar()
     addToolBar(floatToolBar);
 }
 
-void MainWindow::InitMenus()
+void MainWindow::CreateMenus()
 {
     // 最近打开的文件记录
     QSettings settings;
     recentFilesMenu = new QRecentFilesMenu(tr("Recent Files"), ui->openMenu);
     recentFilesMenu->restoreState(settings.value("recentFiles").toByteArray());
     ui->openMenu->insertMenu(ui->action_Save, recentFilesMenu);
-    connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(LoadFile(const QString &)));
+    connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(addRecentFile(QString)) );
 //    几种绘图
     QMenu* ptMenu = new QMenu(this);
     ptActions<< ui->act1 << ui->act2 << ui->act3 <<ui->dividePt;
@@ -280,7 +291,7 @@ void MainWindow::InitMenus()
     ui->DrawText->setMenu(textMenu);
 }
 
-void MainWindow::InitConnects(MyView* view)
+void MainWindow::CreateConnects(MyView* view)
 {
     foreach(QAction* act, ptActions)
         connect(act, &QAction::triggered, view, &MyView::DrawPt);
@@ -298,6 +309,7 @@ void MainWindow::InitConnects(MyView* view)
     connect(this, SIGNAL(toFont(QFont)), view, SLOT(getFont()) );
     connect(CatchMode, SIGNAL(toggled(bool)), view, SLOT(setCatch(bool)) );
     connect(DraftMode, SIGNAL(toggled(bool)), view, SLOT(setDraftMode(bool)) );
+
     connect(Normal, &QPushButton::clicked, view, &MyView::setNormalMode);
     connect(AreaZoom, SIGNAL(clicked(bool)), this, SLOT(on_areaZoom_triggered()) );
     connect(SmartZoom, SIGNAL(clicked(bool)), this, SLOT(on_smartZoomAct_triggered()) );
@@ -307,7 +319,18 @@ void MainWindow::InitConnects(MyView* view)
     connect(ui->insertWidget_2, SIGNAL(clicked(bool)), this, SLOT(on_insertWidget_triggered()) );
 }
 
-void MainWindow::InitDir()
+void MainWindow::CreateCorner()
+{
+    QMenu* m = new QMenu(this);
+    m->addAction(ui->action_Open);
+    m->addAction(ui->action_Exit);
+    QPushButton* btn = new QPushButton(this);
+    btn->resize(60,30);
+    btn->setMenu(m);
+    ui->menuBar->setCornerWidget(btn,Qt::TopLeftCorner);
+}
+
+void MainWindow::CreateDir()
 {
     dirPath = QApplication::applicationDirPath();
     filePath = dirPath + "/Files";
@@ -397,7 +420,7 @@ void MainWindow::on_NewView_triggered()
     ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),name);
     ui->tabView->setCurrentWidget(newView);
 
-    InitConnects(newView);
+    CreateConnects(newView);
     InitWorkWidgets(true);
 }
 
@@ -419,7 +442,7 @@ void MainWindow::on_Open_triggered()
         TabNameList<<tabName;
 
     fullName = dirPath+"/Files/"+tabName;
-    LoadFile(tabName);
+    addRecentFile(tabName);
 
     QDataStream ds(&f);
     MyView *openView = new MyView(this);
@@ -431,7 +454,7 @@ void MainWindow::on_Open_triggered()
     ui->tabView->currentWidget()->setObjectName(tabName);
     ui->tabView->setTabToolTip(ui->tabView->currentIndex(),ModifiedTime);
 
-    InitConnects(openView);
+    CreateConnects(openView);
 
     QFileSystemWatcher *watcher = new QFileSystemWatcher(this);
     watcher->addPath(dirPath+"/Files/"+fullName);
@@ -480,6 +503,7 @@ void MainWindow::on_Print_triggered()
     printer.setMargins(m);
     //不管是否提前对y轴对称,得到的结果总是y轴向下
     QPainter painter(&printer);
+    painter.setRenderHints(QPainter::HighQualityAntialiasing | QPainter::TextAntialiasing);
     getCurrentView()->getScene()->render(&painter);
 }
 
@@ -499,6 +523,8 @@ void MainWindow::on_tabView_tabCloseRequested(int index)
     }
     else
         ShowSaveBox();
+    if(ui->tabView->currentIndex()==0)
+        InitWorkWidgets(false);
 }
 
 void MainWindow::on_action_Current_triggered()
@@ -540,7 +566,7 @@ void MainWindow::on_startBtn_clicked()
         ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
         ui->tabView->setCurrentWidget(newView);
 
-        InitConnects(newView);
+        CreateConnects(newView);
     }
     InitWorkWidgets(true);
 }
@@ -565,7 +591,7 @@ void MainWindow::on_openBtn_clicked()
     on_action_Open_triggered();
 }
 
-void MainWindow::LoadFile(const QString &fileName)
+void MainWindow::addRecentFile(const QString &fileName)
 {
     QApplication::setOverrideCursor(Qt::WaitCursor);
     QApplication::restoreOverrideCursor();
@@ -592,7 +618,6 @@ void MainWindow::on_FontPicker_clicked()
     bool ok;
     TextFont = QFontDialog::getFont(&ok, QFont("Inconsolata", 12), 0);
 //    a comma-separated list of the attributes,suited for use in QSettings.
-//    qDebug()<<TextFont.toString();
     emit toFont(TextFont);
 }
 
@@ -603,7 +628,9 @@ void MainWindow::on_translateAct_triggered()
     dlg->showPt();
     if(dlg->exec() != QDialog::Accepted)    return;
     QPointF pt = dlg->getPt();
-    getCurrentView()->Translate(pt);
+
+    Cmd = new Command(getCurrentView());
+    Cmd->Translate(pt);
 }
 
 void MainWindow::on_rotateAct_triggered()
@@ -689,7 +716,7 @@ void MainWindow::on_action_PDF_triggered()
     QPainter p;
     if( !p.begin( &printer ) )
     {
-        qDebug() << "Error!";
+        QMessageBox::warning(0,"出错了!","另存PDF时出错");
         return;
     }
     //不管是否提前对y轴对称,得到的结果总是y轴向下 ???
@@ -753,6 +780,7 @@ void MainWindow::on_lineAngle_triggered()
     Cmd = new Command(getCurrentView());
     qreal angle = Cmd->getLinesAngle();
     QString a = QString::number(angle,'f',2);
+
     if(angle==360)  return;
     if(angle==0)
         QMessageBox::information(0,"直线夹角",QString("两直线平行"));
@@ -831,10 +859,10 @@ void MainWindow::on_SVG_triggered()
 
     QSvgGenerator svgGen;
     svgGen.setFileName( file );
-    svgGen.setSize(QSize(1200, 800));
-    svgGen.setViewBox(QRect(-600,400, 1200, 800));
+    svgGen.setSize(QSize(MyScene::width, MyScene::height));
+    svgGen.setViewBox(QRect(-MyScene::width/2,MyScene::height/2, MyScene::width, MyScene::height));
     svgGen.setTitle(tr("SVG Drawing"));
-    svgGen.setDescription(tr("An SVG drawing created by QSvgGenerator"));
+    svgGen.setDescription(tr("An SVG drawing generated by QSvgGenerator"));
 
     QPainter painter( &svgGen );
     painter.setRenderHint(QPainter::HighQualityAntialiasing);
@@ -875,12 +903,19 @@ void MainWindow::on_zoomOutView_triggered()
     showScale(t);   //状态栏显示当前比例
 }
 
-void MainWindow::on_About_triggered()
+void MainWindow::on_Instruction_triggered()
 {
-    QMessageBox::about(0,"QSketch 1.0","QSketch是我自己开发的一个简易绘图工具");
+    QDesktopServices::openUrl(QUrl("https://github.com/rjosodtssp/QSketch/blob/master/README.md", QUrl::TolerantMode));
 }
 
-void MainWindow::on_Help_triggered()
+void MainWindow::on_About_triggered()
 {
-     QDesktopServices::openUrl(QUrl("https://github.com/rjosodtssp/QSketch/blob/master/README.md", QUrl::TolerantMode));
+    QMessageBox::about(0,"QSketch 1.0","QSketch是一个简易的2D绘图工具      \n\n"
+                                       "开发环境:Qt 5.9.1 Graphics View框架\n\n"
+                                       "编译器:MinGW 5.3 32bit for C++     \n\n");
+}
+
+void MainWindow::on_action_Publish_triggered()
+{
+
 }

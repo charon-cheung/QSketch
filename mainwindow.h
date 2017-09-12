@@ -14,6 +14,7 @@ class MainWindow;
 }
 
 class Command;
+class PosDialog;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -30,6 +31,7 @@ public:
     QFont btnFont(int size);
     void showScale(QString s);
     void DraftStatusBar(bool on);
+
 public slots:
 
     void on_Open_triggered();
@@ -58,7 +60,7 @@ public slots:
 
     void on_openBtn_clicked();
 
-    void LoadFile(const QString &name);
+    void addRecentFile(const QString &name);
 
     void on_ColorPicker_clicked();
 
@@ -128,9 +130,11 @@ private slots:
 
     void on_Image_triggered();
 
+    void on_Instruction_triggered();
+
     void on_About_triggered();
 
-    void on_Help_triggered();
+    void on_action_Publish_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -164,15 +168,17 @@ private:
     QCheckBox *CatchMode,*DraftMode;
     Command* Cmd;
     QToolBar *floatToolBar;
+
 private:
     void InitUi();
-    void InitActions();
-    void InitStatusBar();
-    void InitToolWidget(QPushButton* btn);
-    void InitToolBar();
-    void InitMenus();
-    void InitConnects(MyView* view);
-    void InitDir();
+    void CreateActions();
+    void CreateStatusBar();
+    void CreateToolWidget(QPushButton* btn);
+    void CreateToolBar();
+    void CreateMenus();
+    void CreateConnects(MyView* view);
+    void CreateCorner();
+    void CreateDir();
     void ShowSaveBox();
     MyView* getCurrentView();
     QString getCurrentTabName();
