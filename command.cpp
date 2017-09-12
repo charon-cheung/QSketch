@@ -23,7 +23,7 @@ Command::Command(MyView *view)
 MyScene *Command::getScene()
 {
     //少做转型的又一例子
-//    MyScene* scene = qobject_cast<MyScene*>(m_view->scene());
+    //    MyScene* scene = qobject_cast<MyScene*>(m_view->scene());
     return m_view->getScene();;
 }
 
@@ -40,8 +40,8 @@ void Command::Rotate(QPointF pt, float angle)
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-//        绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
-//        item->setTransformOriginPoint(item->mapFromScene(0,0));
+        //        绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
+        //        item->setTransformOriginPoint(item->mapFromScene(0,0));
         item->setTransformOriginPoint(item->mapFromScene(pt));
         item->setRotation(angle);
     }
@@ -93,7 +93,7 @@ void Command::Zoom(bool in)
 void Command::SelectAll(bool state)
 {
     QList<QGraphicsItem*> all = m_scene->items(m_scene->sceneRect(),
-                       Qt::IntersectsItemShape,Qt::AscendingOrder);
+                                               Qt::IntersectsItemShape,Qt::AscendingOrder);
     foreach (QGraphicsItem* item, all)
     {
         //去掉场景初始化的7个图元
@@ -119,18 +119,18 @@ void Command::FillBrush()
     {
         switch(item->type())
         {
-            case QGraphicsRectItem::Type:
-            {
-                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-                R->setBrush(brush);
-                break;
-            }
-            case QGraphicsEllipseItem::Type:
-            {
-                QGraphicsEllipseItem* E = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-                E->setBrush(brush);
-                break;
-            }
+        case QGraphicsRectItem::Type:
+        {
+            QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+            R->setBrush(brush);
+            break;
+        }
+        case QGraphicsEllipseItem::Type:
+        {
+            QGraphicsEllipseItem* E = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+            E->setBrush(brush);
+            break;
+        }
         default:
             break;
         }
@@ -192,20 +192,20 @@ void Command::changeStyle()
     {
         switch(item->type())
         {
-            case QGraphicsRectItem::Type:
-            {
-                QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
-                R->setPen(m_view->getPen());
-                R->setBrush(m_view->getBrush());
-                break;
-            }
-            case QGraphicsEllipseItem::Type:
-            {
-                QGraphicsEllipseItem* E = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-                E->setPen(m_view->getPen());
-                E->setBrush(m_view->getBrush());
-                break;
-            }
+        case QGraphicsRectItem::Type:
+        {
+            QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
+            R->setPen(m_view->getPen());
+            R->setBrush(m_view->getBrush());
+            break;
+        }
+        case QGraphicsEllipseItem::Type:
+        {
+            QGraphicsEllipseItem* E = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+            E->setPen(m_view->getPen());
+            E->setBrush(m_view->getBrush());
+            break;
+        }
         default:
             break;
         }
@@ -217,15 +217,15 @@ void Command::SetSymmetry(Qt::Axis axis)
     QTransform t;
     t.rotate(180, axis);
     foreach(QGraphicsItem* item, chosenItems)
-        // combine为true,否则连续对称操作会出错,仍是以原始位置为准
-        item->setTransform(t,true);
+//     combine为true,否则连续对称操作会出错,仍是以原始位置为准
+    item->setTransform(t,true);
 }
 
 void Command::ShowItemInfo()
 {
     if(chosenItems.size()!=1)
     {
-        QMessageBox::warning(0, "注意!","只能选择一个图元 !");
+        QMessageBox::warning(0, "出错了!","只能选择一个图元 !");
         return;
     }
     QString type;
@@ -430,8 +430,8 @@ QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
 void Command::SmartZoom()
 {
     //有item的范围Rect的大小,之前因为画坐标轴,所以范围几乎与sceneRect相同
-//    qDebug()<<m_scene->itemsBoundingRect();
-//    m_scene->items(Qt::AscendingOrder); 按绘画顺序排列
+    //    qDebug()<<m_scene->itemsBoundingRect();
+    //    m_scene->items(Qt::AscendingOrder); 按绘画顺序排列
     m_view->fitInView(m_scene->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
@@ -458,9 +458,9 @@ QList<QPointF> Command::getDividePts()
     QList<QPointF> list;
     if(chosenItems.size()!=1)
     {
-       QMessageBox::warning(0,"出错了!","只能选择一条直线");
-       list.clear();
-       return list;
+        QMessageBox::warning(0,"出错了!","只能选择一条直线");
+        list.clear();
+        return list;
     }
     if(chosenItems.at(0)->type()!=QGraphicsLineItem::Type)
     {

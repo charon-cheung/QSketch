@@ -59,11 +59,9 @@ private:
     qreal x,y;
     QGraphicsItem* tempItem;
     MyView* view;
-private:
-
 
 protected:
-    virtual void drawBackground(QPainter * painter, const QRectF & rect);
+    void drawBackground(QPainter * painter, const QRectF & rect);
     void mousePressEvent(QGraphicsSceneMouseEvent  *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

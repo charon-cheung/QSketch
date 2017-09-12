@@ -70,7 +70,6 @@ QPen BaseItem::getItemPen()
     pen.setWidth(1);
     pen.setStyle(Qt::SolidLine);
     pen.setColor(QColor(247, 160, 57));
-//    pen.setColor(QColor(m_hovered ? Qt::blue : QColor(247, 160, 57) ));
     return pen;
 }
 

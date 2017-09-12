@@ -15,6 +15,7 @@
 #include <QFontDialog>
 #include <QGridLayout>
 #include <QSvgGenerator>
+#include <QInputDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -264,7 +265,7 @@ void MainWindow::CreateMenus()
     recentFilesMenu->restoreState(settings.value("recentFiles").toByteArray());
     ui->openMenu->insertMenu(ui->action_Save, recentFilesMenu);
     connect(recentFilesMenu, SIGNAL(recentFileTriggered(const QString &)), this, SLOT(addRecentFile(QString)) );
-//    几种绘图
+    //    几种绘图
     QMenu* ptMenu = new QMenu(this);
     ptActions<< ui->act1 << ui->act2 << ui->act3 <<ui->dividePt;
     ptMenu->addActions(ptActions);
@@ -353,7 +354,6 @@ void MainWindow::ShowSaveBox()
 
     QMessageBox msg;
     msg.setText(tr("      是否需要保存 ?"));
-
     QPushButton* Save = msg.addButton(tr("保存"), QMessageBox::ActionRole);
     QPushButton* NotSave = msg.addButton(tr("不保存"), QMessageBox::ActionRole);
     QPushButton* Cancel = msg.addButton(tr("取消"), QMessageBox::ActionRole);
@@ -402,7 +402,7 @@ QString MainWindow::getCurrentTabName()
 void MainWindow::on_NewView_triggered()
 {
     QString fullName = QFileDialog::getSaveFileName(this, tr("新建画面"),
-                       dirPath+"/Files", tr("画面文件(*.gph)"));
+                                                    dirPath+"/Files", tr("画面文件(*.gph)"));
     if(fullName.isEmpty())      return;
     QString name=fullName.remove(dirPath+"/Files/");
 
@@ -458,8 +458,8 @@ void MainWindow::on_Open_triggered()
 
     QFileSystemWatcher *watcher = new QFileSystemWatcher(this);
     watcher->addPath(dirPath+"/Files/"+fullName);
-//    先修改再保存，才能知道有没有修改
-//    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
+    //    先修改再保存，才能知道有没有修改
+    //    connect(watcher, SIGNAL(fileChanged(QString)), this,SLOT(Modified()) );
     InitWorkWidgets(true);
     ui->statusBar->showMessage("加载文件完成");
 }
@@ -493,8 +493,8 @@ void MainWindow::on_Print_triggered()
     QPrinter printer(QPrinter::HighResolution);
     printer.setPaperSize(QPrinter::A4);
     printer.setPageOrientation(QPageLayout::Landscape);     //横向
-//    printer.setColorMode(QPrinter::Color);    //不设置打印机时，加这两句会无法打印
-//    printer.setOutputFormat(QPrinter::PdfFormat);
+    //    printer.setColorMode(QPrinter::Color);    //不设置打印机时，加这两句会无法打印
+    //    printer.setOutputFormat(QPrinter::PdfFormat);
     QPagedPaintDevice::Margins m;
     m.bottom=10;
     m.top=10;
@@ -560,8 +560,8 @@ void MainWindow::on_startBtn_clicked()
         newView = new MyView(this);
         newView->setNew(true);
         newView->setFocus();    //获得焦点
-//        newView->setMatrix(QMatrix(1,0,0,-1,0,0));
-//        newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
+        //        newView->setMatrix(QMatrix(1,0,0,-1,0,0));
+        //        newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
         newView->updateCenterRect();
         ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
         ui->tabView->setCurrentWidget(newView);
@@ -617,7 +617,7 @@ void MainWindow::on_FontPicker_clicked()
 {
     bool ok;
     TextFont = QFontDialog::getFont(&ok, QFont("Inconsolata", 12), 0);
-//    a comma-separated list of the attributes,suited for use in QSettings.
+    //    a comma-separated list of the attributes,suited for use in QSettings.
     emit toFont(TextFont);
 }
 
@@ -720,7 +720,7 @@ void MainWindow::on_action_PDF_triggered()
         return;
     }
     //不管是否提前对y轴对称,得到的结果总是y轴向下 ???
-//    getCurrentView()->scale(1,-1);
+    //    getCurrentView()->scale(1,-1);
     getCurrentView()->getScene()->render(&p);
     p.end();
     ui->statusBar->showMessage("画面保存为PDF文件");
@@ -787,7 +787,7 @@ void MainWindow::on_lineAngle_triggered()
     else if(angle==90)
         QMessageBox::information(0,"直线夹角",QString("两直线垂直"));
     else
-    QMessageBox::information(0,"直线夹角",QString("两直线所成角度为%1°").arg(a));
+        QMessageBox::information(0,"直线夹角",QString("两直线所成角度为%1°").arg(a));
 }
 
 void MainWindow::on_fullViewAct_triggered()
@@ -876,7 +876,7 @@ void MainWindow::on_Image_triggered()
     QPainter painter(&image);
     getCurrentView()->getScene()->render(&painter);     //关键函数
 
-//    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
+    //    因为m_view->scale(6, -6);对纵坐标做了镜像处理，所以再倒过来
     QImage mirroredImage = image.mirrored(false, true);
     QString path = QApplication::applicationDirPath();
     QDateTime time = QDateTime::currentDateTime();
@@ -917,5 +917,10 @@ void MainWindow::on_About_triggered()
 
 void MainWindow::on_action_Publish_triggered()
 {
+    if(!getCurrentView())   return;
+    QInputDialog dlg;
+    QString address = dlg.getText(0, "请输入邮箱地址","",QLineEdit::Normal,"");
+
+    if(address.isEmpty())   return;
 
 }

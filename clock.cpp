@@ -83,6 +83,7 @@ QPair<double,double> Clock::getPoint(double nowX, double nowY, double alpha)
 
 void Clock::paintEvent(QPaintEvent *e)
 {
+    Q_UNUSED(e);
     QPainter paint(this);
     paint.setRenderHint(QPainter::HighQualityAntialiasing);
     clear(paint);
@@ -93,39 +94,13 @@ void Clock::paintEvent(QPaintEvent *e)
     drawCenter(paint);
 }
 
-void Clock::drawBase(QPainter &paint)
+void Clock::drawFourLines(QPainter &paint)
 {
     QPen p;
-    p.setColor(QColor(234,234,234));
-    p.setWidthF(3);
-    p.setStyle(Qt::SolidLine);
-
-    paint.setPen(p);
-    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
-
-    qreal radius = 95;    // 半径
-    QPointF center(100, 100);  // 圆心
-    QPointF focus(100, 100); // 焦点
-    QRadialGradient outter(center, radius, focus);
-    outter.setColorAt(0.0, QColor(220,220,220));
-    outter.setColorAt(1.0, QColor(235,235,235));
-
-    paint.setBrush(QBrush(outter));
-    paint.drawEllipse(center, radius, radius);
-    //内圈
-    radius = 48;    // 半径
-    QRadialGradient innner(center, radius, focus);
-    innner.setColorAt(0.0, QColor(215,215,215));
-    innner.setColorAt(1.0, QColor(220,220,220));
-    paint.setPen(QColor(220,220,220));
-    paint.setBrush(QBrush(innner));
-    paint.drawEllipse(center, radius, radius);
-
-
-    //四条直线
     p.setWidthF(6);
     p.setColor(QColor(161,161,161));
-
+    p.setStyle(Qt::SolidLine);
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.setPen(p);
     //右
     double nowUpX=185,nowUpY=100,nowDownX=170,nowDownY=100;
@@ -139,6 +114,37 @@ void Clock::drawBase(QPainter &paint)
     //上
     nowUpX=100; nowUpY=15; nowDownX=100; nowDownY=30;
     paint.drawLine(nowUpX,nowUpY,nowDownX,nowDownY);
+}
+
+void Clock::drawBase(QPainter &paint)
+{
+    QPen p;
+    p.setColor(QColor(234,234,234));
+    p.setWidthF(3);
+    p.setStyle(Qt::SolidLine);
+    paint.setPen(p);
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    //外圈
+    qreal radius = 95;    // 半径
+    QPointF center(100, 100);  // 圆心
+    QPointF focus(100, 100); // 焦点
+    QRadialGradient outter(center, radius, focus);
+    outter.setColorAt(0.0, QColor(220,220,220));
+    outter.setColorAt(1.0, QColor(235,235,235));
+
+    paint.setBrush(QBrush(outter));
+    paint.drawEllipse(center, radius, radius);
+    //内圈
+    radius = 48;
+    QRadialGradient innner(center, radius, focus);
+    innner.setColorAt(0.0, QColor(215,215,215));
+    innner.setColorAt(1.0, QColor(220,220,220));
+
+    paint.setPen(QColor(220,220,220));
+    paint.setBrush(QBrush(innner));
+    paint.drawEllipse(center, radius, radius);
+    //四条刻度线
+    drawFourLines(paint);
 }
 
 void Clock::drawSeconds(QPainter &paint, double alpha)

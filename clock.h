@@ -12,7 +12,9 @@ class Clock : public QWidget
 public:
     Clock(QWidget *parent = 0);
     ~Clock();
+
     void paintEvent(QPaintEvent * e);
+    void drawFourLines(QPainter &paint);
     void drawBase(QPainter &paint);
     void drawHours(QPainter &paint, double alpha);
     void drawMinutes(QPainter &paint, double alpha);

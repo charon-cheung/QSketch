@@ -242,7 +242,7 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
         event->ignore();
         break;
     }
-//    没有mouseMoveEvent时，能实现橡胶手模式，因为mode=NORMAL,鼠标事件实际是父类的moveEvent
+    //    没有mouseMoveEvent时，能实现橡胶手模式，因为mode=NORMAL,鼠标事件实际是父类的moveEvent
     QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -266,7 +266,7 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         {
             if(flag == drawLine)
             {
-                 LineCount++;
+                LineCount++;
             }
             else if(flag == drawRect)
             {
@@ -292,7 +292,7 @@ void MyView::wheelEvent(QWheelEvent *event)
     if(event->modifiers() & Qt::ControlModifier)
     {
         qreal scaleFactor = qPow(2.0, event->delta() / 240.0);  // ???
-//        qDebug()<<event->delta();     为正负120
+        //        qDebug()<<event->delta();     为正负120
         this->scale(scaleFactor, scaleFactor);
         this->updateCenterRect();
         QString t = "当前比例为 "+QString::number(matrix().m11(),'f',2)+":1 ";
@@ -435,6 +435,7 @@ bool MyView::goCatch()
     return m_catch;
 }
 
+// 获得直线的终点
 QPointF MyView::getP3()
 {
     return p2;
@@ -553,8 +554,7 @@ void MyView::DrawLine()
         MyLine* L = new MyLine(0, pt1, length, angle);
         L->setView(this);
         m_scene->addItem(L);
-//        m_scene->addLine(line, getPen())->
-//                setFlag(QGraphicsItem::ItemIsSelectable);
+//        m_scene->addLine(line, getPen())->setFlag(QGraphicsItem::ItemIsSelectable);
         setNormalMode();
     }
 }
@@ -771,14 +771,12 @@ void MyView::Paste()
             else if(className=="CrossPt")
             {
                 CrossPt *pt = new CrossPt();
-//                pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(pos);
                 this->getScene()->addItem(pt);
             }
             else if(className=="CirclePt")
             {
                 CirclePt *pt = new CirclePt();
-//                pt->setBoundingRect(QRect(x,y,w,h));
                 pt->setPos(pos);
                 this->getScene()->addItem(pt);
             }
@@ -852,7 +850,7 @@ void MyView::updateCenterRect()
     // If we update the rect, the shape will still be translated, so we have to return
     // it to the centre of the scene.
     this->viewCenter->setPos(0, 0);
-    dynamic_cast<QGraphicsRectItem*>(this->viewCenter)->setRect(mapToScene(viewRect).boundingRect());
+    qgraphicsitem_cast<QGraphicsRectItem*>(this->viewCenter)->setRect(mapToScene(viewRect).boundingRect());
 }
 
 void MyView::changeCursor(const QString& shape)
@@ -933,7 +931,7 @@ void MyView::InitParameters()
 
 void MyView::InitViewRect()
 {
-    //随着鼠标点击，场景总出现几个矩形，暂时去掉
+    //viewCenter用于在moveEvent里拖动画面
     QRect viewport_rect(0, 0, viewport()->width(), viewport()->height() );       //98 X 28
     QRectF visible_scene_rect = this->mapToScene(viewport_rect).boundingRect();
     viewCenter = new QGraphicsRectItem(visible_scene_rect);

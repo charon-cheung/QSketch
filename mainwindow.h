@@ -103,6 +103,7 @@ public slots:
 
 signals:
     void toFont(QFont f);
+
 private slots:
     void on_lineAngle_triggered();
 

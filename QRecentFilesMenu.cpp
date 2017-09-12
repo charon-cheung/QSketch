@@ -10,7 +10,6 @@ QRecentFilesMenu::QRecentFilesMenu(QWidget * parent)
     , m_format(QLatin1String("%d %s"))
 {
     connect(this, SIGNAL(triggered(QAction*)), this, SLOT(menuTriggered(QAction*)));
-
     setMaxCount(m_maxCount);
 }
 
@@ -20,7 +19,6 @@ QRecentFilesMenu::QRecentFilesMenu(const QString & title, QWidget * parent)
     , m_format(QLatin1String("%d %s"))
 {
     connect(this, SIGNAL(triggered(QAction*)), this, SLOT(menuTriggered(QAction*)));
-
     setMaxCount(m_maxCount);
 }
 
@@ -31,14 +29,12 @@ void QRecentFilesMenu::addRecentFile(const QString &fileName)
 
     while (m_files.size() > maxCount())
         m_files.removeLast();
-
     updateRecentFileActions();
 }
 
 void QRecentFilesMenu::clearMenu()
 {
     m_files.clear();
-
     updateRecentFileActions();
 }
 
@@ -88,16 +84,13 @@ bool QRecentFilesMenu::restoreState(const QByteArray &state)
         return false;
 
     stream >> m_files;
-
     updateRecentFileActions();
-
     return true;
 }
 
 void QRecentFilesMenu::setMaxCount(int count)
 {
     m_maxCount = count;
-
     updateRecentFileActions();
 }
 
@@ -110,7 +103,6 @@ void QRecentFilesMenu::menuTriggered(QAction* action)
 void QRecentFilesMenu::updateRecentFileActions()
 {
     int numRecentFiles = qMin(m_files.size(), maxCount());
-
     clear();
 
     for (int i = 0; i < numRecentFiles; ++i) {

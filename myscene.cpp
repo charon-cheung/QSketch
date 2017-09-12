@@ -28,7 +28,7 @@ void MyScene::InitText()
 
     X = this->addSimpleText("X轴",font);
     X->setPos(120,-5);
-//    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());   //总是Pos的2倍
+    //    qDebug()<<"X的坐标:"<<X->mapToScene(X->pos());   //总是Pos的2倍
     X->setTransform(QTransform::fromScale(1,-1));
     X->setBrush(QBrush(Qt::darkCyan,Qt::SolidPattern));
 
@@ -341,9 +341,7 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
         for (qreal i = newRect.left(); i < newRect.right(); i = i + min_space)
         {
             for (qreal j = newRect.top(); j < newRect.bottom(); j = j + min_space)
-            {
                 greenPoints.append(QPointF(i, j));
-            }
         }
         break;
     case GRID:
@@ -362,13 +360,13 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
         for (qreal i = newRect.left(); i < newRect.right(); i = i + min_space)
         {
             painter->setPen(QColor(37,50,70));
-            if(qRound(i)%space !=0 && qRound(i)%space !=0)
+            if(qRound(i) %space !=0)
                 painter->drawLine(QLineF( QPointF(i,newRect.top()), QPointF(i,newRect.bottom()) ) );
         }
         for (qreal j = newRect.top(); j < newRect.bottom(); j = j + min_space)
         {
             painter->setPen(QColor(37,50,70));
-            if(qRound(j) %space !=0 && qRound(j) %space !=0)
+            if(qRound(j) %space !=0)
                 painter->drawLine(QLineF( QPointF(newRect.left(), j), QPointF(newRect.right(), j) ) );
         }
         break;
@@ -424,14 +422,14 @@ void MyScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
-// 改写和覆盖了QGraphicsScene::itemsBoundingRect()的源码
+// 覆盖了QGraphicsScene::itemsBoundingRect()的源码
 QRectF MyScene::itemsBoundingRect() const
 {
     QRectF boundingRect;
     for (QGraphicsItem *item : this->items())
     {
         if(item->data(0).toString().isEmpty())
-        boundingRect |= item->sceneBoundingRect();
+            boundingRect |= item->sceneBoundingRect();
     }
     return boundingRect;
 }

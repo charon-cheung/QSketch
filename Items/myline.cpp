@@ -34,7 +34,6 @@ MyLine::MyLine(QGraphicsItem *parent, QPointF src,qreal length, qreal angle)
         length(length),
         angle(angle)
 {
-//    qDebug()<<"sin:"<<qSin(qDegreesToRadians(90.0f));
     this->setAcceptHoverEvents(true);
     this->setFlags(QGraphicsItem::ItemIsSelectable);
 }
@@ -198,12 +197,12 @@ void MyLine::DrawLines(QPainter *painter)
 
 void MyLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
     setBoudingPainter(painter);
     DrawBounding(painter);
     DrawElli(painter);
-
     DrawLines(painter);
-//    qDebug()<<"paint";
 }
 
 void MyLine::updateRect()

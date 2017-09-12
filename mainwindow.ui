@@ -495,14 +495,14 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
           <property name="geometry">
            <rect>
             <x>20</x>
-            <y>40</y>
+            <y>70</y>
             <width>278</width>
             <height>292</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="spacing">
-            <number>40</number>
+            <number>50</number>
            </property>
            <item>
             <widget class="QPushButton" name="startBtn">
