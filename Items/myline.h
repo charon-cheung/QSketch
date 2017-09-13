@@ -8,6 +8,7 @@
 #include <QMouseEvent>
 #include <myview.h>
 
+class MyView;
 //之前继承QGraphicsLineItem,导致无法接受鼠标事件,也无法选择和移动,为什么???
 class MyLine : public QGraphicsItem
 {
@@ -23,6 +24,9 @@ public:
     void setBoundingRect(qreal x, qreal y, qreal w, qreal h);
     QRectF boundingRect() const;
     QRectF rect() const;
+    QPointF getP1() const;
+    QPointF getP2() const;
+    QPointF getP3() const;
 
     QPen getSelectedPen();
     QPen getUnselectedPen();

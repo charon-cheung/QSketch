@@ -26,12 +26,12 @@ public:
         PACE =5
     };
     enum{
-         range = 2
+        range = 2
     };
 
 public slots:
     void Delete();
-    void Rotate(QPointF pt, float angle);
+    void Rotate(float angle);
     void Translate(int direction);
     void Translate(QPointF pt);
     void Zoom(bool in);
@@ -56,7 +56,6 @@ private:
     QTransform m_translate;
     BrushDlg* brush_dlg;
     SelectDlg* select_dlg;
-
 
     QString getItemInfo(QString type, QPointF pos, QSizeF size, QColor c);
     qreal getSlope(QGraphicsLineItem* line);

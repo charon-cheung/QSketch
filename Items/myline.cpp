@@ -81,6 +81,21 @@ QRectF MyLine::rect() const
     return m_rect;
 }
 
+QPointF MyLine::getP1() const
+{
+    return p1;
+}
+
+QPointF MyLine::getP2() const
+{
+    return p2;
+}
+
+QPointF MyLine::getP3() const
+{
+    return p3;
+}
+
 QPen MyLine::getSelectedPen()
 {
 //    选择时的边界矩形样式

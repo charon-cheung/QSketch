@@ -150,6 +150,16 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             s<< rectangle->pos().x();
             s<< rectangle->pos().y();
         }
+        else if(item->type()== MyLine::Type)
+        {
+            className = "MyLine";
+            MyLine* myline = qgraphicsitem_cast<MyLine*>(item);
+            s<< className;
+            s<< int(myline->flags());
+            s<<myline->getP1();
+            s<<myline->getP2();
+            s<<myline->getP3();
+        }
         else if(item->type()== QGraphicsSimpleTextItem::Type)
         {
             className = "QGraphicsSimpleTextItem";
@@ -209,6 +219,7 @@ void MyScene::Import(QDataStream &s, int count)
         int style;
         int width;
         QPen pen;
+
         s>>className;   //不能直接用字符串
         s >> flags;
         if(className =="QGraphicsEllipseItem"||className=="QGraphicsRectItem")
@@ -262,6 +273,17 @@ void MyScene::Import(QDataStream &s, int count)
             pt->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
             this->addItem(pt);
         }
+        else if(className == "MyLine")
+        {
+            QPointF p1,p2,p3;
+            s>>p1;
+            s>>p2;
+            s>>p3;
+
+            MyLine* line = new MyLine(0,p1,p3);
+            line->setView(getCurrentView());
+            addItem(line);
+        }
         else if(className == "QGraphicsSimpleTextItem")
         {
             QString text,family;
@@ -312,7 +334,7 @@ void MyScene::setMode(MyScene::GridMode m)
 void MyScene::setDraftMode(bool on)
 {
     m_draft = on;
-    view = qobject_cast<MyView*>(this->views().at(0));
+    view = getCurrentView();
 }
 
 void MyScene::selectPen(QPen p)
@@ -432,4 +454,10 @@ QRectF MyScene::itemsBoundingRect() const
             boundingRect |= item->sceneBoundingRect();
     }
     return boundingRect;
+}
+
+MyView* MyScene::getCurrentView()
+{
+    view = qobject_cast<MyView*>(this->views().at(0));
+    return view;
 }

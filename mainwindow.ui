@@ -960,7 +960,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <string>旋转</string>
    </property>
    <property name="toolTip">
-    <string>旋转一定角度</string>
+    <string>绕原点旋转一定角度</string>
    </property>
   </action>
   <action name="ring">

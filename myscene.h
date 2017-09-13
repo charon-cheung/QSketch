@@ -5,6 +5,7 @@
 #include "Items/circlept.h"
 #include "Items/crosspt.h"
 #include "Items/ring.h"
+#include "Items/myline.h"
 #include <QDataStream>
 #include <QGraphicsSceneMouseEvent>
 #include <myview.h>
@@ -35,7 +36,7 @@ public:
     void InitData();
     void InitShape();
     void InitScene();
-//    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
+    //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
     void Load(QDataStream& s);
@@ -44,11 +45,11 @@ public:
     void setDraftMode(bool on);
     void selectPen(QPen p);
     QRectF itemsBoundingRect() const;
-
+    MyView* getCurrentView();
 private:
     enum{
         min_space = 20,
-        space = min_space*5
+        space = min_space * 5
     };
     QPen pen;
     QGraphicsLineItem  *AxisX, *AxisY;

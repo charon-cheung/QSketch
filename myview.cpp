@@ -121,6 +121,8 @@ void MyView::mousePressEvent(QMouseEvent *event)
                 Text->setPos(StartPt);
                 Text->setTransform(QTransform::fromScale(1,-1));
                 Text->setPen(getPen());
+                mode = NORMAL;     //画完文本后没有releaseEvent的恢复普通模式,只能在这里添加
+                this->setDragMode(QGraphicsView::RubberBandDrag);
                 break;
             }
             default:
@@ -315,9 +317,8 @@ void MyView::keyPressEvent(QKeyEvent *event)
         this->Paste();
     else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_A)
     {
-        Cmd = new Command(m_scene);
+        Cmd = new Command(this);
         Cmd->SelectAll(true);
-        showStatus("已经选择所有的图元");
     }
     else if( event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_Return )
         this->setFullView(!m_full);
@@ -490,6 +491,7 @@ void MyView::DrawPt()
                 m_scene->addItem(pt);
             }
         }
+        setNormalMode();
     }
 }
 
@@ -582,6 +584,7 @@ void MyView::DrawRect()
                 value[0],value[1], getPen(),getBrush())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
+        setNormalMode();
     }
 }
 
@@ -607,6 +610,7 @@ void MyView::DrawEllipse()
                 value[0], value[1], getPen(), getBrush())->
                 setFlag(QGraphicsItem::ItemIsSelectable);
         delete[] value;
+        setNormalMode();
     }
     else if(sender()->objectName()=="ring")
     {
@@ -681,6 +685,7 @@ void MyView::setDraftMode(bool on)
     else
     {
         m_main->DraftStatusBar(false);
+        Empty();
         this->setDragMode(QGraphicsView::RubberBandDrag);
     }
 }
@@ -751,49 +756,87 @@ void MyView::Paste()
         int style;
         int width;
         QPen pen;
+        QTransform t;
         s>>className;   //不能直接用字符串
         s >> flags;
-
+        // 四种图形的复制基点都是中心点
         if(className=="QGraphicsEllipseItem"||className=="QGraphicsRectItem"
                 || className=="CrossPt"|| className=="CirclePt")
         {
             qreal x,y,w,h;
-            s >> x;
-            s >> y;
-            s >> w;
-            s >> h;
+            qreal px,py;
+            s >> x; s >> y;
+            s >> w; s >> h;
+            s >> px;    s >> py;
+            s >> c; s >> style; s >> width;
+
+            pen.setColor(c);
+            pen.setStyle(Qt::PenStyle(style) );
+            pen.setWidth(width);
             if(className=="QGraphicsEllipseItem")
             {
-                this->getScene()->addEllipse(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)) );
+                QGraphicsEllipseItem* Elli = getScene()->addEllipse(pos.x(),pos.y(),w,h,pen );
+                Elli->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
+                QPointF movePt = pos - Elli->rect().center();
+                t.translate(movePt.x(), movePt.y());
+                Elli->setTransform(t,true);
             }
             else if(className=="QGraphicsRectItem")
-                this->getScene()->addRect(pos.x(),pos.y(),w,h,QPen(QColor(Qt::white)));
+            {
+                QGraphicsRectItem* Rect = getScene()->addRect(pos.x(),pos.y(),w,h,pen );
+                Rect->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
+                QPointF movePt = pos - Rect->rect().center();
+                t.translate(movePt.x(), movePt.y());
+                Rect->setTransform(t,true);
+            }
             else if(className=="CrossPt")
             {
                 CrossPt *pt = new CrossPt();
                 pt->setPos(pos);
+                pt->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
                 this->getScene()->addItem(pt);
             }
             else if(className=="CirclePt")
             {
                 CirclePt *pt = new CirclePt();
                 pt->setPos(pos);
+                pt->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
                 this->getScene()->addItem(pt);
             }
+        }
+        else if(className == "MyLine")
+        {
+            QPointF p1,p2,p3;
+            s>>p1;
+            s>>p2;
+            s>>p3;
+
+            MyLine* line = new MyLine(0,p1,p3);
+            line->setView(this);
+            QPointF movePt = pos - p2;
+            QTransform t;
+            t.translate(movePt.x(), movePt.y());
+            line->setTransform(t,true);
+            m_scene->addItem(line);
         }
         else if(className=="QGraphicsLineItem")
         {
             qreal x1,y1,x2,y2;
-            s>>x1;
-            s>>y1;
-            s>>x2;
-            s>>y2;
-            QGraphicsLineItem *Line = this->getScene()->addLine(x1,y1,x2,y2,QPen(QColor(Qt::white)) );
+
+            s>>x1; s>>y1; s>>x2; s>>y2;
+            s >> c; s >> style; s >> width;
+
+            pen.setColor(c);
+            pen.setStyle(Qt::PenStyle(style) );
+            pen.setWidth(width);
+            QGraphicsLineItem *Line = getScene()->addLine(x1,y1,x2,y2, pen );
+//            复制的是直线的两个端点，只能以中点为基准而平移
+            QPointF mid = QPointF( (x1+x2)/2, (y1+y2)/2 );
+            QPointF movePt = pos - mid;
             QTransform t;
-//            复制的是直线的两个端点，只能平移
-            t.translate(pos.x(),pos.y());
-            Line->setTransform(t);
-//            Line->setFlag(QGraphicsItem::ItemIsSelectable);
+            t.translate(movePt.x(), movePt.y());
+            Line->setTransform(t,true);
+            Line->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
         }
         else if(className == "QGraphicsSimpleTextItem")
         {

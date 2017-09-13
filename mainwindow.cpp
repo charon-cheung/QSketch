@@ -636,12 +636,9 @@ void MainWindow::on_translateAct_triggered()
 void MainWindow::on_rotateAct_triggered()
 {
     if(!getCurrentView())   return;
-    dlg = new PosDialog(this);
-    dlg->showPtAngle();
-    if(dlg->exec() != QDialog::Accepted)    return;
-
-    Cmd = new Command(getCurrentView()->getScene());
-    Cmd->Rotate(dlg->getPt(), dlg->getAngle());
+    double angle = QInputDialog::getDouble(0, tr("请输入旋转角度"),"",90,0,360);
+    Cmd = new Command(getCurrentView());
+    Cmd->Rotate(angle);
 }
 
 void MainWindow::on_changeStyleAct_triggered()
@@ -710,7 +707,7 @@ void MainWindow::on_action_PDF_triggered()
     printer.setPageSize( QPrinter::A4 );
     printer.setOrientation( QPrinter::Landscape );
     printer.setOutputFormat( QPrinter::PdfFormat );
-    // file will be created in build directory
+//    file will be created in build directory
     printer.setOutputFileName( getCurrentTabName()+".pdf" );
 
     QPainter p;
@@ -720,7 +717,7 @@ void MainWindow::on_action_PDF_triggered()
         return;
     }
     //不管是否提前对y轴对称,得到的结果总是y轴向下 ???
-    //    getCurrentView()->scale(1,-1);
+//    getCurrentView()->scale(1,-1);
     getCurrentView()->getScene()->render(&p);
     p.end();
     ui->statusBar->showMessage("画面保存为PDF文件");

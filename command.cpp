@@ -23,7 +23,7 @@ Command::Command(MyView *view)
 MyScene *Command::getScene()
 {
     //少做转型的又一例子
-    //    MyScene* scene = qobject_cast<MyScene*>(m_view->scene());
+//    MyScene* scene = qobject_cast<MyScene*>(m_view->scene());
     return m_view->getScene();;
 }
 
@@ -36,14 +36,17 @@ void Command::Delete()
     }
 }
 
-void Command::Rotate(QPointF pt, float angle)
+//这种方式只能绕原点旋转
+void Command::Rotate(float angle)
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-        //        绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
-        //        item->setTransformOriginPoint(item->mapFromScene(0,0));
-        item->setTransformOriginPoint(item->mapFromScene(pt));
-        item->setRotation(angle);
+        QTransform t;
+        t.rotate(angle,Qt::ZAxis);
+        item->setTransform(t,true);
+//        绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
+//        item->setTransformOriginPoint(item->mapFromScene(pt));
+//        item->setRotation(angle);  // 这种方式无法连续旋转,只能转到固定位置
     }
 }
 
@@ -69,12 +72,14 @@ void Command::Translate(QPointF pt)
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-        QPointF movePt = pt - item->scenePos();
+        QPointF p1 = item->boundingRect().center(); // 同一图形的值不变
+        QPointF movePt = pt - item->boundingRect().center();
         m_translate.translate(movePt.x(), movePt.y());
         item->setTransform(m_translate);
+        qDebug()<<"当前坐标:"<< item->scenePos()+p1;
     }
 }
-
+// 只在视觉上改变,大小和坐标都没有改变,实际没多大意义
 void Command::Zoom(bool in)
 {
     qreal factor;
@@ -100,6 +105,7 @@ void Command::SelectAll(bool state)
         if(item->data(0).isNull())
             item->setSelected(state);
     }
+    m_view->showStatus(QString("选择了%1个图形").arg(all.size()-7));
 }
 
 void Command::FillBrush()
@@ -142,6 +148,7 @@ void Command::SetMovable(bool state)
     foreach(QGraphicsItem* item, chosenItems)
     {
         item->setFlag(QGraphicsItem::ItemIsMovable, state);
+        qDebug()<<item->flags();
         if(item->flags()==( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable ))
         {
             m_view->SetMoveFlag(true);
@@ -235,14 +242,13 @@ void Command::ShowItemInfo()
     QString info;
     foreach (QGraphicsItem* item, chosenItems)
     {
-        pos = item->scenePos();  //场景坐标,图元坐标是item->pos()
         switch(item->type())
         {
         case QGraphicsRectItem::Type:
         {
             QGraphicsRectItem* R = qgraphicsitem_cast<QGraphicsRectItem*>(item);
             type = "矩形";
-            pos = R->rect().center();
+            pos = R->boundingRect().center() + R->scenePos();
             size = R->rect().size();
             color = R->pen().color();
             info = getItemInfo(type, pos, size, color);
@@ -252,7 +258,7 @@ void Command::ShowItemInfo()
         {
             QGraphicsEllipseItem* Ell = qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
             type = "椭圆";
-            pos = Ell->rect().center();
+            pos = Ell->boundingRect().center() + Ell->scenePos();
             size = Ell->rect().size();
             color = Ell->pen().color();
             info = getItemInfo(type, pos, size, color);
@@ -288,7 +294,7 @@ void Command::ShowItemInfo()
             type = "直线";
             color = L->pen().color();
             info =  QString("图元类型: %1 \n").arg(type);
-            info += QString("两个点的坐标: (%2 . %3) 和 (%4 . %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
+            info += QString("两个点的坐标: (%2 , %3) 和 (%4 , %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
             info += QString("直线长度: %4   直线角度: %5               \n").arg(length).arg(angle);
             info += QString("直线颜色: %6").arg(QVariant(color.toRgb()).toString());
             break;
@@ -364,6 +370,32 @@ void Command::CatchPt()
     {
         QGraphicsEllipseItem* Elli = qgraphicsitem_cast<QGraphicsEllipseItem*>(chosenItems.at(0));
         QPointF center = Elli->rect().center();
+        if(inCatchRange(m_view->getScenePos(),center))
+            m_view->catchPt(center);
+        else
+        {
+            m_view->changeCursor(Qt::ArrowCursor);
+            return;
+        }
+    }
+        break;
+    case CirclePt::Type :
+    {
+        CirclePt* pt = qgraphicsitem_cast<CirclePt*>(chosenItems.at(0));
+        QPointF center = pt->boundingRect().center()+pt->scenePos();
+        if(inCatchRange(m_view->getScenePos(),center))
+            m_view->catchPt(center);
+        else
+        {
+            m_view->changeCursor(Qt::ArrowCursor);
+            return;
+        }
+    }
+        break;
+    case CrossPt::Type :
+    {
+        CrossPt* pt = qgraphicsitem_cast<CrossPt*>(chosenItems.at(0));
+        QPointF center = pt->boundingRect().center()+pt->scenePos();
         if(inCatchRange(m_view->getScenePos(),center))
             m_view->catchPt(center);
         else
@@ -449,7 +481,7 @@ void Command::InsertPix()
 void Command::InsertWidget(QWidget* w)
 {
     QGraphicsProxyWidget* widget = m_scene->addWidget(w);
-    widget->setTransform(QTransform::fromScale(1,-1));
+//    widget->setTransform(QTransform::fromScale(1,-1));
     widget->setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
