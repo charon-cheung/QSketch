@@ -484,7 +484,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
          <widget class="Clock" name="clock" native="true">
           <property name="geometry">
            <rect>
-            <x>360</x>
+            <x>390</x>
             <y>60</y>
             <width>256</width>
             <height>256</height>
@@ -495,14 +495,14 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
           <property name="geometry">
            <rect>
             <x>20</x>
-            <y>70</y>
+            <y>40</y>
             <width>278</width>
-            <height>292</height>
+            <height>312</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="spacing">
-            <number>50</number>
+            <number>70</number>
            </property>
            <item>
             <widget class="QPushButton" name="startBtn">

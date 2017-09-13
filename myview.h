@@ -110,6 +110,7 @@ private:
     Qt::PenStyle getPenStyle();
     QColor getColor();
 
+    bool pressCtrlKey(QKeyEvent *event, int key);
     QString inputMultiText(bool multi);
 
 public slots:

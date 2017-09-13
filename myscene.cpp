@@ -107,6 +107,8 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             s<< rectangle->pen().color();
             s<< int(rectangle->pen().style());  //强制转换Qt::PenStyle
             s<< rectangle->pen().width();
+            s<< rectangle->brush().color();
+            s<< int(rectangle->brush().style());
         }
         else if(item->type()==QGraphicsEllipseItem::Type)
         {
@@ -123,6 +125,8 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             s<< rectangle->pen().color();
             s<< int(rectangle->pen().style());  //强制转换Qt::PenStyle
             s<< rectangle->pen().width();
+            s<< rectangle->brush().color();
+            s<< int(rectangle->brush().style());
         }
         else if(item->type()== CrossPt::Type)
         {
@@ -220,6 +224,10 @@ void MyScene::Import(QDataStream &s, int count)
         int width;
         QPen pen;
 
+        QColor b;
+        int brushStyle;
+        QBrush brush;
+
         s>>className;   //不能直接用字符串
         s >> flags;
         if(className =="QGraphicsEllipseItem"||className=="QGraphicsRectItem")
@@ -234,15 +242,21 @@ void MyScene::Import(QDataStream &s, int count)
             pen.setStyle(Qt::PenStyle(style) );
             pen.setWidth(width);
 
+            s >> b; s>>brushStyle;
+            brush.setColor(b);
+            brush.setStyle(Qt::BrushStyle(brushStyle) );
+
             if(className=="QGraphicsEllipseItem")
             {
                 QGraphicsEllipseItem* ell = this->addEllipse(x,y,w,h, pen);
+                ell->setBrush(brush);
                 ell->setPos(px,py);
                 ell->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
             }
             else if(className=="QGraphicsRectItem")
             {
                 QGraphicsRectItem* rect = this->addRect(x,y,w,h, pen);
+                rect->setBrush(brush);
                 rect->setPos(px,py);
                 rect->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
             }

@@ -306,21 +306,21 @@ void MyView::wheelEvent(QWheelEvent *event)
 
 void MyView::keyPressEvent(QKeyEvent *event)
 {
-    if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_C)
+    if(pressCtrlKey(event, Qt::Key_C))
         this->Copy();
-    if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_X)
+    else if(pressCtrlKey(event, Qt::Key_X))
     {
         Copy();
         Delete();
     }
-    else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_V)
+    else if(pressCtrlKey(event, Qt::Key_V))
         this->Paste();
-    else if(event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_A)
+    else if(pressCtrlKey(event, Qt::Key_A))
     {
         Cmd = new Command(this);
         Cmd->SelectAll(true);
     }
-    else if( event->modifiers() == Qt::ControlModifier && event->key()==Qt::Key_Return )
+    else if(pressCtrlKey(event, Qt::Key_Enter))
         this->setFullView(!m_full);
 
     switch(event->key())
@@ -704,6 +704,7 @@ void MyView::Locate()
     this->scale(1, 1);
     this->updateCenterRect();
     catchPt(QPointF(0,0));
+    changeCursor(Qt::ArrowCursor);
     showStatus("鼠标切换至原点");
 }
 
@@ -756,7 +757,12 @@ void MyView::Paste()
         int style;
         int width;
         QPen pen;
+
         QTransform t;
+        QColor b;
+        int brushStyle;
+        QBrush brush;
+
         s>>className;   //不能直接用字符串
         s >> flags;
         // 四种图形的复制基点都是中心点
@@ -773,9 +779,14 @@ void MyView::Paste()
             pen.setColor(c);
             pen.setStyle(Qt::PenStyle(style) );
             pen.setWidth(width);
+
+            s >> b; s>>brushStyle;
+            brush.setColor(b);
+            brush.setStyle(Qt::BrushStyle(brushStyle) );
             if(className=="QGraphicsEllipseItem")
             {
                 QGraphicsEllipseItem* Elli = getScene()->addEllipse(pos.x(),pos.y(),w,h,pen );
+                Elli->setBrush(brush);
                 Elli->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
                 QPointF movePt = pos - Elli->rect().center();
                 t.translate(movePt.x(), movePt.y());
@@ -784,6 +795,7 @@ void MyView::Paste()
             else if(className=="QGraphicsRectItem")
             {
                 QGraphicsRectItem* Rect = getScene()->addRect(pos.x(),pos.y(),w,h,pen );
+                Rect->setBrush(brush);
                 Rect->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
                 QPointF movePt = pos - Rect->rect().center();
                 t.translate(movePt.x(), movePt.y());
@@ -1000,6 +1012,15 @@ QColor MyView::getColor()
         PenColor = Qt::white;
     return PenColor;
 }
+
+bool MyView::pressCtrlKey(QKeyEvent *event, int key)
+{
+    bool keyFlag;
+    bool modifer = (event->modifiers() == Qt::ControlModifier);
+    keyFlag = modifer && (event->key() == key);
+    return keyFlag;
+}
+
 //没在mainwindow里选,则没有brush
 QBrush MyView::getBrush()
 {

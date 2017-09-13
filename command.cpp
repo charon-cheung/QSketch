@@ -436,7 +436,7 @@ qreal Command::getLinesAngle()
     }
     if(chosenItems.at(0)->type()!=QGraphicsLineItem::Type  || chosenItems.at(1)->type()!=QGraphicsLineItem::Type)
     {
-        QMessageBox::warning(0,"出错了","所选图元有的不是直线!");
+        QMessageBox::warning(0,"出错了","有的图形不是直线!");
         return 360;
     }
     QGraphicsLineItem* Line1 = qgraphicsitem_cast<QGraphicsLineItem*>(chosenItems.at(0));
@@ -470,7 +470,7 @@ void Command::SmartZoom()
 void Command::InsertPix()
 {
     QString fileName=QFileDialog::getOpenFileName(0,"打开图片",QApplication::applicationDirPath(),
-                                                  QStringLiteral("所有文件(*.*);;PNG文件(*.png);;JPG文件(*.jpg);;JPEG文件(*.jpeg);;BMP文件(*.bmp);;") );
+                                                  QStringLiteral("所有文件(*.*);;PNG文件(*.png);;JPG文件(*.jpg);;JPEG文件(*.jpeg);;BMP文件(*.bmp)") );
     if(fileName.isEmpty())      return;
     QPixmap pix(fileName);
     QGraphicsPixmapItem* pixItem = m_scene->addPixmap(pix);
