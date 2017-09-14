@@ -914,3 +914,10 @@ void MainWindow::on_action_Publish_triggered()
     if(address.isEmpty())   return;
 
 }
+
+void MainWindow::on_animation_triggered()
+{
+    if(!getCurrentView())   return;
+    Cmd = new Command(getCurrentView());
+    Cmd->Animation();
+}

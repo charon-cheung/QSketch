@@ -500,6 +500,17 @@ void Command::InsertWidget(QWidget* w)
     widget->setFlag(QGraphicsItem::ItemIsSelectable);
 }
 
+void Command::Animation()
+{
+    foreach(QGraphicsItem* item, chosenItems)
+    {
+        int angle =10;
+        QTransform t;
+        t.rotate(angle,Qt::ZAxis);
+        item->setTransform(t,true);
+    }
+}
+
 QList<QPointF> Command::getDividePts()
 {
     QList<QPointF> list;

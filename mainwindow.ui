@@ -637,13 +637,12 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <addaction name="symmetryAct"/>
     <addaction name="lineAngle"/>
     <addaction name="StretchAct"/>
+    <addaction name="animation"/>
    </widget>
    <widget class="QMenu" name="editMenu">
     <property name="title">
      <string>编辑</string>
     </property>
-    <addaction name="undo"/>
-    <addaction name="redo"/>
     <addaction name="separator"/>
     <addaction name="cutAct"/>
     <addaction name="copyAct"/>
@@ -1073,21 +1072,6 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <string>A</string>
    </property>
   </action>
-  <action name="undo">
-   <property name="icon">
-    <iconset>
-     <normalon>:/Icon/Icon/undo.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>撤销</string>
-   </property>
-  </action>
-  <action name="redo">
-   <property name="text">
-    <string>重复</string>
-   </property>
-  </action>
   <action name="cutAct">
    <property name="icon">
     <iconset>
@@ -1256,6 +1240,11 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    </property>
    <property name="text">
     <string>拉伸直线</string>
+   </property>
+  </action>
+  <action name="animation">
+   <property name="text">
+    <string>演示动画</string>
    </property>
   </action>
  </widget>

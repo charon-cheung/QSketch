@@ -135,6 +135,8 @@ private slots:
 
     void on_action_Publish_triggered();
 
+    void on_animation_triggered();
+
 private:
     Ui::MainWindow *ui;
     QString dirPath,filePath;

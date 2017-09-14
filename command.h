@@ -5,13 +5,14 @@
 #include "mainwindow.h"
 #include "Dialogs/brushdlg.h"
 #include "Dialogs/selectdlg.h"
-#include <QVector>
+#include <QTimeLine>
 
 class MyView;
 class MyScene;
 class MainWindow;
 class Command
 {
+
 public:
     Command(MyScene* scene);
     Command(MyView* view);
@@ -43,12 +44,15 @@ public slots:
     void SetSymmetry(Qt::Axis axis);
     void ShowItemInfo();
     void SmartZoom();
-    void InsertPix();
-    void InsertWidget(QWidget* w);
+
     QList<QPointF> getDividePts();
     void CatchPt();
     qreal getLinesAngle();
 
+    void InsertPix();
+    void InsertWidget(QWidget* w);
+    void Animation();
+    void test(qreal value);
 private:
     MyView* m_view;
     MyScene* m_scene;
@@ -56,7 +60,7 @@ private:
     QTransform m_translate;
     BrushDlg* brush_dlg;
     SelectDlg* select_dlg;
-
+    QTimeLine* timeLine;
     QString getItemInfo(QString type, QPointF pos, QSizeF size, QColor c);
     qreal getSlope(QGraphicsLineItem* line);
     bool inCatchRange(QPointF src, QPointF des);
