@@ -34,6 +34,7 @@ void Command::Delete()
         if(!item)   return;
         m_scene->removeItem(item);  //删除item及其子item
     }
+    m_view->showStatus(QString("删除%1个图元成功").arg(chosenItems.size()) );
 }
 
 //这种方式只能绕原点旋转
@@ -48,6 +49,7 @@ void Command::Rotate(float angle)
 //        item->setTransformOriginPoint(item->mapFromScene(pt));
 //        item->setRotation(angle);  // 这种方式无法连续旋转,只能转到固定位置
     }
+    m_view->showStatus("已经旋转"+QString::number(angle)+"°");
 }
 
 void Command::Translate(int direction)
@@ -78,6 +80,8 @@ void Command::Translate(QPointF pt)
         item->setTransform(m_translate);
         qDebug()<<"当前坐标:"<< item->scenePos()+p1;
     }
+    QString pos = "("+QString::number(pt.x()) + "," + QString::number(pt.y());
+    m_view->showStatus("已经移动到点"+ pos);
 }
 // 只在视觉上改变,大小和坐标都没有改变,实际没多大意义
 void Command::Zoom(bool in)
@@ -141,6 +145,7 @@ void Command::FillBrush()
             break;
         }
     }
+    m_view->showStatus("填充图案完成");
 }
 
 void Command::SetMovable(bool state)
@@ -213,10 +218,17 @@ void Command::changeStyle()
             E->setBrush(m_view->getBrush());
             break;
         }
+        case QGraphicsLineItem::Type:
+        {
+            QGraphicsLineItem* L = qgraphicsitem_cast<QGraphicsLineItem*>(item);
+            L->setPen(m_view->getPen());
+            break;
+        }
         default:
             break;
         }
     }
+    m_view->showStatus("图形样式已经改变");
 }
 
 void Command::SetSymmetry(Qt::Axis axis)
@@ -465,6 +477,7 @@ void Command::SmartZoom()
     //    qDebug()<<m_scene->itemsBoundingRect();
     //    m_scene->items(Qt::AscendingOrder); 按绘画顺序排列
     m_view->fitInView(m_scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+    m_view->showStatus("自适应画面大小");
 }
 
 void Command::InsertPix()
@@ -476,6 +489,8 @@ void Command::InsertPix()
     QGraphicsPixmapItem* pixItem = m_scene->addPixmap(pix);
     pixItem->setFlag(QGraphicsItem::ItemIsSelectable);
     pixItem->setTransform(QTransform::fromScale(1,-1));
+    if(pixItem)
+        m_view->showStatus("插入图片成功");
 }
 
 void Command::InsertWidget(QWidget* w)

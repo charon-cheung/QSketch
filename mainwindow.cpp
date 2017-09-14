@@ -26,8 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     CreateActions();
     CreateMenus();
     CreateDir();
-//    ui->centralWidget->setMouseTracking(true);
-//    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
+    //    ui->centralWidget->setMouseTracking(true);
+    //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
 }
 
 MainWindow::~MainWindow()
@@ -169,7 +169,7 @@ void MainWindow::InitUi()
     CreateStatusBar();
     CreateToolBar();
     InitWorkWidgets(false);
-//    CreateCorner();
+    //    CreateCorner();
 }
 
 void MainWindow::CreateActions()
@@ -493,8 +493,8 @@ void MainWindow::on_Print_triggered()
     QPrinter printer(QPrinter::HighResolution);
     printer.setPaperSize(QPrinter::A4);
     printer.setPageOrientation(QPageLayout::Landscape);     //横向
-    //    printer.setColorMode(QPrinter::Color);    //不设置打印机时，加这两句会无法打印
-    //    printer.setOutputFormat(QPrinter::PdfFormat);
+//    printer.setColorMode(QPrinter::Color);    //不设置彩色打印时,加这两句会无法打印
+//    printer.setOutputFormat(QPrinter::PdfFormat);
     QPagedPaintDevice::Margins m;
     m.bottom=10;
     m.top=10;
@@ -560,8 +560,8 @@ void MainWindow::on_startBtn_clicked()
         newView = new MyView(this);
         newView->setNew(true);
         newView->setFocus();    //获得焦点
-        //        newView->setMatrix(QMatrix(1,0,0,-1,0,0));
-        //        newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
+//        newView->setMatrix(QMatrix(1,0,0,-1,0,0));
+//        newView->scale(1,-1);   // 翻转y轴,默认y轴正方向指向下方
         newView->updateCenterRect();
         ui->tabView->addTab(newView,QIcon(":/Icon/Icon/gph.png"),"画面1.gph");
         ui->tabView->setCurrentWidget(newView);
@@ -617,7 +617,7 @@ void MainWindow::on_FontPicker_clicked()
 {
     bool ok;
     TextFont = QFontDialog::getFont(&ok, QFont("Inconsolata", 12), 0);
-    //    a comma-separated list of the attributes,suited for use in QSettings.
+//    a comma-separated list of the attributes,suited for use in QSettings.
     emit toFont(TextFont);
 }
 
@@ -636,7 +636,7 @@ void MainWindow::on_translateAct_triggered()
 void MainWindow::on_rotateAct_triggered()
 {
     if(!getCurrentView())   return;
-    double angle = QInputDialog::getDouble(0, tr("请输入旋转角度"),"",90,0,360);
+    double angle = QInputDialog::getDouble(0, tr("请输入旋转角度"),"",90,-360,360);
     Cmd = new Command(getCurrentView());
     Cmd->Rotate(angle);
 }
@@ -657,13 +657,6 @@ void MainWindow::on_ResetStyle_clicked()
     PenBrush.setStyle(Qt::NoBrush);
     ui->PenWidth->setCurrentText("1");
     ui->PenStyle->setCurrentText("实线");
-}
-
-void MainWindow::on_movableAct_triggered()
-{
-    if(!getCurrentView())   return;
-    Cmd = new Command(getCurrentView());
-    Cmd->SetMovable(true);
 }
 
 void MainWindow::on_brushAct_triggered()
@@ -707,7 +700,7 @@ void MainWindow::on_action_PDF_triggered()
     printer.setPageSize( QPrinter::A4 );
     printer.setOrientation( QPrinter::Landscape );
     printer.setOutputFormat( QPrinter::PdfFormat );
-//    file will be created in build directory
+    //    file will be created in build directory
     printer.setOutputFileName( getCurrentTabName()+".pdf" );
 
     QPainter p;
@@ -717,7 +710,7 @@ void MainWindow::on_action_PDF_triggered()
         return;
     }
     //不管是否提前对y轴对称,得到的结果总是y轴向下 ???
-//    getCurrentView()->scale(1,-1);
+    //    getCurrentView()->scale(1,-1);
     getCurrentView()->getScene()->render(&p);
     p.end();
     ui->statusBar->showMessage("画面保存为PDF文件");

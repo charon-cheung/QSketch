@@ -306,22 +306,13 @@ void MyView::wheelEvent(QWheelEvent *event)
 
 void MyView::keyPressEvent(QKeyEvent *event)
 {
-    if(pressCtrlKey(event, Qt::Key_C))
-        this->Copy();
-    else if(pressCtrlKey(event, Qt::Key_X))
-    {
-        Copy();
-        Delete();
-    }
-    else if(pressCtrlKey(event, Qt::Key_V))
-        this->Paste();
-    else if(pressCtrlKey(event, Qt::Key_A))
+    if(pressCtrlKey(event, Qt::Key_A))
     {
         Cmd = new Command(this);
         Cmd->SelectAll(true);
     }
-    else if(pressCtrlKey(event, Qt::Key_Enter))
-        this->setFullView(!m_full);
+    else if(pressCtrlKey(event, Qt::Key_Return))
+        setFullView(!m_full);
 
     switch(event->key())
     {
@@ -331,22 +322,6 @@ void MyView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Home:
         this->Locate();
         this->Reset();
-        break;
-    case Qt::Key_Plus:
-        this->scale(1.41421, 1.41421);
-        this->updateCenterRect();
-        break;
-    case Qt::Key_Minus:
-        this->scale(0.70711, 0.70711);
-        this->updateCenterRect();
-        break;
-    case Qt::Key_PageUp:
-        Cmd = new Command(m_scene);
-        Cmd->Zoom(true);
-        break;
-    case Qt::Key_PageDown:
-        Cmd = new Command(m_scene);
-        Cmd->Zoom(false);
         break;
     case Qt::Key_M :
         Cmd = new Command(this);
@@ -359,23 +334,15 @@ void MyView::keyPressEvent(QKeyEvent *event)
         Cmd = new Command(this);
         Cmd->CatchPt();
         break;
-    case Qt::Key_V :
-        Cmd = new Command(m_scene);
-        Cmd->Stretch();
-        break;
-    case Qt::Key_S :
+    case Qt::Key_Q:
         Cmd = new Command(this);
-        Cmd->changeStyle();
+        Cmd->Rotate(45);
+        showStatus("逆时针转45°");
         break;
-    case Qt::Key_F :
+    case Qt::Key_E:
         Cmd = new Command(this);
-        Cmd->FillBrush();
-        break;
-    case Qt::Key_R :
-        this->showItemInfo();
-        break;
-    case Qt::Key_Delete:
-        this->Delete();
+        Cmd->Rotate(-45);
+        showStatus("顺时针转45°");
         break;
     case Qt::Key_Up:
         this->Translate(Command::UP);
@@ -392,10 +359,6 @@ void MyView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Right:
         this->Translate(Command::RIGHT);
         showStatus("向右平移5个单位");
-        break;
-    case Qt::Key_T:
-        Cmd = new Command(this);
-        Cmd->InsertPix();
         break;
     default:
         event->ignore();
@@ -479,17 +442,16 @@ void MyView::DrawPt()
     {
         flag = drawDividePt;
         changeCursor(Qt::ArrowCursor);
-        {
-            Cmd = new Command(this);
-            QList<QPointF> Positions = Cmd->getDividePts();
-            if(Positions.isEmpty())    return;
 
-            foreach (QPointF pos, Positions)
-            {
-                CirclePt *pt = new CirclePt();
-                pt->setPos(pos);
-                m_scene->addItem(pt);
-            }
+        Cmd = new Command(this);
+        QList<QPointF> Positions = Cmd->getDividePts();
+        if(Positions.isEmpty())    return;
+
+        foreach (QPointF pos, Positions)
+        {
+            CirclePt *pt = new CirclePt();
+            pt->setPos(pos);
+            m_scene->addItem(pt);
         }
         setNormalMode();
     }
@@ -634,14 +596,11 @@ void MyView::DrawTexts()
 void MyView::ShowContextMenu()
 {
     QMenu m;
-    QAction *Normal = m.addAction("重置为普通模式");
+    QAction *Normal = m.addAction("重置为普通模式  Space");
     QAction *Locate = m.addAction("定位到原点");
-    QAction *Reset = m.addAction("重置视图");
+    QAction *Reset = m.addAction("重置视图  Home");
     QAction *Delete = m.addAction("删除");
     QAction *Empty = m.addAction("清空重画");
-    QAction *Cut = m.addAction("剪切");
-    QAction *Copy = m.addAction("复制");
-    QAction *Paste = m.addAction("黏贴");
     QAction* Info = m.addAction("属性");
 
     Normal->setIcon(QIcon(":/Icon/Icon/normal.png"));
@@ -649,18 +608,12 @@ void MyView::ShowContextMenu()
     Reset->setIcon(QIcon(":/Icon/Icon/reset.png"));
     Delete->setIcon(QIcon(":/Icon/Icon/delete.png"));
     Empty->setIcon(QIcon(":/Icon/Icon/empty.png"));
-    Cut->setIcon(QIcon(":/Icon/Icon/cut.png"));
-    Copy->setIcon(QIcon(":/Icon/Icon/copy.png"));
-    Paste->setIcon(QIcon(":/Icon/Icon/paste.png"));
     Info->setIcon(QIcon(":/Icon/Icon/info.png"));
 
     connect(Normal,SIGNAL(triggered(bool)), this, SLOT(setNormalMode()) );
     connect(Locate,SIGNAL(triggered(bool)), this, SLOT(Locate()) );
     connect(Reset,SIGNAL(triggered(bool)), this,  SLOT(Reset()) );
     connect(Delete, SIGNAL(triggered(bool)), this, SLOT(Delete()) );
-    connect(Cut,&QAction::triggered, [this]{this->Copy(); this->Delete();} );
-    connect(Copy,SIGNAL(triggered(bool)), this,  SLOT(Copy()) );
-    connect(Paste,SIGNAL(triggered(bool)), this,  SLOT(Paste()) );
     connect(Empty,SIGNAL(triggered(bool)), this, SLOT(Empty()) );
     connect(Info, SIGNAL(triggered(bool)), this, SLOT(showItemInfo()) );
 
@@ -714,7 +667,7 @@ void MyView::Reset()
     this->scale(1,-1);
     this->centerOn(0,0);
     this->updateCenterRect();
-    showStatus("重置");
+    showStatus("重置画面");
 }
 
 void MyView::Copy()
@@ -881,7 +834,7 @@ void MyView::Paste()
 
 void MyView::Delete()
 {
-    Cmd = new Command(m_scene);
+    Cmd = new Command(this);
     Cmd->Delete();
 }
 
@@ -1015,10 +968,8 @@ QColor MyView::getColor()
 
 bool MyView::pressCtrlKey(QKeyEvent *event, int key)
 {
-    bool keyFlag;
     bool modifer = (event->modifiers() == Qt::ControlModifier);
-    keyFlag = modifer && (event->key() == key);
-    return keyFlag;
+    return modifer && (event->key() == key);
 }
 
 //没在mainwindow里选,则没有brush

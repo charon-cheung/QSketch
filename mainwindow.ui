@@ -630,7 +630,6 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     </widget>
     <addaction name="translateAct"/>
     <addaction name="rotateAct"/>
-    <addaction name="movableAct"/>
     <addaction name="brushAct"/>
     <addaction name="zoom"/>
     <addaction name="infoAct"/>
@@ -815,10 +814,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     </iconset>
    </property>
    <property name="text">
-    <string>打开</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
+    <string>打开 Ctrl+O</string>
    </property>
   </action>
   <action name="action_Save">
@@ -828,7 +824,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     </iconset>
    </property>
    <property name="text">
-    <string>保存</string>
+    <string>保存 Ctrl+S</string>
    </property>
   </action>
   <action name="action_SaveAs">
@@ -924,19 +920,6 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <string>SVG</string>
    </property>
   </action>
-  <action name="action_Reset">
-   <property name="icon">
-    <iconset>
-     <normalon>:/Icon/Icon/reset.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>重置</string>
-   </property>
-   <property name="shortcut">
-    <string>End</string>
-   </property>
-  </action>
   <action name="translateAct">
    <property name="icon">
     <iconset>
@@ -978,16 +961,6 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <string>多行文本</string>
    </property>
   </action>
-  <action name="movableAct">
-   <property name="icon">
-    <iconset>
-     <normalon>:/Icon/Icon/movable.png</normalon>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>设为可动</string>
-   </property>
-  </action>
   <action name="brushAct">
    <property name="icon">
     <iconset>
@@ -996,6 +969,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    </property>
    <property name="text">
     <string>填充图案</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
    </property>
   </action>
   <action name="zoomIn">
@@ -1027,6 +1003,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <property name="text">
     <string>显示信息</string>
    </property>
+   <property name="shortcut">
+    <string>R</string>
+   </property>
   </action>
   <action name="changeStyleAct">
    <property name="icon">
@@ -1036,6 +1015,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    </property>
    <property name="text">
     <string>改变样式</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
    </property>
   </action>
   <action name="actionX">
@@ -1087,6 +1069,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <property name="text">
     <string>直线夹角</string>
    </property>
+   <property name="shortcut">
+    <string>A</string>
+   </property>
   </action>
   <action name="undo">
    <property name="icon">
@@ -1112,6 +1097,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <property name="text">
     <string>剪切</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
   </action>
   <action name="copyAct">
    <property name="icon">
@@ -1121,6 +1109,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    </property>
    <property name="text">
     <string>复制</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
   <action name="pasteAct">
@@ -1132,6 +1123,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <property name="text">
     <string>黏贴</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
   </action>
   <action name="deleteAct">
    <property name="icon">
@@ -1142,6 +1136,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <property name="text">
     <string>删除</string>
    </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
   </action>
   <action name="fullViewAct">
    <property name="icon">
@@ -1150,7 +1147,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     </iconset>
    </property>
    <property name="text">
-    <string>全屏</string>
+    <string>全屏  Ctrl+Enter</string>
    </property>
   </action>
   <action name="zoomInView">
@@ -1165,6 +1162,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <property name="toolTip">
     <string>放大视图</string>
    </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
   </action>
   <action name="zoomOutView">
    <property name="icon">
@@ -1178,6 +1178,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    <property name="toolTip">
     <string>缩小视图</string>
    </property>
+   <property name="shortcut">
+    <string>-</string>
+   </property>
   </action>
   <action name="smartZoomAct">
    <property name="icon">
@@ -1187,6 +1190,9 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
    </property>
    <property name="text">
     <string>自适应大小</string>
+   </property>
+   <property name="shortcut">
+    <string>End</string>
    </property>
   </action>
   <action name="areaZoom">

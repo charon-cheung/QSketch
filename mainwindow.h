@@ -76,8 +76,6 @@ public slots:
 
     void on_ResetStyle_clicked();
 
-    void on_movableAct_triggered();
-
     void on_brushAct_triggered();
 
     void on_zoomIn_triggered();

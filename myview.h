@@ -11,7 +11,7 @@
 
 class Command;
 class MainWindow;
-#define PI 3.1415926
+
 class MyView : public QGraphicsView
 {
     Q_OBJECT
@@ -73,8 +73,6 @@ private:
 
     QGraphicsSimpleTextItem* Text;
     QPointF StartPt;
-    QPointF end;
-    QPointF mouseMovePos;
 
     enum MouseMode
     {
@@ -90,8 +88,6 @@ private:
     QPointF pastePos;
     bool m_copied, m_movable, m_saved, m_new, m_catch, m_full;
     QTransform m_translate;
-    QList<QGraphicsItem*> chosenItems;
-    QGraphicsItem* tempItem;
     // 画笔样式
     Qt::PenStyle PenStyle;
     int PenWidth;
