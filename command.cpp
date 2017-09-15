@@ -108,7 +108,10 @@ void Command::SelectAll(bool state)
         if(item->data(0).isNull())
             item->setSelected(state);
     }
-    m_view->showStatus(QString("选择了%1个图形").arg(all.size()-7));
+    if(all.size()<8)
+        m_view->showStatus("当前没有图形");
+    else
+        m_view->showStatus(QString("选择了%1个图形").arg(all.size()-7));
 }
 
 void Command::FillBrush()

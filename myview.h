@@ -23,10 +23,14 @@ public:
     MyScene* getScene();
     MainWindow* getMainWindow();
     void updateCenterRect();
+
     void setSaved(bool flag);
     bool IsSaved();
     void setNew(bool flag);
     bool IsNew();
+    void setDraftFile(bool flag);
+    bool isDraftFile();
+
     void SetMoveFlag(bool flag);
     void showStatus(QString msg);
     void catchPt(QPointF pt);
@@ -86,7 +90,8 @@ private:
     QPointF dragBegin;
     QGraphicsItem *viewCenter;
     QPointF pastePos;
-    bool m_copied, m_movable, m_saved, m_new, m_catch, m_full;
+    bool m_copied, m_movable, m_catch, m_full;
+    bool m_saved, m_new, m_draft;
     QTransform m_translate;
     // 画笔样式
     Qt::PenStyle PenStyle;

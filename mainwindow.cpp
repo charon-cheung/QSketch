@@ -475,7 +475,7 @@ void MainWindow::on_Save_triggered()
     if(!getCurrentView())   return;
 
     QDir d(dirPath+"/Files");
-    //是否需要判断是新建的文件还是打开已有的文件?
+
     QString fullName=dirPath+"/Files/"+tabName;
     QFile f(fullName);
     if(!f.open(QIODevice::WriteOnly)){

@@ -72,6 +72,17 @@ void MyScene::InitScene()
     InitData();
 }
 
+void MyScene::UnloadScene()
+{
+    removeItem(AxisX);
+    removeItem(AxisY);
+    removeItem(ArrowX);
+    removeItem(ArrowY);
+    removeItem(Origin);
+    removeItem(X);
+    removeItem(Y);
+}
+
 void MyScene::Save(QDataStream &s)
 {
     s<< MAGIC;
@@ -199,19 +210,16 @@ bool MyScene::Load(QDataStream &s)
 {
     int magic;
     s>>magic;
-    qDebug()<<"magic:"<<magic;
     if(magic!=MAGIC){
         QMessageBox::warning(0, QStringLiteral("出错了"),
                              QStringLiteral("打开的不是gph文件!"));
         return false;
     }
-//    else{
-        InitScene();
-        int count;
-        s>>count;
-        Import(s,count);
-        return true;
-//    }
+    InitScene();
+    int count;
+    s>>count;
+    Import(s,count);
+    return true;
 }
 
 void MyScene::Import(QDataStream &s, int count)

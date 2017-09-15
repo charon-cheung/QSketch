@@ -36,6 +36,7 @@ public:
     void InitData();
     void InitShape();
     void InitScene();
+    void UnloadScene();
     //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);

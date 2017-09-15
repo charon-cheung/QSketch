@@ -625,12 +625,15 @@ void MyView::setDraftMode(bool on)
     {
         this->setDragMode(QGraphicsView::NoDrag);
         m_main->DraftStatusBar(true);
+        getScene()->UnloadScene();
         getScene()->selectPen(getPen());
     }
     else
     {
+        // 提示是否保存
         m_main->DraftStatusBar(false);
         Empty();
+        Reset();
         this->setDragMode(QGraphicsView::RubberBandDrag);
     }
 }
@@ -1005,6 +1008,16 @@ void MyView::setNew(bool flag)
 bool MyView::IsNew()
 {
     return m_new;
+}
+
+void MyView::setDraftFile(bool flag)
+{
+    m_draft = flag;
+}
+
+bool MyView::isDraftFile()
+{
+    return m_draft;
 }
 
 void MyView::SetMoveFlag(bool flag)
