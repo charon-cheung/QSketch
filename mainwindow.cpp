@@ -437,7 +437,10 @@ void MainWindow::on_Open_triggered()
     QString tabName = fullName.remove(dirPath+"/Files/");
     // 在关闭时应remove name,否则关闭后无法再打开
     if(TabNameList.contains(tabName))
+    {
+        QMessageBox::information(0,"注意!","此文件已经打开或者不是gph文件");
         return;
+    }
     else
         TabNameList<<tabName;
 
@@ -447,7 +450,8 @@ void MainWindow::on_Open_triggered()
     QDataStream ds(&f);
     MyView *openView = new MyView(this);
     //MyView已经包含了一个MyScene对象,不能再定义一个对象,否则打开的是另一个场景,无法编辑
-    openView->getScene()->Load(ds);
+    if(!openView->getScene()->Load(ds))
+        return;
 
     ui->tabView->addTab(openView,QIcon(":/Icon/Icon/gph.png"),tabName);
     ui->tabView->setCurrentWidget(openView);

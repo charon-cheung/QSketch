@@ -34,7 +34,7 @@ void Command::Delete()
         if(!item)   return;
         m_scene->removeItem(item);  //删除item及其子item
     }
-    m_view->showStatus(QString("删除%1个图元成功").arg(chosenItems.size()) );
+    m_view->showStatus(QString("删除%1个图形成功").arg(chosenItems.size()) );
 }
 
 //这种方式只能绕原点旋转
@@ -45,7 +45,7 @@ void Command::Rotate(float angle)
         QTransform t;
         t.rotate(angle,Qt::ZAxis);
         item->setTransform(t,true);
-//        绕场景坐标的原点旋转, 默认绕图元坐标的原点旋转
+//        绕场景坐标的原点旋转, 默认绕图形坐标的原点旋转
 //        item->setTransformOriginPoint(item->mapFromScene(pt));
 //        item->setRotation(angle);  // 这种方式无法连续旋转,只能转到固定位置
     }
@@ -63,9 +63,8 @@ void Command::Translate(int direction)
     else if(direction == RIGHT)
         m_translate.translate(PACE, 0);
     foreach(QGraphicsItem* item, chosenItems)
-    {   // false则不能连续平移,只能平移到固定位置
+        // false不能连续平移,只能平移到固定位置
         item->setTransform(m_translate,true);
-    }
 }
 
 // 场景坐标是item->scenePos();不是item->mapToScene(item->pos());
@@ -95,7 +94,7 @@ void Command::Zoom(bool in)
         else
             item->setScale(0.707*factor);
 
-        m_view->showStatus("所选图元的当前比例: "+QString::number(item->scale()));
+        m_view->showStatus("所选图形的当前比例: "+QString::number(item->scale()));
     }
 }
 
@@ -105,7 +104,7 @@ void Command::SelectAll(bool state)
                                                Qt::IntersectsItemShape,Qt::AscendingOrder);
     foreach (QGraphicsItem* item, all)
     {
-        //去掉场景初始化的7个图元
+        //去掉场景初始化的7个图形
         if(item->data(0).isNull())
             item->setSelected(state);
     }
@@ -157,12 +156,12 @@ void Command::SetMovable(bool state)
         if(item->flags()==( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable ))
         {
             m_view->SetMoveFlag(true);
-            m_view->showStatus("当前图元已经可拖动");
+            m_view->showStatus("当前图形已经可拖动");
         }
         else
         {
             m_view->SetMoveFlag(false);
-            m_view->showStatus("当前图元无法再拖动");
+            m_view->showStatus("当前图形无法再拖动");
         }
     }
 }
@@ -244,7 +243,7 @@ void Command::ShowItemInfo()
 {
     if(chosenItems.size()!=1)
     {
-        QMessageBox::warning(0, "出错了!","只能选择一个图元 !");
+        QMessageBox::warning(0, "出错了!","只能选择一个图形 !");
         return;
     }
     QString type;
@@ -305,7 +304,7 @@ void Command::ShowItemInfo()
 
             type = "直线";
             color = L->pen().color();
-            info =  QString("图元类型: %1 \n").arg(type);
+            info =  QString("图形类型: %1 \n").arg(type);
             info += QString("两个点的坐标: (%2 , %3) 和 (%4 , %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
             info += QString("直线长度: %4   直线角度: %5               \n").arg(length).arg(angle);
             info += QString("直线颜色: %6").arg(QVariant(color.toRgb()).toString());
@@ -315,7 +314,7 @@ void Command::ShowItemInfo()
             break;
         }
     }
-    QMessageBox::information(0, "图元信息",info);
+    QMessageBox::information(0, "图形信息",info);
 }
 
 void Command::CatchPt()
@@ -360,7 +359,7 @@ void Command::CatchPt()
         QPointF tr = R->rect().bottomRight();
         QPointF center = R->rect().center();
 
-        //始终不能捕捉五个点,最多捕捉同一对角线的三个点
+        //始终不能捕捉五个点,最多捕捉同一对角线的三个点 ???
         if(inCatchRange(m_view->getScenePos(),tl))
             m_view->catchPt(tl);
         else if(inCatchRange(m_view->getScenePos(),center))
@@ -424,11 +423,9 @@ void Command::CatchPt()
 
 bool Command::inCatchRange(QPointF src, QPointF des)
 {
-    bool ok;
-    if( qAbs(src.x()-des.x()) < range || qAbs(src.y()-des.y())<range )
-        ok = true;
-    else ok = false;
-    return ok;
+    bool rangeX = qAbs(src.x()-des.x()) < range;
+    bool rangeY = qAbs(src.y()-des.y()) < range;
+    return (rangeX || rangeY) ;
 }
 
 qreal Command::getSlope(QGraphicsLineItem* line)
@@ -443,7 +440,7 @@ qreal Command::getLinesAngle()
 {
     if(chosenItems.size()!=2)
     {
-        QMessageBox::warning(0,"出错了","没有选择两个图元!");
+        QMessageBox::warning(0,"出错了","没有选择两个图形!");
         return 360;
     }
     if(chosenItems.at(0)->type()!=QGraphicsLineItem::Type  || chosenItems.at(1)->type()!=QGraphicsLineItem::Type)
@@ -464,10 +461,10 @@ qreal Command::getLinesAngle()
 QString Command::getItemInfo(QString type, QPointF pos, QSizeF size, QColor c)
 {
     QString info;
-    info = QString("图元类型: %1 \n").arg(type);
-    info += QString("图元坐标: (%2 , %3)     \n").arg(pos.x()).arg(pos.y());
-    info += QString("图元大小: %4 X %5       \n").arg(size.width()).arg(size.height());
-    info += QString("图元颜色: %7").arg(QVariant(c.toRgb()).toString());
+    info = QString("图形类型: %1 \n").arg(type);
+    info += QString("图形坐标: (%2 , %3)     \n").arg(pos.x()).arg(pos.y());
+    info += QString("图形大小: %4 X %5       \n").arg(size.width()).arg(size.height());
+    info += QString("图形颜色: %7").arg(QVariant(c.toRgb()).toString());
     return info;
 }
 

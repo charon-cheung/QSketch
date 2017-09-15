@@ -40,7 +40,7 @@ void MyScene::InitText()
 
 void MyScene::InitData()
 {
-    // 给数据,用于跟添加的图元区分
+    // 给数据,用于跟添加的图形区分
     Origin->setData(0,"Origin");
     AxisX->setData(0,"AxisX");
     AxisY->setData(0,"AxisY");
@@ -75,10 +75,9 @@ void MyScene::InitScene()
 void MyScene::Save(QDataStream &s)
 {
     s<< MAGIC;
-    QList<QGraphicsItem*> all = items(this->sceneRect(),
-                                      Qt::IntersectsItemShape,Qt::AscendingOrder);
+    QList<QGraphicsItem*> all = items(this->sceneRect(),Qt::IntersectsItemShape,Qt::AscendingOrder);
     //去掉两个坐标轴和两个箭头,原点,场景矩形. 为什么场景矩形也算进items ?
-    s<<all.count()-6;
+    s<<all.count()-8;
     Export(s, all);
 }
 
@@ -87,9 +86,8 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
     foreach (QGraphicsItem* item, items)
     {
         if(!item->data(0).toString().isEmpty())
-        {
             continue;
-        }
+
         QString className;
 
         if(item->type()==QGraphicsRectItem::Type)
@@ -197,20 +195,23 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
     }
 }
 
-void MyScene::Load(QDataStream &s)
+bool MyScene::Load(QDataStream &s)
 {
     int magic;
     s>>magic;
-    if(magic!=MAGIC)
-    {
+    qDebug()<<"magic:"<<magic;
+    if(magic!=MAGIC){
         QMessageBox::warning(0, QStringLiteral("出错了"),
                              QStringLiteral("打开的不是gph文件!"));
-        return;
+        return false;
     }
-    InitScene();
-    int count;
-    s>>count;
-    Import(s,count);
+//    else{
+        InitScene();
+        int count;
+        s>>count;
+        Import(s,count);
+        return true;
+//    }
 }
 
 void MyScene::Import(QDataStream &s, int count)

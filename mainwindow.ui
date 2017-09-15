@@ -616,7 +616,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     </property>
     <widget class="QMenu" name="zoom">
      <property name="title">
-      <string>放缩图元</string>
+      <string>放缩图形</string>
      </property>
      <addaction name="zoomIn"/>
      <addaction name="zoomOut"/>

@@ -39,7 +39,7 @@ public:
     //    QSet<QList<QGraphicsItem*> > set;   //不要写成>>，否则报错
     void Save(QDataStream& s);
     void Export(QDataStream& s,QList<QGraphicsItem*> items);
-    void Load(QDataStream& s);
+    bool Load(QDataStream& s);
     void Import(QDataStream& s,int count);
     void setMode(GridMode m);
     void setDraftMode(bool on);

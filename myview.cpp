@@ -17,6 +17,7 @@ MyView::MyView(QWidget *parent):
     this->setScene(m_scene);
 
     Cmd = new Command(m_scene);
+    // 获得主窗口指针的方法,很重要！
     m_main = qobject_cast<MainWindow*>(this->topLevelWidget());
     m_main->showScale("当前比例为 1:1 ");
     connect(this,SIGNAL(customContextMenuRequested(const QPoint&)), this,
@@ -72,7 +73,7 @@ void MyView::mousePressEvent(QMouseEvent *event)
             case drawCirPt:
             {
                 CirclePt *pt1 = new CirclePt();
-                pt1->setPos(StartPt);  //这里不是图元坐标，是场景坐标
+                pt1->setPos(StartPt);  //这里不是图形坐标，是场景坐标
                 m_scene->addItem(pt1);
                 break;
             }
@@ -142,13 +143,9 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
     QPointF EndPt =this->mapToScene(event->pos()); // 不能直接mapToScene(pt).y()
     switch (mode) {
     case NORMAL:
-    {
         break;  // 需要处理QGraphicsView::mouseMoveEvent
-    }
     case ZOOM:
-    {
         break;
-    }
     case DRAG:
     {
         //Calculate the offset to drag relative to scene coordinates.
@@ -267,17 +264,12 @@ void MyView::mouseReleaseEvent(QMouseEvent *event)
         else if(mode==EDIT)
         {
             if(flag == drawLine)
-            {
                 LineCount++;
-            }
             else if(flag == drawRect)
-            {
                 RectCount++;
-            }
             else if(flag == drawElli)
-            {
                 ElliCount++;
-            }
+
             mode = NORMAL;     // 不加就报错,会多产生moveEvent,为什么
             this->setDragMode(QGraphicsView::RubberBandDrag);
         }
@@ -692,7 +684,7 @@ void MyView::Paste()
     const QMimeData * md = cb->mimeData();
     QByteArray ba = md->data("GraphicsItem");
     if(ba.isEmpty()){
-        QMessageBox::warning(0,"出错了!","没有复制图元数据");
+        QMessageBox::warning(0,"出错了!","没有复制图形数据");
         return;
     }
     m_scene->clearSelection();
