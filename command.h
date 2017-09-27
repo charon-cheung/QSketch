@@ -2,7 +2,6 @@
 #define COMMAND_H
 
 #include "myview.h"
-#include "mainwindow.h"
 #include "Dialogs/brushdlg.h"
 #include "Dialogs/selectdlg.h"
 #include <QTimeLine>

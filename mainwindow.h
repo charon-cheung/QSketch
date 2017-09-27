@@ -2,10 +2,9 @@
 #define MAINWINDOW_H
 
 #include "command.h"
-#include "Dialogs/posdialog.h"
+//#include "Dialogs/posdialog.h"
 #include "QRecentFilesMenu.h"
 #include <QMainWindow>
-#include <QDockWidget>
 #include <QLabel>
 #include <QCheckBox>
 
@@ -153,7 +152,6 @@ private:
     QList<QAction*> ellipseActions;
     QList<QAction*> textActions;
     QList<QAction*> SceneModes;
-    QDockWidget* dock;
 
     bool m_modified;
     MyView *newView;

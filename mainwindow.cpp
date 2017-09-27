@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDateTime>
-#include <QDebug>
 #include <QFileDialog>
 #include <QFile>
 #include <QtPrintSupport/QPrinter>
@@ -13,7 +12,6 @@
 #include <QDate>
 #include <QColorDialog>
 #include <QFontDialog>
-#include <QGridLayout>
 #include <QSvgGenerator>
 #include <QInputDialog>
 
@@ -123,7 +121,7 @@ void MainWindow::DraftStatusBar(bool on)
     SceneMode->setDisabled(on);
     scale->setDisabled(on);
     if(on)
-        ui->statusBar->showMessage("当前为草图模式");
+        ui->statusBar->showMessage("进入草图模式");
     else
         ui->statusBar->showMessage("退出草图模式");
 }
@@ -337,13 +335,9 @@ void MainWindow::CreateDir()
     filePath = dirPath + "/Files";
     QDir dir(dirPath);
     if(!dir.entryList().contains("Files"))
-    {
         dir.mkdir("Files");
-    }
     if(!dir.entryList().contains("Images"))
-    {
         dir.mkdir("Images");
-    }
     return;
 }
 
@@ -430,7 +424,7 @@ void MainWindow::on_Open_triggered()
     if(fullName.isEmpty())      return;
     QFile f(fullName);
     if(!f.open(QIODevice::ReadWrite)){
-        qDebug()<<"画面文件读取失败："<<fullName;
+        QMessageBox::warning(0,"出错了!","文件读取失败:"+f.errorString());
         return ;
     }
 
@@ -479,7 +473,7 @@ void MainWindow::on_Save_triggered()
     QString fullName=dirPath+"/Files/"+tabName;
     QFile f(fullName);
     if(!f.open(QIODevice::WriteOnly)){
-        qDebug()<<"画面文件写入失败:"<<f.fileName();
+        QMessageBox::warning(0,"出错了!","文件保存失败:"+f.errorString());
         return;
     }
 

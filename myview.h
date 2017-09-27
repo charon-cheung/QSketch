@@ -2,7 +2,6 @@
 #define MYVIEW_H
 #include <QGraphicsView>
 #include <QMimeData>
-#include <QMouseEvent>
 #include <QGraphicsSimpleTextItem>
 #include "Dialogs/posdialog.h"
 #include <myscene.h>

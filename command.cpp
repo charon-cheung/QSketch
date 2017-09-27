@@ -29,11 +29,9 @@ MyScene *Command::getScene()
 
 void Command::Delete()
 {
+    if(chosenItems.size()==0)   return;
     foreach(QGraphicsItem* item, chosenItems)
-    {
-        if(!item)   return;
         m_scene->removeItem(item);  //删除item及其子item
-    }
     m_view->showStatus(QString("删除%1个图形成功").arg(chosenItems.size()) );
 }
 
@@ -73,11 +71,11 @@ void Command::Translate(QPointF pt)
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-        QPointF p1 = item->boundingRect().center(); // 同一图形的值不变
+//        QPointF p1 = item->boundingRect().center(); // 同一图形的值不变
         QPointF movePt = pt - item->boundingRect().center();
         m_translate.translate(movePt.x(), movePt.y());
         item->setTransform(m_translate);
-        qDebug()<<"当前坐标:"<< item->scenePos()+p1;
+//        qDebug()<<"当前坐标:"<< item->scenePos()+p1;
     }
     QString pos = "("+QString::number(pt.x()) + "," + QString::number(pt.y());
     m_view->showStatus("已经移动到点"+ pos);
@@ -155,7 +153,7 @@ void Command::SetMovable(bool state)
     foreach(QGraphicsItem* item, chosenItems)
     {
         item->setFlag(QGraphicsItem::ItemIsMovable, state);
-        qDebug()<<item->flags();
+//        qDebug()<<item->flags();
         if(item->flags()==( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable ))
         {
             m_view->SetMoveFlag(true);

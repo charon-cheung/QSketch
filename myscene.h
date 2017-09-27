@@ -7,7 +7,6 @@
 #include "Items/ring.h"
 #include "Items/myline.h"
 #include <QDataStream>
-#include <QGraphicsSceneMouseEvent>
 #include <myview.h>
 
 class MyView;     //需要前置声明

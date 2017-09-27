@@ -1,7 +1,5 @@
 #include "circlept.h"
 
-#include <QDebug>
-
 CirclePt::CirclePt(QGraphicsItem *parent)
     :BaseItem(parent)
 {

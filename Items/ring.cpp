@@ -1,5 +1,4 @@
 #include "ring.h"
-#include <QDebug>
 
 Ring::Ring(QGraphicsItem *parent)
     :BaseItem(parent)

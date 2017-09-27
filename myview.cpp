@@ -6,7 +6,6 @@
 #include <QClipboard>
 #include <QStatusBar>
 #include <QInputDialog>
-#include "Items/myline.h"
 
 MyView::MyView(QWidget *parent):
     QGraphicsView(parent)   // 初始化
@@ -234,14 +233,13 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
                 ElliVec.at(ElliCount)->setRect(newRect);
             }
         }
-
         break;
     }
     default:
         event->ignore();
         break;
     }
-    //    没有mouseMoveEvent时，能实现橡胶手模式，因为mode=NORMAL,鼠标事件实际是父类的moveEvent
+//    没有mouseMoveEvent时，能实现橡胶手模式，因为mode=NORMAL,鼠标事件实际是父类的moveEvent
     QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -286,7 +284,7 @@ void MyView::wheelEvent(QWheelEvent *event)
     if(event->modifiers() & Qt::ControlModifier)
     {
         qreal scaleFactor = qPow(2.0, event->delta() / 240.0);  // ???
-        //        qDebug()<<event->delta();     为正负120
+//        qDebug()<<event->delta();     为正负120
         this->scale(scaleFactor, scaleFactor);
         this->updateCenterRect();
         QString t = "当前比例为 "+QString::number(matrix().m11(),'f',2)+":1 ";

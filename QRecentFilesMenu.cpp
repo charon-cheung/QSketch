@@ -1,5 +1,4 @@
 #include "QRecentFilesMenu.h"
-#include <QDebug>
 #include <QFileInfo>
 
 static const qint32 RecentFilesMenuMagic = 0xff;

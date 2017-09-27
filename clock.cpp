@@ -1,14 +1,12 @@
 #include "clock.h"
 #include <QPair>
-#include <QPalette>
-#include <QPixmap>
-#include <QBrush>
+
 Clock::Clock(QWidget *parent)
     : QWidget(parent)
 {
     resize(256,256);
-    Ox = 100; Oy = 100;
-    upX = 100; upY = 5;
+    Ox = 100;   Oy = 100;
+    upX = 100;  upY = 5;
     first = true;
 
     // 背景透明, 妨碍了图片的加载

@@ -1,5 +1,4 @@
 #include "myline.h"
-#include <QDebug>
 #include <QMessageBox>
 #include <QtMath>
 

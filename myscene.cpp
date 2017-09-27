@@ -1,5 +1,4 @@
 #include "myscene.h"
-#include <QDebug>
 #include <QMessageBox>
 const int MAGIC = 0x1234;
 
@@ -433,7 +432,7 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
 
     painter->restore();
 }
-
+// 鼠标事件实现草图模式
 void MyScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!m_draft)    return;
