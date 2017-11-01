@@ -71,11 +71,23 @@ void Command::Translate(QPointF pt)
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-//        QPointF p1 = item->boundingRect().center(); // 同一图形的值不变
-        QPointF movePt = pt - item->boundingRect().center();
-        m_translate.translate(movePt.x(), movePt.y());
-        item->setTransform(m_translate);
-//        qDebug()<<"当前坐标:"<< item->scenePos()+p1;
+        if(item->type() == QGraphicsSimpleTextItem::Type)
+        {
+            QPointF movePt = pt - item->scenePos();
+            m_translate.translate(movePt.x(), movePt.y());
+            item->setTransform(m_translate);
+//            item->setTransform(QTransform::fromScale(-1,1));
+            QTransform t;
+            t.rotate(180, Qt::XAxis);
+            item->setTransform(t,true);
+        }
+        else
+        {
+//            QPointF p1 = item->boundingRect().center(); // 同一图形的值不变
+            QPointF movePt = pt - item->boundingRect().center();
+            m_translate.translate(movePt.x(), movePt.y());
+            item->setTransform(m_translate);
+        }
     }
     QString pos = "("+QString::number(pt.x()) + "," + QString::number(pt.y());
     m_view->showStatus("已经移动到点"+ pos);
@@ -309,6 +321,18 @@ void Command::ShowItemInfo()
             info += QString("两个点的坐标: (%2 , %3) 和 (%4 , %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
             info += QString("直线长度: %4   直线角度: %5               \n").arg(length).arg(angle);
             info += QString("直线颜色: %6").arg(QVariant(color.toRgb()).toString());
+            break;
+        }
+        case QGraphicsSimpleTextItem::Type :
+        {
+            QGraphicsSimpleTextItem* Text = qgraphicsitem_cast<QGraphicsSimpleTextItem*>(item);
+            type = "文字";
+            pos = Text->scenePos();
+            QFont font = Text->font();
+            info =  QString("图形类型: %1 \n").arg(type);
+            info += QString("图形坐标: (%2 , %3)     \n").arg(pos.x()).arg(pos.y());
+            info += QString("字体名称: %4            \n").arg(font.family());
+            info += QString("字体大小: %5            \n").arg(font.pointSizeF());
             break;
         }
         default:

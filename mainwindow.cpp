@@ -114,6 +114,11 @@ void MainWindow::showScale(QString s)
 {
     scale->setText(s);
 }
+//显示光标所在的场景坐标
+void MainWindow::showCoordinate(QString s)
+{
+    MousePos->setText(s);
+}
 
 void MainWindow::DraftStatusBar(bool on)
 {
@@ -186,6 +191,11 @@ void MainWindow::CreateStatusBar()
     scale->setFont(btnFont(14));
     scale->show();
     ui->statusBar->addPermanentWidget(scale);
+
+    MousePos = new QLabel(this);
+    MousePos->setFont(btnFont(14));
+    MousePos->show();
+    ui->statusBar->addPermanentWidget(MousePos);
 
     SceneModes<<ui->showGridAct <<ui->showPtAct <<ui->resetSceneAct;
     QMenu* modes = new QMenu(this);

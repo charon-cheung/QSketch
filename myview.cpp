@@ -139,10 +139,14 @@ void MyView::mousePressEvent(QMouseEvent *event)
 void MyView::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF dragTrans;
-    QPointF EndPt =this->mapToScene(event->pos()); // 不能直接mapToScene(pt).y()
+    QPointF EndPt = this->mapToScene(event->pos()); // 不能直接mapToScene(pt).y()
+    QString MousePos = "("+ QString::number(EndPt.x()) +","+ QString::number(EndPt.y()) +")";
     switch (mode) {
     case NORMAL:
+    {
+        m_main->showCoordinate("当前坐标为:"+MousePos);
         break;  // 需要处理QGraphicsView::mouseMoveEvent
+    }
     case ZOOM:
         break;
     case DRAG:
@@ -152,10 +156,12 @@ void MyView::mouseMoveEvent(QMouseEvent *event)
         viewCenter->moveBy(dragTrans.x(), dragTrans.y());
         this->centerOn(viewCenter);
         event->accept();
+        m_main->showCoordinate("当前坐标为:"+MousePos);
         break;
     }
     case EDIT:
     {
+        m_main->showCoordinate("当前坐标为:"+MousePos);
         if(flag == drawLine)
         {
             QLineF newLine;

@@ -29,6 +29,7 @@ public:
     QFont  getFont();
     QFont btnFont(int size);
     void showScale(QString s);
+    void showCoordinate(QString s);
     void DraftStatusBar(bool on);
 
 public slots:
@@ -162,7 +163,7 @@ private:
     QBrush PenBrush;
     QFont TextFont;
 
-    QLabel* scale;
+    QLabel* scale, *MousePos;
     QPushButton *SceneMode, *Normal, *AreaZoom, *SmartZoom, *Reset, *Empty ;
     QCheckBox *CatchMode,*DraftMode;
     Command* Cmd;
