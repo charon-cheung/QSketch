@@ -11,6 +11,7 @@ Command::Command(MyScene *scene)
 {
     m_scene = scene;
     chosenItems = m_scene->selectedItems();
+    pace = 5;
 }
 
 Command::Command(MyView *view)
@@ -18,13 +19,14 @@ Command::Command(MyView *view)
     m_view = view;
     m_scene = m_view->getScene();
     chosenItems = m_scene->selectedItems();
+    pace = 5;
 }
 
 MyScene *Command::getScene()
 {
     //少做转型的又一例子
 //    MyScene* scene = qobject_cast<MyScene*>(m_view->scene());
-    return m_view->getScene();;
+    return m_view->getScene();
 }
 
 void Command::Delete()
@@ -76,7 +78,6 @@ void Command::Translate(QPointF pt)
             QPointF movePt = pt - item->scenePos();
             m_translate.translate(movePt.x(), movePt.y());
             item->setTransform(m_translate);
-//            item->setTransform(QTransform::fromScale(-1,1));
             QTransform t;
             t.rotate(180, Qt::XAxis);
             item->setTransform(t,true);
@@ -91,6 +92,19 @@ void Command::Translate(QPointF pt)
     }
     QString pos = "("+QString::number(pt.x()) + "," + QString::number(pt.y());
     m_view->showStatus("已经移动到点"+ pos);
+}
+
+void Command::PaceUp()
+{
+    pace +=3;
+    m_up = true;
+}
+
+void Command::PaceDown()
+{
+    if(pace>3)
+        pace -=3;
+    m_down = true;
 }
 // 只在视觉上改变,大小和坐标都没有改变,实际没多大意义
 void Command::Zoom(bool in)
@@ -510,7 +524,7 @@ void Command::InsertPix()
     QPixmap pix(fileName);
     QGraphicsPixmapItem* pixItem = m_scene->addPixmap(pix);
     pixItem->setFlag(QGraphicsItem::ItemIsSelectable);
-    pixItem->setTransform(QTransform::fromScale(1,-1));
+//    pixItem->setTransform(QTransform::fromScale(1,-1));
     if(pixItem)
         m_view->showStatus("插入图片成功");
 }

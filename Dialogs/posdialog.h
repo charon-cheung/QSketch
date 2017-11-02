@@ -37,6 +37,7 @@ private:
     Ui::PosDialog *ui;
     QDoubleValidator *X, *Y, *Positive, *Angle;
     QPointF pt1,pt2;
+    QFont font;
     int angle,length;
 };
 

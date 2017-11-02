@@ -8,8 +8,12 @@ PosDialog::PosDialog(QWidget *parent) :
     ui(new Ui::PosDialog)
 {
     ui->setupUi(this);
-    this->setWindowTitle("请输入点的坐标");
+    this->setWindowTitle("请输入需要的参数");
     this->setWindowIcon(QIcon(":/Icon/Icon/input.png"));
+    font.setFamily("Inconsolata");
+    font.setPointSize(12);
+    this->setStyleSheet("QLabel{ font-family: Inconsolata; font-size: 16pt;}"
+                        "QLineEdit{ font-family: Inconsolata; font-size: 14pt;}");
     X = new QDoubleValidator(-MyScene::width/2, MyScene::width/2, 2,this);
     ui->pt1_x->setValidator(X);
     ui->pt2_x->setValidator(X);
@@ -26,7 +30,7 @@ PosDialog::PosDialog(QWidget *parent) :
     ui->width->setValidator(Positive);
     ui->height->setValidator(Positive);
 
-    Angle = new QDoubleValidator(0,360,2,this);
+    Angle = new QDoubleValidator(-360,360,2,this);
     ui->angle->setValidator(Angle);
     ui->pt1_x->setFocus();
 }
@@ -67,6 +71,10 @@ void PosDialog::showPtAngle()
 
 void PosDialog::showLineXY()
 {
+    ui->label->setText("起点的横坐标");
+    ui->label_2->setText("起点的纵坐标");
+    ui->label_3->setText("终点的横坐标");
+    ui->label_4->setText("终点的纵坐标");
     ui->frame->setVisible(false);
     ui->frame_3->setVisible(false);
     return;
@@ -74,6 +82,8 @@ void PosDialog::showLineXY()
 
 void PosDialog::showLineAH()
 {
+    ui->label->setText("起点的横坐标");
+    ui->label_2->setText("起点的纵坐标");
     ui->frame->setVisible(false);
     ui->frame_2->setVisible(false);
     return;
@@ -81,13 +91,18 @@ void PosDialog::showLineAH()
 
 void PosDialog::showRectXY()
 {
+    ui->label->setText("左上顶点的横坐标");
+    ui->label_2->setText("左上顶点的纵坐标");
     ui->frame_2->setVisible(false);
     ui->frame_3->setVisible(false);
 }
 
 void PosDialog::showEllipse()
 {
-    showRectXY();
+    ui->label->setText("圆心横坐标");
+    ui->label_2->setText("圆心纵坐标");
+    ui->frame_2->setVisible(false);
+    ui->frame_3->setVisible(false);
 }
 
 float PosDialog::getAngle()

@@ -136,6 +136,8 @@ public slots:
     void Delete();
     void Empty();
     void Translate(int direction);
+    void PaceUp();
+    void PaceDown();
     void showItemInfo();
 
 protected:

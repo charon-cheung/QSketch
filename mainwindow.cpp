@@ -24,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     CreateActions();
     CreateMenus();
     CreateDir();
-    //    ui->centralWidget->setMouseTracking(true);
-    //    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
+//    ui->centralWidget->setMouseTracking(true);
+//    this->setMouseTracking(true);   //鼠标不按下的移动也能捕捉到MouseMoveEvent
 }
 
 MainWindow::~MainWindow()

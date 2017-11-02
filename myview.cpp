@@ -342,19 +342,25 @@ void MyView::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Up:
         this->Translate(Command::UP);
-        showStatus("向上平移5个单位");
+        showStatus("向上平移"+QString::number(Command::PACE)+"个单位");
         break;
     case Qt::Key_Down:
         this->Translate(Command::DOWN);
-        showStatus("向下平移5个单位");
+        showStatus("向下平移"+QString::number(Command::PACE)+"个单位");
         break;
     case Qt::Key_Left:
         this->Translate(Command::LEFT);
-        showStatus("向左平移5个单位");
+        showStatus("向左平移"+QString::number(Command::PACE)+"个单位");
         break;
     case Qt::Key_Right:
         this->Translate(Command::RIGHT);
-        showStatus("向右平移5个单位");
+        showStatus("向右平移"+QString::number(Command::PACE)+"个单位");
+        break;
+    case Qt::Key_PageUp:
+        this->PaceUp();
+        break;
+    case Qt::Key_PageDown:
+        this->PaceDown();
         break;
     default:
         event->ignore();
@@ -740,18 +746,18 @@ void MyView::Paste()
                 QGraphicsEllipseItem* Elli = getScene()->addEllipse(pos.x(),pos.y(),w,h,pen );
                 Elli->setBrush(brush);
                 Elli->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
-                QPointF movePt = pos - Elli->rect().center();
-                t.translate(movePt.x(), movePt.y());
-                Elli->setTransform(t,true);
+//                QPointF movePt = pos - Elli->rect().center();
+//                t.translate(movePt.x(), movePt.y());
+//                Elli->setTransform(t,true);
             }
             else if(className=="QGraphicsRectItem")
             {
                 QGraphicsRectItem* Rect = getScene()->addRect(pos.x(),pos.y(),w,h,pen );
                 Rect->setBrush(brush);
                 Rect->setFlags(QGraphicsItem::GraphicsItemFlags(flags));
-                QPointF movePt = pos - Rect->rect().center();
-                t.translate(movePt.x(), movePt.y());
-                Rect->setTransform(t,true);
+//                QPointF movePt = pos - Rect->rect().center();
+//                t.translate(movePt.x(), movePt.y());
+//                Rect->setTransform(t,true);
             }
             else if(className=="CrossPt")
             {
@@ -778,9 +784,9 @@ void MyView::Paste()
             MyLine* line = new MyLine(0,p1,p3);
             line->setView(this);
             QPointF movePt = pos - p2;
-            QTransform t;
-            t.translate(movePt.x(), movePt.y());
-            line->setTransform(t,true);
+//            QTransform t;
+//            t.translate(movePt.x(), movePt.y());
+//            line->setTransform(t,true);
             m_scene->addItem(line);
         }
         else if(className=="QGraphicsLineItem")
@@ -848,6 +854,18 @@ void MyView::Translate(int direction)
 {
     Cmd = new Command(m_scene);
     Cmd->Translate(direction);
+}
+
+void MyView::PaceUp()
+{
+    Cmd = new Command(m_scene);
+    Cmd->PaceUp();
+}
+
+void MyView::PaceDown()
+{
+    Cmd = new Command(m_scene);
+    Cmd->PaceDown();
 }
 
 void MyView::updateCenterRect()

@@ -23,7 +23,7 @@ public:
         DOWN,
         LEFT,
         RIGHT,
-        PACE =5
+        PACE = 8
     };
     enum{
         range = 2
@@ -34,6 +34,8 @@ public slots:
     void Rotate(float angle);
     void Translate(int direction);
     void Translate(QPointF pt);
+    void PaceUp();
+    void PaceDown();
     void Zoom(bool in);
     void SelectAll(bool state);
     void FillBrush();
@@ -57,6 +59,8 @@ private:
     MyScene* m_scene;
     QList<QGraphicsItem*> chosenItems;
     QTransform m_translate;
+    int pace;
+    bool m_up, m_down;
     BrushDlg* brush_dlg;
     SelectDlg* select_dlg;
     QTimeLine* timeLine;

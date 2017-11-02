@@ -112,6 +112,8 @@ void MyScene::Export(QDataStream& s, QList<QGraphicsItem *> items)
             s<< rectangle->rect().height();
             s<< rectangle->pos().x();
             s<< rectangle->pos().y();
+//            qDebug()<<"保存时的矩形位置:"<< rectangle->pos();
+            qDebug()<<"保存时的矩形rect:"<< rectangle->rect();
             s<< rectangle->pen().color();
             s<< int(rectangle->pen().style());  //强制转换Qt::PenStyle
             s<< rectangle->pen().width();
