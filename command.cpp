@@ -278,6 +278,7 @@ void Command::ShowItemInfo()
     QSizeF size;
     QColor color;
     QString info;
+//    qDebug()<<"type:"<<chosenItems.at(0)->type();
     foreach (QGraphicsItem* item, chosenItems)
     {
         switch(item->type())
@@ -348,6 +349,22 @@ void Command::ShowItemInfo()
             info += QString("字体名称: %4            \n").arg(font.family());
             info += QString("字体大小: %5            \n").arg(font.pointSizeF());
             break;
+        }
+        case MyLine::Type :
+        {
+            MyLine* L = qgraphicsitem_cast<MyLine*>(item);
+            qreal x1= L->getP1().x();
+            qreal y1= L->getP1().y();
+            qreal x2= L->getP3().x();
+            qreal y2= L->getP3().y();
+
+            qreal length = L->getLength();
+            qreal angle =  L->getAngle();
+            if(angle > 360)   angle -= 360;
+            type = "直线";
+            info =  QString("图形类型: %1 \n").arg(type);
+            info += QString("两个点的坐标: (%2 , %3) 和 (%4 , %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
+            info += QString("直线长度: %4   直线角度: %5               \n").arg(length).arg(angle);
         }
         default:
             break;

@@ -63,5 +63,6 @@
         <file>Icon/stretch.png</file>
         <file>Icon/angle.png</file>
         <file>Icon/undo.png</file>
+        <file>Icon/tick.png</file>
     </qresource>
 </RCC>

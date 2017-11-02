@@ -262,6 +262,7 @@ void MainWindow::CreateToolBar()
     floatToolBar->addWidget(Empty);
     floatToolBar->setOrientation(Qt::Vertical);
     floatToolBar->setAllowedAreas(Qt::LeftToolBarArea | Qt::RightToolBarArea | Qt::TopToolBarArea);
+
     addToolBar(floatToolBar);
 }
 
@@ -401,6 +402,29 @@ QString MainWindow::getCurrentTabName()
     QString name = ui->tabView->tabText(ui->tabView->currentIndex());
     name.remove(".gph");
     return name;
+}
+
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+    Q_UNUSED(event);
+    if(!getCurrentView())   return;
+
+    QMenu m(this);
+    m.addAction(ui->ToolBarCmd);
+    m.addAction(ui->FloatBarCmd);
+
+    if(ui->mainToolBar->isVisible())
+        ui->ToolBarCmd->setIcon(QIcon(":/Icon/Icon/tick.png"));
+    else
+        ui->ToolBarCmd->setIcon(QIcon());
+
+    if(floatToolBar->isVisible())
+        ui->FloatBarCmd->setIcon(QIcon(":/Icon/Icon/tick.png"));
+    else
+        ui->FloatBarCmd->setIcon(QIcon());
+    // 仅限小范围内出现
+    if( event->pos().x()<this->width() && event->pos().y()< 2*ui->mainToolBar->height())
+    m.exec(QCursor::pos());
 }
 
 void MainWindow::on_NewView_triggered()
@@ -928,4 +952,32 @@ void MainWindow::on_animation_triggered()
     if(!getCurrentView())   return;
     Cmd = new Command(getCurrentView());
     Cmd->Animation();
+}
+
+void MainWindow::on_ToolBarCmd_triggered()
+{
+    if(ui->mainToolBar->isVisible())
+    {
+        ui->mainToolBar->setVisible(false);
+        ui->ToolBarCmd->setIcon(QIcon());
+    }
+    else
+    {
+        ui->mainToolBar->setVisible(true);
+        ui->ToolBarCmd->setIcon(QIcon(":/Icon/Icon/tick.png"));
+    }
+}
+
+void MainWindow::on_FloatBarCmd_triggered()
+{
+    if(floatToolBar->isVisible())
+    {
+        floatToolBar->setVisible(false);
+        ui->FloatBarCmd->setIcon(QIcon());
+    }
+    else
+    {
+        floatToolBar->setVisible(true);
+        ui->FloatBarCmd->setIcon(QIcon(":/Icon/Icon/tick.png"));
+    }
 }

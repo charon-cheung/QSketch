@@ -137,6 +137,10 @@ private slots:
 
     void on_animation_triggered();
 
+    void on_ToolBarCmd_triggered();
+
+    void on_FloatBarCmd_triggered();
+
 private:
     Ui::MainWindow *ui;
     QString dirPath,filePath;
@@ -182,7 +186,8 @@ private:
     void ShowSaveBox();
     MyView* getCurrentView();
     QString getCurrentTabName();
-
+protected:
+    void contextMenuEvent(QContextMenuEvent *event);
 };
 
 #endif // MAINWINDOW_H

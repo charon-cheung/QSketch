@@ -95,6 +95,18 @@ QPointF MyLine::getP3() const
     return p3;
 }
 
+qreal MyLine::getLength()
+{
+    length = qPow(p1.x()-p3.x(), 2) + qPow(p1.y()-p3.y(), 2);
+    return qSqrt(length);
+}
+
+qreal MyLine::getAngle()
+{
+    angle = qAtan(getSlope());
+    return qRadiansToDegrees(angle);
+}
+
 QPen MyLine::getSelectedPen()
 {
 //    选择时的边界矩形样式
@@ -236,8 +248,7 @@ bool MyLine::equalToOrigin(QPointF pt)
 
 qreal MyLine::getSlope()
 {
-    int slope = (p3.y()-p1.y()) / (p3.x()-p1.x());
-    return slope;
+    return ( (p3.y()-p1.y()) / (p3.x()-p1.x()) );
 }
 
 void MyLine::mousePressEvent(QGraphicsSceneMouseEvent *event)

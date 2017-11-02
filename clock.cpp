@@ -86,13 +86,39 @@ void Clock::paintEvent(QPaintEvent *e)
     paint.setRenderHint(QPainter::HighQualityAntialiasing);
     clear(paint);
     drawBase(paint);
-//    drawHours(paint,alphaHours);
-//    drawMinutes(paint,alphaMin);
+//    drawGraduation(paint);
+//    drawValue(paint);
+    drawHours(paint,alphaHours);
+    drawMinutes(paint,alphaMin);
 //    drawSeconds(paint,alphaSec);
     drawCenter(paint);
 }
 
-void Clock::drawFourLines(QPainter &paint)
+void Clock::drawBase(QPainter &paint)
+{
+    QPen p;
+    p.setColor(QColor(234,234,234));
+    p.setWidthF(3);
+    p.setStyle(Qt::SolidLine);
+    paint.setPen(p);
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    //外圈渐变色
+    qreal radius = 95;    // 半径
+    QPointF center(100, 100);  // 圆心
+    QPointF focus(100, 100); // 焦点
+    QRadialGradient outter(center, radius, focus);
+    outter.setColorAt(0.94, QColor(255,255,255));
+    outter.setColorAt(1.0, QColor(90,90,90));
+    paint.setBrush(QBrush(outter));
+
+    QPen outPen;
+    outPen.setWidth(4);
+    outPen.setColor(QColor(88,88,88));
+    paint.setPen(outPen);
+    paint.drawEllipse(center, radius, radius);
+}
+
+void Clock::drawGraduation(QPainter &paint)
 {
     QPen p;
     p.setWidthF(1.5);
@@ -101,21 +127,17 @@ void Clock::drawFourLines(QPainter &paint)
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
     paint.setPen(p);
     //右
-    double nowUpX=185,nowUpY=100,nowDownX=140,nowDownY=100;
+    double nowUpX=185,nowUpY=100, nowDownX=145,nowDownY=100;
     paint.drawLine(nowUpX,nowUpY,nowDownX,nowDownY);
-    paint.drawText(QRect(120,95,10,10),"3");
     //下
-    nowUpX=100; nowUpY=185; nowDownX=100; nowDownY=140;
+    nowUpX=100; nowUpY=185; nowDownX=100; nowDownY=145;
     paint.drawLine(nowUpX,nowUpY,nowDownX,nowDownY);
-    paint.drawText(QRect(100,120,10,10),"6");
     //左
-    nowUpX=15; nowUpY=100; nowDownX=60; nowDownY=100;
+    nowUpX=15; nowUpY=100; nowDownX=55; nowDownY=100;
     paint.drawLine(nowUpX,nowUpY,nowDownX,nowDownY);
-    paint.drawText(QRect(80,100,10,10),"9");
     //上
-    nowUpX=100; nowUpY=10; nowDownX=100; nowDownY=60;
+    nowUpX=100; nowUpY=15; nowDownX=100; nowDownY=55;
     paint.drawLine(nowUpX,nowUpY,nowDownX,nowDownY);
-    paint.drawText(QRect(100,70,10,10),"12");
     // 补充8条线
     nowUpX=135; nowUpY=120; nowDownX=170; nowDownY=140;
     paint.drawLine(nowUpX,nowUpY,nowDownX,nowDownY);
@@ -145,39 +167,30 @@ void Clock::drawFourLines(QPainter &paint)
     paint.drawLine(nowUpX,nowUpY,nowDownX,nowDownY);
 }
 
-void Clock::drawBase(QPainter &paint)
+void Clock::drawValue(QPainter &paint)
 {
     QPen p;
-    p.setColor(QColor(234,234,234));
-    p.setWidthF(3);
+    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    p.setWidthF(3.5);
+    p.setColor(QColor(90,90,90));
     p.setStyle(Qt::SolidLine);
     paint.setPen(p);
-    paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
-    //外圈渐变色
-    qreal radius = 95;    // 半径
-    QPointF center(100, 100);  // 圆心
-    QPointF focus(100, 100); // 焦点
-    QRadialGradient outter(center, radius, focus);
-    outter.setColorAt(0.94, QColor(255,255,255));
-    outter.setColorAt(1.0, QColor(90,90,90));
-    paint.setBrush(QBrush(outter));
-
-    QPen outPen;
-    outPen.setWidth(4);
-    outPen.setColor(QColor(88,88,88));
-    paint.setPen(outPen);
-    paint.drawEllipse(center, radius, radius);
-    //四条刻度线
-    drawFourLines(paint);
+    paint.drawText(QRect(130,95,10,10),"3");
+    paint.drawText(QRect(97,130,10,10),"6");
+    paint.drawText(QRect(65,95,10,10),"9");
+    paint.drawText(QRect(95,65,15,10),"12");
 }
 
 void Clock::drawSeconds(QPainter &paint, double alpha)
 {
-    QPair<double,double> tmp = getPoint(upX,upY+15,alpha);
-    paint.setPen(QPen(QColor(200,55,55),2,Qt::SolidLine));
+    QPair<double,double> tmp = getPoint(upX,upY+20,alpha);
+    paint.setPen(QPen(QColor(245,88,80),3.2,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    // 长侧
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
-    tmp = getPoint(upX,100-30,alpha+180.0);
+    paint.drawEllipse(QPoint(100,100),5,5);
+    // 短侧
+    tmp = getPoint(upX,100-20,alpha+180.0);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
 }
 
@@ -199,9 +212,9 @@ void Clock::drawHours(QPainter &paint, double alpha)
 
 void Clock::drawCenter(QPainter &paint)
 {
-    paint.setPen(QPen(Qt::black,6,Qt::SolidLine,Qt::RoundCap));
+    paint.setPen(QPen(Qt::white,1,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
-    paint.drawPoint(100,100);
+    paint.drawEllipse(QPoint(100,100),2,2);
 }
 
 void Clock::clear(QPainter &paint)

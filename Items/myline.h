@@ -27,6 +27,8 @@ public:
     QPointF getP1() const;
     QPointF getP2() const;
     QPointF getP3() const;
+    qreal getLength();
+    qreal getAngle();
 
     QPen getSelectedPen();
     QPen getUnselectedPen();

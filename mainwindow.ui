@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>737</width>
-    <height>583</height>
+    <width>739</width>
+    <height>585</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -560,7 +560,7 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>737</width>
+     <width>739</width>
      <height>23</height>
     </rect>
    </property>
@@ -1248,6 +1248,16 @@ QTabBar::tab:left:only-one, QTabBar::tab:right:only-one {
   <action name="animation">
    <property name="text">
     <string>演示动画</string>
+   </property>
+  </action>
+  <action name="ToolBarCmd">
+   <property name="text">
+    <string>工具栏</string>
+   </property>
+  </action>
+  <action name="FloatBarCmd">
+   <property name="text">
+    <string>浮动工具栏</string>
    </property>
   </action>
  </widget>
