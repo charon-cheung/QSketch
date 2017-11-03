@@ -783,7 +783,7 @@ void MyView::Paste()
 
             MyLine* line = new MyLine(0,p1,p3);
             line->setView(this);
-            QPointF movePt = pos - p2;
+//            QPointF movePt = pos - p2;
 //            QTransform t;
 //            t.translate(movePt.x(), movePt.y());
 //            line->setTransform(t,true);

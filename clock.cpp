@@ -86,11 +86,11 @@ void Clock::paintEvent(QPaintEvent *e)
     paint.setRenderHint(QPainter::HighQualityAntialiasing);
     clear(paint);
     drawBase(paint);
-//    drawGraduation(paint);
-//    drawValue(paint);
+    drawGraduation(paint);
+    drawValue(paint);
     drawHours(paint,alphaHours);
     drawMinutes(paint,alphaMin);
-//    drawSeconds(paint,alphaSec);
+    drawSeconds(paint,alphaSec);
     drawCenter(paint);
 }
 
@@ -107,7 +107,7 @@ void Clock::drawBase(QPainter &paint)
     QPointF center(100, 100);  // 圆心
     QPointF focus(100, 100); // 焦点
     QRadialGradient outter(center, radius, focus);
-    outter.setColorAt(0.94, QColor(255,255,255));
+    outter.setColorAt(0.95, QColor(255,255,255));
     outter.setColorAt(1.0, QColor(90,90,90));
     paint.setBrush(QBrush(outter));
 
@@ -190,23 +190,30 @@ void Clock::drawSeconds(QPainter &paint, double alpha)
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
     paint.drawEllipse(QPoint(100,100),5,5);
     // 短侧
-    tmp = getPoint(upX,100-20,alpha+180.0);
+    tmp = getPoint(upX,100-25,alpha+180.0);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
 }
 
 void Clock::drawMinutes(QPainter &paint, double alpha)
 {
-    QPair<double,double> tmp = getPoint(upX,upY+15,alpha);
-    paint.setPen(QPen(QColor(25,25,25),4,Qt::SolidLine));
+    QPair<double,double> tmp = getPoint(upX,upY+35,alpha);
+    paint.setPen(QPen(QColor(75,75,75),4,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    paint.drawLine(Ox,Oy,tmp.first,tmp.second);
+    // 短侧
+    tmp = getPoint(upX,100-12,alpha+180.0);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
 }
 
 void Clock::drawHours(QPainter &paint, double alpha)
 {
-    QPair<double,double> tmp = getPoint(upX,upY+50,alpha);
-    paint.setPen(QPen(QColor(25,25,25),6,Qt::SolidLine));
+    QPair<double,double> tmp = getPoint(upX,upY+55,alpha);
+    paint.setPen(QPen(QColor(75,75,75),4,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    // 长侧
+    paint.drawLine(Ox,Oy,tmp.first,tmp.second);
+    // 短侧
+    tmp = getPoint(upX,100-10,alpha+180.0);
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
 }
 

@@ -334,7 +334,7 @@ void Command::ShowItemInfo()
             color = L->pen().color();
             info =  QString("图形类型: %1 \n").arg(type);
             info += QString("两个点的坐标: (%2 , %3) 和 (%4 , %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
-            info += QString("直线长度: %4   直线角度: %5               \n").arg(length).arg(angle);
+            info += QString("直线长度: %4          直线角度: %5        \n").arg(length).arg(angle);
             info += QString("直线颜色: %6").arg(QVariant(color.toRgb()).toString());
             break;
         }
@@ -364,7 +364,7 @@ void Command::ShowItemInfo()
             type = "直线";
             info =  QString("图形类型: %1 \n").arg(type);
             info += QString("两个点的坐标: (%2 , %3) 和 (%4 , %5)      \n").arg(x1).arg(y1).arg(x2).arg(y2);
-            info += QString("直线长度: %4   直线角度: %5               \n").arg(length).arg(angle);
+            info += QString("直线长度: %4          直线角度: %5      \n").arg(length).arg(angle);
         }
         default:
             break;

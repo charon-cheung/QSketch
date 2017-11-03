@@ -234,22 +234,27 @@ void MainWindow::CreateToolBar()
 {
     Normal = new QPushButton(this);
     Normal->setObjectName("normal");
+    Normal->setToolTip("恢复为普通模式");
     CreateToolWidget(Normal);
 
     AreaZoom = new QPushButton(this);
     AreaZoom->setObjectName("areazoom");
+    AreaZoom->setToolTip("局部放大");
     CreateToolWidget(AreaZoom);
 
     SmartZoom = new QPushButton(this);
     SmartZoom->setObjectName("smartzoom");
+    SmartZoom->setToolTip("智能放缩");
     CreateToolWidget(SmartZoom);
 
     Reset = new QPushButton(this);
     Reset->setObjectName("reset");
+    Reset->setToolTip("重置视图");
     CreateToolWidget(Reset);
 
     Empty = new QPushButton(this);
     Empty->setObjectName("empty");
+    Empty->setToolTip("清空");
     CreateToolWidget(Empty);
 
     floatToolBar = new QToolBar();

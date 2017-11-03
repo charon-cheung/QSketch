@@ -80,6 +80,7 @@ void MyScene::UnloadScene()
     removeItem(Origin);
     removeItem(X);
     removeItem(Y);
+    qDebug()<<"items 个数"<<this->items(sceneRect(),Qt::IntersectsItemShape,Qt::AscendingOrder).size();
 }
 
 void MyScene::Save(QDataStream &s)
@@ -406,13 +407,13 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
         for (qreal i = newRect.left(); i < newRect.right(); i = i + min_space)
         {
             painter->setPen(QColor(37,50,70));
-            if(qRound(i) %space !=0)
+            if(qRound(i) % space !=0)
                 painter->drawLine(QLineF( QPointF(i,newRect.top()), QPointF(i,newRect.bottom()) ) );
         }
         for (qreal j = newRect.top(); j < newRect.bottom(); j = j + min_space)
         {
             painter->setPen(QColor(37,50,70));
-            if(qRound(j) %space !=0)
+            if(qRound(j) % space !=0)
                 painter->drawLine(QLineF( QPointF(newRect.left(), j), QPointF(newRect.right(), j) ) );
         }
         break;
@@ -429,12 +430,10 @@ void MyScene::drawBackground(QPainter *painter, const QRectF &rect)
     }
     // Long origin marker
     painter->setPen(Qt::lightGray);
-    painter->drawLine(0, rect.top(), 0, rect.bottom());
-    painter->drawLine(rect.left(), 0, rect.right(), 0);
 
     painter->restore();
 }
-// 鼠标事件实现草图模式
+// 三个鼠标事件实现草图模式
 void MyScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!m_draft)    return;

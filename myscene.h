@@ -55,7 +55,7 @@ private:
     QGraphicsLineItem  *AxisX, *AxisY;
     QGraphicsPolygonItem *ArrowX, *ArrowY;
     QGraphicsEllipseItem *Origin;
-    QGraphicsSimpleTextItem* X, *Y;
+    QGraphicsSimpleTextItem *X, *Y;
     bool m_draft,m_pressed;
     qreal x,y;
     QGraphicsItem* tempItem;
