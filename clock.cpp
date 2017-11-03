@@ -171,7 +171,7 @@ void Clock::drawValue(QPainter &paint)
 {
     QPen p;
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
-    p.setWidthF(3.5);
+    p.setWidthF(4);
     p.setColor(QColor(90,90,90));
     p.setStyle(Qt::SolidLine);
     paint.setPen(p);
@@ -197,8 +197,13 @@ void Clock::drawSeconds(QPainter &paint, double alpha)
 void Clock::drawMinutes(QPainter &paint, double alpha)
 {
     QPair<double,double> tmp = getPoint(upX,upY+35,alpha);
-    paint.setPen(QPen(QColor(75,75,75),4,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
+
+    QLinearGradient linearGradient(Ox,Oy,tmp.first,tmp.second);
+    linearGradient.setColorAt(0.0, QColor(65,65,65));
+    linearGradient.setColorAt(0.5, QColor(75,75,75));
+    linearGradient.setColorAt(1.0, QColor(85,85,85));
+    paint.setPen(QPen(QBrush(linearGradient), 4));
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
     // 短侧
     tmp = getPoint(upX,100-12,alpha+180.0);
@@ -208,8 +213,13 @@ void Clock::drawMinutes(QPainter &paint, double alpha)
 void Clock::drawHours(QPainter &paint, double alpha)
 {
     QPair<double,double> tmp = getPoint(upX,upY+55,alpha);
-    paint.setPen(QPen(QColor(75,75,75),4,Qt::SolidLine));
     paint.setRenderHint(QPainter::HighQualityAntialiasing, true);
+
+    QLinearGradient linearGradient(Ox,Oy,tmp.first,tmp.second);
+    linearGradient.setColorAt(0.0, QColor(65,65,65));
+    linearGradient.setColorAt(0.5, QColor(75,75,75));
+    linearGradient.setColorAt(1.0, QColor(85,85,85));
+    paint.setPen(QPen(QBrush(linearGradient), 4));
     // 长侧
     paint.drawLine(Ox,Oy,tmp.first,tmp.second);
     // 短侧

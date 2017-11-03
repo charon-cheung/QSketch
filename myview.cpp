@@ -62,6 +62,10 @@ void MyView::mousePressEvent(QMouseEvent *event)
             mode = NORMAL;
             showStatus("当前为普通模式");
         }
+        else if(flag == drawDraft)
+        {
+            showStatus("当前为草图模式");
+        }
         else
         {
             mode =EDIT;
@@ -342,25 +346,19 @@ void MyView::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Up:
         this->Translate(Command::UP);
-        showStatus("向上平移"+QString::number(Command::PACE)+"个单位");
+        showStatus("向上平移"+QString::number(m_main->getPace())+"个单位");
         break;
     case Qt::Key_Down:
         this->Translate(Command::DOWN);
-        showStatus("向下平移"+QString::number(Command::PACE)+"个单位");
+        showStatus("向下平移"+QString::number(m_main->getPace())+"个单位");
         break;
     case Qt::Key_Left:
         this->Translate(Command::LEFT);
-        showStatus("向左平移"+QString::number(Command::PACE)+"个单位");
+        showStatus("向左平移"+QString::number(m_main->getPace())+"个单位");
         break;
     case Qt::Key_Right:
         this->Translate(Command::RIGHT);
-        showStatus("向右平移"+QString::number(Command::PACE)+"个单位");
-        break;
-    case Qt::Key_PageUp:
-        this->PaceUp();
-        break;
-    case Qt::Key_PageDown:
-        this->PaceDown();
+        showStatus("向右平移"+QString::number(m_main->getPace())+"个单位");
         break;
     default:
         event->ignore();
@@ -633,6 +631,8 @@ void MyView::setDraftMode(bool on)
     getScene()->setDraftMode(on);
     if(on)
     {
+        m_scene->clear();
+        flag = drawDraft;
         this->setDragMode(QGraphicsView::NoDrag);
         m_main->DraftStatusBar(true);
         getScene()->UnloadScene();
@@ -640,10 +640,34 @@ void MyView::setDraftMode(bool on)
     }
     else
     {
-        // 提示是否保存
+        // 从草图模式进绘图模式，提示是否保存
+        QMessageBox msg;
+        msg.setText(tr("      是否需要保存 ?"));
+        QPushButton* Save = msg.addButton(tr("保存"), QMessageBox::ActionRole);
+        QPushButton* NotSave = msg.addButton(tr("不保存"), QMessageBox::ActionRole);
+        QPushButton* Cancel = msg.addButton(tr("取消"), QMessageBox::ActionRole);
+        //    不显示最大化和最小化按钮,必须用两行完成
+        msg.setWindowFlags(msg.windowFlags() & ~Qt::WindowMinMaxButtonsHint);
+        msg.setWindowFlags(msg.windowFlags() | Qt::WindowStaysOnTopHint);
+        msg.exec();
+        // 用qobject_cast转换会出错，但又必须转换
+        if ((QPushButton*)(msg.clickedButton()) == Cancel)
+        {
+            msg.close();
+            setDraftMode(true);
+            flag = drawDraft;
+            m_main->DraftStatusBar(true);
+            this->showStatus("当前为草图模式");
+            return;
+        }
+        else if((QPushButton*)msg.clickedButton() == Save)
+            m_main->on_Image_triggered();   // 以图片形式保存草图
+        else if((QPushButton*)msg.clickedButton() == NotSave)
+        {;}
         m_main->DraftStatusBar(false);
         Empty();
         Reset();
+        flag = drawNone;
         this->setDragMode(QGraphicsView::RubberBandDrag);
     }
 }
@@ -853,19 +877,7 @@ void MyView::Empty()
 void MyView::Translate(int direction)
 {
     Cmd = new Command(m_scene);
-    Cmd->Translate(direction);
-}
-
-void MyView::PaceUp()
-{
-    Cmd = new Command(m_scene);
-    Cmd->PaceUp();
-}
-
-void MyView::PaceDown()
-{
-    Cmd = new Command(m_scene);
-    Cmd->PaceDown();
+    Cmd->Translate(direction, m_main->getPace());
 }
 
 void MyView::updateCenterRect()

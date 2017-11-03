@@ -31,7 +31,7 @@ public:
     void showScale(QString s);
     void showCoordinate(QString s);
     void DraftStatusBar(bool on);
-
+    int getPace();
 public slots:
 
     void on_Open_triggered();
@@ -59,6 +59,8 @@ public slots:
     void on_action_Save_triggered();
 
     void on_openBtn_clicked();
+
+    void on_Image_triggered();
 
     void addRecentFile(const QString &name);
 
@@ -127,8 +129,6 @@ private slots:
 
     void on_SVG_triggered();
 
-    void on_Image_triggered();
-
     void on_Instruction_triggered();
 
     void on_About_triggered();
@@ -188,6 +188,7 @@ private:
     QString getCurrentTabName();
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // MAINWINDOW_H

@@ -64,7 +64,8 @@ private:
         drawRing = 0x400,
         drawText = 0x800,
         drawDividePt = 0x1000,
-        dragZoom = 0x1001
+        dragZoom = 0x1001,
+        drawDraft = 0x1002
     };
     DrawFlag flag;
     bool m_drawMulti;
@@ -136,8 +137,6 @@ public slots:
     void Delete();
     void Empty();
     void Translate(int direction);
-    void PaceUp();
-    void PaceDown();
     void showItemInfo();
 
 protected:

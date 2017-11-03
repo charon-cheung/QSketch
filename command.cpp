@@ -11,7 +11,6 @@ Command::Command(MyScene *scene)
 {
     m_scene = scene;
     chosenItems = m_scene->selectedItems();
-    pace = 5;
 }
 
 Command::Command(MyView *view)
@@ -19,7 +18,6 @@ Command::Command(MyView *view)
     m_view = view;
     m_scene = m_view->getScene();
     chosenItems = m_scene->selectedItems();
-    pace = 5;
 }
 
 MyScene *Command::getScene()
@@ -52,28 +50,42 @@ void Command::Rotate(float angle)
     m_view->showStatus("已经旋转"+QString::number(angle)+"°");
 }
 
-void Command::Translate(int direction)
+//　快捷平移
+void Command::Translate(int direction, int pace)
 {
-    if(direction == UP)
-        m_translate.translate(0, PACE);
-    else if(direction == DOWN)
-        m_translate.translate(0, -PACE);
-    else if(direction == LEFT)
-        m_translate.translate(-PACE, 0);
-    else if(direction == RIGHT)
-        m_translate.translate(PACE, 0);
     foreach(QGraphicsItem* item, chosenItems)
+    {
+        if(direction == UP)
+        {
+            if(item->type() == QGraphicsSimpleTextItem::Type || item->type() == QGraphicsPixmapItem::Type)
+                m_translate.translate(0, -pace);
+            else
+                m_translate.translate(0, pace);
+        }
+        else if(direction == DOWN)
+        {
+            if(item->type() == QGraphicsSimpleTextItem::Type || item->type() == QGraphicsPixmapItem::Type)
+                m_translate.translate(0, pace);
+            else
+                m_translate.translate(0, -pace);
+        }
+        else if(direction == LEFT)
+            m_translate.translate(-pace, 0);
+        else if(direction == RIGHT)
+            m_translate.translate(pace, 0);
+
         // false不能连续平移,只能平移到固定位置
         item->setTransform(m_translate,true);
+    }
 }
 
 // 场景坐标是item->scenePos();不是item->mapToScene(item->pos());
-//初始为(0,0),每向右平移，坐标就增加(5,0)
+//平移到某点
 void Command::Translate(QPointF pt)
 {
     foreach(QGraphicsItem* item, chosenItems)
     {
-        if(item->type() == QGraphicsSimpleTextItem::Type)
+        if(item->type() == QGraphicsSimpleTextItem::Type || item->type() == QGraphicsPixmapItem::Type)
         {
             QPointF movePt = pt - item->scenePos();
             m_translate.translate(movePt.x(), movePt.y());
@@ -94,18 +106,6 @@ void Command::Translate(QPointF pt)
     m_view->showStatus("已经移动到点"+ pos);
 }
 
-void Command::PaceUp()
-{
-    pace +=3;
-    m_up = true;
-}
-
-void Command::PaceDown()
-{
-    if(pace>3)
-        pace -=3;
-    m_down = true;
-}
 // 只在视觉上改变,大小和坐标都没有改变,实际没多大意义
 void Command::Zoom(bool in)
 {
@@ -541,7 +541,7 @@ void Command::InsertPix()
     QPixmap pix(fileName);
     QGraphicsPixmapItem* pixItem = m_scene->addPixmap(pix);
     pixItem->setFlag(QGraphicsItem::ItemIsSelectable);
-//    pixItem->setTransform(QTransform::fromScale(1,-1));
+    pixItem->setTransform(QTransform::fromScale(1,-1));
     if(pixItem)
         m_view->showStatus("插入图片成功");
 }

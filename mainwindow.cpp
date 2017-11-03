@@ -126,9 +126,17 @@ void MainWindow::DraftStatusBar(bool on)
     SceneMode->setDisabled(on);
     scale->setDisabled(on);
     if(on)
-        ui->statusBar->showMessage("进入草图模式");
+    {
+        DraftMode->setChecked(true);
+        ui->statusBar->showMessage("当前为草图模式");
+    }
     else
-        ui->statusBar->showMessage("退出草图模式");
+        ui->statusBar->showMessage("当前为普通模式");
+}
+
+int MainWindow::getPace()
+{
+    return ui->pace->value();
 }
 
 void MainWindow::InitWorkWidgets(bool on)
@@ -244,7 +252,7 @@ void MainWindow::CreateToolBar()
 
     SmartZoom = new QPushButton(this);
     SmartZoom->setObjectName("smartzoom");
-    SmartZoom->setToolTip("智能放缩");
+    SmartZoom->setToolTip("自适应放缩");
     CreateToolWidget(SmartZoom);
 
     Reset = new QPushButton(this);
@@ -377,14 +385,14 @@ void MainWindow::ShowSaveBox()
         this->on_Save_triggered();
         ui->tabView->removeTab(index);
     }
-    else if (msg.clickedButton() == NotSave)
+    else if(msg.clickedButton() == NotSave)
     {
         foreach(QObject *obj, w->children() )
             if(obj->inherits("QGraphicsView") )
                 delete obj;
         ui->tabView->removeTab(index);
     }
-    else if (msg.clickedButton() == Cancel)
+    else if(msg.clickedButton() == Cancel)
         msg.close();
 }
 
@@ -429,7 +437,21 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
         ui->FloatBarCmd->setIcon(QIcon());
     // 仅限小范围内出现
     if( event->pos().x()<this->width() && event->pos().y()< 2*ui->mainToolBar->height())
-    m.exec(QCursor::pos());
+        m.exec(QCursor::pos());
+}
+// 快捷键调整平移幅度
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key()==Qt::Key_PageUp)
+    {
+        ui->pace->setValue(getPace() + ui->pace->singleStep());
+    }
+    else if(event->key()==Qt::Key_PageDown)
+    {
+        ui->pace->setValue(getPace() - ui->pace->singleStep());
+    }
+    else
+        QMainWindow::keyPressEvent(event);
 }
 
 void MainWindow::on_NewView_triggered()
@@ -908,7 +930,7 @@ void MainWindow::on_Image_triggered()
     QString path = QApplication::applicationDirPath();
     QDateTime time = QDateTime::currentDateTime();
     QString str = time.toString("MM-dd--hh-mm-ss"); //设置显示格式
-    QString file = path+ "/" +str+ ".png";
+    QString file = path+ "/Images/"+str+ ".png";
     mirroredImage.save(file);
 }
 

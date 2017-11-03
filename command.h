@@ -23,7 +23,6 @@ public:
         DOWN,
         LEFT,
         RIGHT,
-        PACE = 8
     };
     enum{
         range = 2
@@ -32,10 +31,8 @@ public:
 public slots:
     void Delete();
     void Rotate(float angle);
-    void Translate(int direction);
+    void Translate(int direction, int pace);
     void Translate(QPointF pt);
-    void PaceUp();
-    void PaceDown();
     void Zoom(bool in);
     void SelectAll(bool state);
     void FillBrush();
